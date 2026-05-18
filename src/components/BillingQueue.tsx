@@ -182,33 +182,39 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
   const [bulkSending, setBulkSending] = useState(false);
   const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0, success: 0, failed: 0 });
 
-  // Global all-time stats (independent of date filter)
+  // Global all-time stats (independent of date filter) — refreshed after every queue load
   const [globalStats, setGlobalStats] = useState({ queueCount: 0, pendingCount: 0, pendingAmount: 0, totalCollected: 0, todayCollected: 0, totalDiscount: 0 });
 
-  useEffect(() => {
-    (async () => {
-      const params = new URLSearchParams();
-      if (scope === "pharmacy") params.set("pharmacyOnly", "true");
-      if (scope === "lab") params.set("labOnly", "true");
-      if (scope === "procedure") { params.set("procedureOnly", "true"); if (subDeptId) params.set("subDeptId", subDeptId); }
-      const d = await api(`/api/billing/queue?${params}`);
-      const items: QueueItem[] = d.data || [];
-      const todayStr = new Date().toISOString().split("T")[0];
-      const getAmt = (q: QueueItem) => scope === "pharmacy" ? getPharmacyItemsTotal(q.bill) : scope === "procedure" ? getProcedureItemsTotal(q.bill) : (q.bill?.total || 0);
-      const getRemainingAmt = (q: QueueItem) => {
-        if (scope !== "procedure" && q.bill?.status === "PARTIALLY_PAID") return Math.max(0, (q.bill?.total || 0) - (q.bill?.paidAmount || 0));
-        return getAmt(q);
-      };
-      setGlobalStats({
-        queueCount: items.length,
-        pendingCount: items.filter(q => q.bill?.status === "PENDING" || q.bill?.status === "PARTIALLY_PAID").length,
-        pendingAmount: items.reduce((s, q) => s + (q.bill?.status !== "PAID" && q.bill?.status !== "CANCELLED" ? getRemainingAmt(q) : 0), 0),
-        totalCollected: items.reduce((s, q) => s + (q.bill?.status === "PAID" ? getAmt(q) : 0), 0),
-        todayCollected: items.filter(q => q.bill?.paidAt && new Date(q.bill.paidAt).toISOString().slice(0, 10) === todayStr && q.bill?.status === "PAID").reduce((s, q) => s + getAmt(q), 0),
-        totalDiscount: items.reduce((s, q) => s + (q.bill?.discount || 0), 0),
-      });
-    })();
+  const loadGlobalStats = useCallback(async () => {
+    const params = new URLSearchParams();
+    if (scope === "pharmacy") params.set("pharmacyOnly", "true");
+    if (scope === "lab") params.set("labOnly", "true");
+    if (scope === "procedure") { params.set("procedureOnly", "true"); if (subDeptId) params.set("subDeptId", subDeptId); }
+    // Fetch all queue items (no date filter) for accurate all-time stats
+    const [queueRes, billingRes] = await Promise.all([
+      api(`/api/billing/queue?${params}`),
+      fetch(`/api/billing?page=1&limit=1${scope === "pharmacy" ? "&pharmacyOnly=true" : scope === "lab" ? "&labOnly=true" : ""}`, { credentials: "include" }).then(r => r.json()).catch(() => null),
+    ]);
+    const items: QueueItem[] = queueRes.data || [];
+    const todayStr = new Date().toISOString().split("T")[0];
+    const getAmt = (q: QueueItem) => scope === "pharmacy" ? getPharmacyItemsTotal(q.bill) : scope === "procedure" ? getProcedureItemsTotal(q.bill) : (q.bill?.total || 0);
+    const getRemainingAmt = (q: QueueItem) => {
+      if (scope !== "procedure" && q.bill?.status === "PARTIALLY_PAID") return Math.max(0, (q.bill?.total || 0) - (q.bill?.paidAmount || 0));
+      return getAmt(q);
+    };
+    // Use billing API stats for revenue figures when available (more accurate)
+    const apiStats = billingRes?.success ? billingRes.data?.stats : null;
+    setGlobalStats({
+      queueCount: items.length,
+      pendingCount: apiStats ? (apiStats.pendingCount || 0) : items.filter(q => q.bill?.status === "PENDING" || q.bill?.status === "PARTIALLY_PAID").length,
+      pendingAmount: items.reduce((s, q) => s + (q.bill?.status !== "PAID" && q.bill?.status !== "CANCELLED" ? getRemainingAmt(q) : 0), 0),
+      totalCollected: apiStats ? ((apiStats.paidCount || 0) > 0 ? items.filter(q => q.bill?.status === "PAID").reduce((s, q) => s + getAmt(q), 0) : 0) : items.reduce((s, q) => s + (q.bill?.status === "PAID" ? getAmt(q) : 0), 0),
+      todayCollected: apiStats ? (apiStats.todayRevenue || 0) : items.filter(q => q.bill?.paidAt && new Date(q.bill.paidAt).toISOString().slice(0, 10) === todayStr && q.bill?.status === "PAID").reduce((s, q) => s + getAmt(q), 0),
+      totalDiscount: items.reduce((s, q) => s + (q.bill?.discount || 0), 0),
+    });
   }, [scope, subDeptId]);
+
+  useEffect(() => { loadGlobalStats(); }, [loadGlobalStats]);
 
   // Status filter
   const [statusFilter, setStatusFilter] = useState<"all" | "PAID" | "PENDING">("all");
@@ -319,6 +325,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
   };
 
   const handleCollect = (item: QueueItem) => {
+    const isPartial = item.bill?.status === "PARTIALLY_PAID" && (item.bill?.paidAmount || 0) > 0;
     setSelectedItem(item);
     setCollectForm({
       ...EMPTY_COLLECT,
@@ -327,6 +334,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
       sgst: item.bill?.sgst || 9,
       igst: item.bill?.igst || 0,
       discount: item.bill?.discount || 0,
+      notes: isPartial ? (deptName ? `Consultation / other remaining charges — collected by ${deptName}` : "Consultation / other remaining charges") : "",
     });
     setCollectStep("billing");
     setPaidBill(null);
@@ -337,7 +345,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
     if (!confirm("Are you sure you want to delete this bill?")) return;
     setDeleting(billId);
     const d = await api(`/api/billing/${billId}`, { method: "DELETE" });
-    if (d.success) loadQueue();
+    if (d.success) { loadQueue(); loadGlobalStats(); }
     else showToast("error", "Delete Failed", d.message || "Failed to delete bill");
     setDeleting(null);
   };
@@ -373,6 +381,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
       setPaidBill(null);
       setViewMode("collect");
       loadQueue();
+      loadGlobalStats();
       showToast("success", "Bill Reverted", "Bill reverted to pending. You can now edit and re-collect.");
     } else {
       showToast("error", "Revert Failed", res.message || "Failed to revert bill");
@@ -681,13 +690,20 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
 
   const liveTotals = useMemo(() => {
     const paidAmount = selectedItem?.bill?.paidAmount || 0;
-    const hasPaidProcedures = paidAmount > 0
+    const billTotal = selectedItem?.bill?.total || 0;
+    const billStatus = selectedItem?.bill?.status;
+    // Any bill that has already been partially collected by another sub-dept
+    const isPartiallyPaid = billStatus === "PARTIALLY_PAID" && paidAmount > 0;
+    // Legacy: procedure-specific partial (kept for backward compat labels)
+    const hasPaidProcedures = isPartiallyPaid
       && (selectedItem?.bill?.billItems || []).some((bi: any) => bi.type === "PROCEDURE")
       && (selectedItem?.bill?.notes || "").includes("Collected by");
+    // Remaining = actual unpaid balance (works for pharmacy, procedure, any sub-dept partial)
+    const remainingBalance = Math.max(0, billTotal - paidAmount);
     const base = scope === "procedure"
       ? getProcedureItemsTotal(selectedItem?.bill)
-      : hasPaidProcedures
-        ? (selectedItem?.bill?.billItems || []).filter((bi: any) => bi.type !== "PROCEDURE").reduce((s: number, bi: any) => s + (bi.amount || 0), 0)
+      : isPartiallyPaid
+        ? remainingBalance
         : (selectedItem?.bill?.subtotal || 0);
     const added = (collectForm.addedCharges || []).reduce((s, c) => s + (c.amount || 0), 0);
     const gross = base + added;
@@ -697,7 +713,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
     const igstAmt = collectForm.isGst ? (gross * collectForm.igst) / 100 : 0;
     const total = Math.max(0, gross + gstTotal - (collectForm.discount || 0));
     const remaining = scope === "procedure" ? total : Math.max(0, total);
-    return { base, added, gross, gstTotal, cgstAmt, sgstAmt, igstAmt, total, remaining, paidAmount, hasPaidProcedures };
+    return { base, added, gross, gstTotal, cgstAmt, sgstAmt, igstAmt, total, remaining, paidAmount, billTotal, hasPaidProcedures, isPartiallyPaid, remainingBalance };
   }, [selectedItem, collectForm]);
 
   const handleCollectAndGenerate = async () => {
@@ -717,29 +733,28 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
       // Wait for all items to be added
       if (updatePromises.length > 0) await Promise.all(updatePromises);
       
-      // Apply GST/discount
-      await api(`/api/billing/${billId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          discount: collectForm.discount || 0, 
-          isGst: collectForm.isGst, 
-          cgst: collectForm.cgst, 
-          sgst: collectForm.sgst, 
-          igst: collectForm.igst 
-        })
-      });
+      // For fresh bills: persist GST/discount server-side.
+      // Skip for partially-paid bills — backend blocks GST/discount changes after payments.
+      const hasExistingPayment = (selectedItem?.bill?.paidAmount || 0) > 0;
+      if (!hasExistingPayment) {
+        await api(`/api/billing/${billId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            discount: collectForm.discount || 0, 
+            isGst: collectForm.isGst, 
+            cgst: collectForm.cgst, 
+            sgst: collectForm.sgst, 
+            igst: collectForm.igst 
+          })
+        });
+      }
+      // liveTotals.total is always the correct payable amount:
+      //   fresh bill   → subtotal + added charges + GST − discount (full amount, paidAmount=0)
+      //   partial bill → remainingBalance + added charges (already net of prior payments)
+      const payableTotal = liveTotals.total;
       
-      // Fetch final total from server
-      const updatedBill = await api(`/api/billing/${billId}`);
-      const fullBillTotal = updatedBill?.data?.total ?? updatedBill?.total ?? liveTotals.total;
-      const alreadyPaid = updatedBill?.data?.paidAmount ?? updatedBill?.paidAmount ?? (selectedItem?.bill?.paidAmount || 0);
-      // Procedure scope: collect only procedure portion; others: collect only remaining unpaid balance
-      const payableTotal = scope === "procedure"
-        ? liveTotals.total
-        : Math.max(0, fullBillTotal - alreadyPaid);
-      
-      // Record payment
+      // Record payment — response now contains the fresh bill, avoids a redundant GET round-trip
       const payRes = await api(`/api/billing/${billId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -753,12 +768,12 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
       });
       
       if (payRes.success) {
-        const billRes = await api(`/api/billing/${billId}`);
-        const freshBill = billRes.data || billRes;
+        const freshBill = payRes.data?.bill || payRes.data || payRes;
         setPaidBill(freshBill);
         setCollectStep("receipt");
         setProcessing(false);
         loadQueue();
+        loadGlobalStats();
         
         // Auto-send email entirely in background — never blocks UI
         if (selectedItem?.patient?.email && selectedItem?.bill) {
@@ -1332,32 +1347,56 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
 
     y += boxH + 8;
 
-    // ── Payment Info Strip ──
-    doc.setFillColor(240, 253, 244);
-    doc.setDrawColor(187, 247, 208);
-    doc.setLineWidth(0.3);
-    doc.roundedRect(mx, y, cw, 14, 2, 2, 'FD');
+    // ── Payment Collection History (PDF) ──
+    const allPdfPayments: any[] = paidBill?.payments || selectedItem.bill?.payments || [];
+    const pdfFullTotal = paidBill?.total ?? selectedItem.bill?.total ?? 0;
+    const pdfTotalPaid = paidBill?.paidAmount ?? selectedItem.bill?.paidAmount ?? 0;
+    const pdfRemaining = Math.max(0, pdfFullTotal - pdfTotalPaid);
+    const pdfIsFullyPaid = (paidBill?.status ?? selectedItem.bill?.status) === 'PAID';
 
-    const payItems = [
-      { label: 'PAYMENT METHOD', value: collectForm.method },
-      { label: 'AMOUNT PAID', value: rs(paidBill?.total ?? liveTotals.total) },
-      { label: 'STATUS', value: 'PAID' },
-    ];
-    if (collectForm.transactionId) payItems.push({ label: 'TXN ID', value: collectForm.transactionId });
-    if (deptName) payItems.push({ label: 'COLLECTED BY', value: deptName });
-    const pColW = cw / payItems.length;
-    payItems.forEach((p, i) => {
-      const pX = mx + 4 + i * pColW;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(148, 163, 184);
-      doc.text(p.label, pX, y + 5);
-      doc.setFontSize(8.5);
-      doc.setTextColor(22, 101, 52);
-      doc.text(p.value, pX, y + 10);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(71, 85, 105);
+    doc.text('PAYMENT COLLECTION HISTORY', mx, y + 4);
+    doc.setDrawColor(14, 137, 143); doc.setLineWidth(0.4); doc.line(mx + 58, y + 2, pw - mx, y + 2);
+    y += 8;
+
+    const pdfPayRows: any[][] = allPdfPayments.length > 0
+      ? allPdfPayments.map((p: any) => {
+          const notes = p.notes || '';
+          const match = notes.match(/Collected by ([^—\n]+)/);
+          const deptLbl = match ? match[0].trim() : (deptName ? `Collected by ${deptName}` : 'Payment Received');
+          const remarkLbl = notes.replace(/Collected by [^—]+/g, '').replace(/^[\s\-—|]+/, '').trim();
+          const isPharm = notes.toLowerCase().includes('pharmacy');
+          const dtStr = p.paidAt ? new Date(p.paidAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+          return [deptLbl, remarkLbl || (isPharm ? 'Medicine charges' : 'Consultation / other charges'), p.method || '', dtStr, rs(p.amount || 0), isPharm];
+        })
+      : [[deptName ? `Collected by ${deptName}` : 'Payment Received', 'Consultation charges', collectForm.method, new Date().toLocaleDateString('en-IN'), rs(paidBill?.total ?? liveTotals.total), false]];
+
+    const pdfPayDisplayRows = pdfPayRows.map(r => [r[0], r[1], r[2], r[3], r[4]]);
+    if (!pdfIsFullyPaid && pdfRemaining > 0.01) pdfPayDisplayRows.push(['Remaining Balance', 'Pending at billing counter', '', '', rs(pdfRemaining)]);
+    pdfPayDisplayRows.push(['', '', '', 'TOTAL COLLECTED', rs(pdfTotalPaid)]);
+
+    autoTable(doc, {
+      startY: y,
+      head: [['Collected By / Dept', 'Remark', 'Method', 'Date', 'Amount']],
+      body: pdfPayDisplayRows,
+      theme: 'grid',
+      headStyles: { fillColor: [14, 137, 143], textColor: [255, 255, 255], fontSize: 7.5, fontStyle: 'bold', cellPadding: { top: 3, bottom: 3, left: 4, right: 4 } },
+      bodyStyles: { fontSize: 8.5, textColor: [30, 41, 59], cellPadding: { top: 3.5, bottom: 3.5, left: 4, right: 4 } },
+      columnStyles: { 0: { cellWidth: 'auto', fontStyle: 'bold' }, 1: { cellWidth: 42 }, 2: { cellWidth: 22 }, 3: { cellWidth: 28 }, 4: { cellWidth: 28, halign: 'right', fontStyle: 'bold' } },
+      margin: { left: mx, right: mx },
+      didParseCell: (data: any) => {
+        if (data.section === 'body') {
+          const isRem = !pdfIsFullyPaid && data.row.index === pdfPayDisplayRows.length - 2 && pdfRemaining > 0.01;
+          const isTot = data.row.index === pdfPayDisplayRows.length - 1;
+          const isPharm = pdfPayRows[data.row.index]?.[5] === true;
+          if (isRem) { data.cell.styles.fillColor = [255, 251, 235]; data.cell.styles.textColor = [180, 83, 9]; }
+          else if (isTot) { data.cell.styles.fillColor = [240, 253, 244]; data.cell.styles.textColor = [22, 101, 52]; data.cell.styles.fontStyle = 'bold'; }
+          else if (isPharm) { data.cell.styles.fillColor = [253, 242, 248]; data.cell.styles.textColor = [190, 24, 93]; }
+          else { data.cell.styles.fillColor = data.row.index % 2 === 0 ? [240, 253, 244] : [255, 255, 255]; data.cell.styles.textColor = [22, 101, 52]; }
+        }
+      },
     });
-
-    y += 20;
+    y = (doc as any).lastAutoTable.finalY + 8;
 
     // ── Signature section ──
     const sigY = Math.max(y + 10, ph - (hasLetterhead ? 60 : 50));
@@ -1545,6 +1584,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
     }
     setSelectedIds(new Set());
     loadQueue();
+    loadGlobalStats();
     if (failed === 0) showToast("success", "Deleted!", `${success} bill${success > 1 ? "s" : ""} deleted successfully.`);
     else showToast("warning", "Partial Delete", `${success} deleted, ${failed} failed (may have payments).`);
   };
@@ -1566,7 +1606,7 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
             <button onClick={() => { setDateFilter(new Date().toISOString().split("T")[0]); setSortBy("newest"); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff", fontSize: 12, fontWeight: 600, color: "#475569", cursor: "pointer" }}>
               <CalendarDays size={13} /> Today
             </button>
-            <button onClick={loadQueue} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff", fontSize: 12, fontWeight: 600, color: "#475569", cursor: "pointer" }}>
+            <button onClick={() => { loadQueue(); loadGlobalStats(); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff", fontSize: 12, fontWeight: 600, color: "#475569", cursor: "pointer" }}>
               <RefreshCw size={13} style={loading ? { animation: "spin 1s linear infinite" } : {}} /> Refresh
             </button>
             <div ref={exportRef} style={{ position: "relative" }}>
@@ -2186,19 +2226,58 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
                   <div className="cm-layout">
                     {/* ── Left Column: Charges ── */}
                     <div className="cm-left">
-                      {/* Previously Collected Banner — shown when sub-dept already collected procedure charges */}
-                      {scope !== "procedure" && liveTotals.hasPaidProcedures && (
-                        <div style={{marginBottom:12,padding:"10px 14px",background:"#fffbeb",border:"1px solid #fde68a",borderRadius:9,display:"flex",alignItems:"flex-start",gap:8,fontSize:11}}>
-                          <IndianRupee size={13} color="#b45309" style={{marginTop:1,flexShrink:0}}/>
-                          <div>
-                            <div style={{fontWeight:700,color:"#92400e",marginBottom:2}}>Partial Collection Already Done</div>
-                            <div style={{color:"#78350f"}}>
-                              {selectedItem.bill?.notes?.match(/Collected by [^|]+/)?.[0]?.trim() || "Procedure charges"}: <strong>{fmtCur(liveTotals.paidAmount)}</strong>
+                      {/* Previously Collected Banner — shown for any PARTIALLY_PAID bill */}
+                      {scope !== "procedure" && liveTotals.isPartiallyPaid && (() => {
+                        const priorPayments: any[] = selectedItem.bill?.payments || [];
+                        return (
+                          <div style={{marginBottom:14,background:"#fffbeb",border:"1px solid #fde68a",borderRadius:10,overflow:"hidden"}}>
+                            <div style={{padding:"9px 14px",background:"#fef3c7",display:"flex",alignItems:"center",gap:7,borderBottom:"1px solid #fde68a"}}>
+                              <IndianRupee size={13} color="#92400e" style={{flexShrink:0}}/>
+                              <div style={{fontWeight:700,color:"#92400e",fontSize:12}}>Partially Collected by Sub-Department(s)</div>
+                              <span style={{marginLeft:"auto",fontSize:11,fontWeight:700,color:"#b45309",background:"#fff",padding:"2px 8px",borderRadius:6,border:"1px solid #fde68a"}}>Already Paid: {fmtCur(liveTotals.paidAmount)}</span>
                             </div>
-                            <div style={{color:"#b45309",marginTop:3}}>Remaining balance to collect: <strong>{fmtCur(liveTotals.remaining)}</strong></div>
+                            <div style={{padding:"8px 14px"}}>
+                              {priorPayments.length > 0 ? (
+                                <table style={{width:"100%",fontSize:11,borderCollapse:"collapse" as const}}>
+                                  <thead>
+                                    <tr style={{color:"#92400e",fontWeight:700}}>
+                                      <td style={{padding:"3px 6px"}}>Dept / Collected By</td>
+                                      <td style={{padding:"3px 6px"}}>Remark</td>
+                                      <td style={{padding:"3px 6px",textAlign:"center" as const}}>Method</td>
+                                      <td style={{padding:"3px 6px",textAlign:"right" as const}}>Amount</td>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {priorPayments.map((p: any, i: number) => {
+                                      const notes = p.notes || "";
+                                      const m = notes.match(/Collected by ([^\u2014\n]+)/);
+                                      const lbl = m ? m[0].trim() : "Payment Received";
+                                      const rem = notes.replace(/Collected by [^\u2014]+/g, "").replace(/^[\s\-\u2014|]+/, "").trim();
+                                      const isPharm = notes.toLowerCase().includes("pharmacy");
+                                      return (
+                                        <tr key={i} style={{background: i % 2 === 0 ? "#fffde7" : "transparent",borderTop:i===0?"1px solid #fde68a":"none"}}>
+                                          <td style={{padding:"5px 6px",fontWeight:700,color: isPharm ? "#be185d" : "#78350f"}}>{lbl}</td>
+                                          <td style={{padding:"5px 6px",color:"#92400e"}}>{rem || (isPharm ? "Medicine charges" : "—")}</td>
+                                          <td style={{padding:"5px 6px",textAlign:"center" as const,color:"#64748b"}}>{p.method}</td>
+                                          <td style={{padding:"5px 6px",textAlign:"right" as const,fontWeight:800,color: isPharm ? "#be185d" : "#92400e"}}>{fmtCur(p.amount)}</td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              ) : (
+                                <div style={{color:"#78350f",fontSize:11}}>
+                                  {selectedItem.bill?.notes?.match(/Collected by [^|]+/)?.[0]?.trim() || "Partial amount collected"}: <strong>{fmtCur(liveTotals.paidAmount)}</strong>
+                                </div>
+                              )}
+                              <div style={{marginTop:8,padding:"6px 8px",background:"#fef9c3",borderRadius:6,border:"1px solid #fde68a",fontSize:11,fontWeight:700,color:"#92400e",display:"flex",justifyContent:"space-between"}}>
+                                <span>Remaining to Collect Now (Central Billing)</span>
+                                <span style={{fontSize:14,color:"#b45309"}}>{fmtCur(liveTotals.remainingBalance)}</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                       {/* Charges + Pharmacy Detail (Collect modal) */}
                       {(() => {
                         const billForCollect = getRemainingChargesBill(selectedItem.bill, scope);
@@ -2364,21 +2443,26 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
                     <div className="cm-right">
                       {/* Live Total Box */}
                       <div className="cm-total-box">
-                        <div className="cm-total-row"><span>{liveTotals.hasPaidProcedures && scope !== "procedure" ? "Remaining Charges" : "Base Charges"}</span><span>{fmtCur(liveTotals.base)}</span></div>
+                        {liveTotals.isPartiallyPaid && scope !== "procedure" ? (
+                          <>
+                            <div className="cm-total-row" style={{color:"#94a3b8",fontSize:11}}><span>Full Bill Total</span><span>{fmtCur(liveTotals.billTotal)}</span></div>
+                            <div className="cm-total-row" style={{color:"#b45309",borderBottom:"1px dashed #fde68a",paddingBottom:6,marginBottom:6}}>
+                              <span>Already Collected</span>
+                              <span style={{fontWeight:700}}>− {fmtCur(liveTotals.paidAmount)}</span>
+                            </div>
+                            <div className="cm-total-row"><span>Remaining Base</span><span>{fmtCur(liveTotals.base)}</span></div>
+                          </>
+                        ) : (
+                          <div className="cm-total-row"><span>Base Charges</span><span>{fmtCur(liveTotals.base)}</span></div>
+                        )}
                         {liveTotals.added > 0 && <div className="cm-total-row"><span>Extra Charges</span><span style={{color:"#0369a1"}}>+{fmtCur(liveTotals.added)}</span></div>}
                         {collectForm.isGst && liveTotals.cgstAmt > 0 && <div className="cm-total-row"><span>CGST ({collectForm.cgst}%)</span><span>{fmtCur(liveTotals.cgstAmt)}</span></div>}
                         {collectForm.isGst && liveTotals.sgstAmt > 0 && <div className="cm-total-row"><span>SGST ({collectForm.sgst}%)</span><span>{fmtCur(liveTotals.sgstAmt)}</span></div>}
                         {collectForm.isGst && liveTotals.igstAmt > 0 && <div className="cm-total-row"><span>IGST ({collectForm.igst}%)</span><span>{fmtCur(liveTotals.igstAmt)}</span></div>}
                         {(collectForm.discount||0) > 0 && <div className="cm-total-row"><span>Discount</span><span style={{color:"#059669"}}>-{fmtCur(collectForm.discount)}</span></div>}
-                        {liveTotals.hasPaidProcedures && scope !== "procedure" && (
-                          <div className="cm-total-row" style={{color:"#b45309",borderTop:"1px dashed #fde68a",paddingTop:6,marginTop:6}}>
-                            <span>Already Collected (Procedure)</span>
-                            <span style={{fontWeight:700}}>- {fmtCur(liveTotals.paidAmount)}</span>
-                          </div>
-                        )}
-                        <div className="cm-total-final">
-                          <span>{liveTotals.hasPaidProcedures && scope !== "procedure" ? "Remaining Balance" : "Total Payable"}</span>
-                          <strong>{fmtCur(liveTotals.total)}</strong>
+                        <div className="cm-total-final" style={liveTotals.isPartiallyPaid && scope !== "procedure" ? {background:"#fffbeb",border:"1px solid #fde68a",color:"#92400e"} : {}}>
+                          <span>{liveTotals.isPartiallyPaid && scope !== "procedure" ? "Now Collecting (Remaining)" : "Total Payable"}</span>
+                          <strong style={liveTotals.isPartiallyPaid && scope !== "procedure" ? {color:"#b45309"} : {}}>{fmtCur(liveTotals.total)}</strong>
                         </div>
                       </div>
 
@@ -2567,14 +2651,77 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
                       </div>
                     </div>
 
-                    {/* Payment strip */}
-                    <div className="bill-pay-strip">
-                      <div className="bill-pay-item"><span>Payment Method</span><strong>{collectForm.method}</strong></div>
-                      <div className="bill-pay-item"><span>Amount Collected</span><strong>{fmtCur(liveTotals.total)}</strong></div>
-                      <div className="bill-pay-item"><span>Status</span><span className="bill-paid-badge">{liveTotals.hasPaidProcedures && scope !== "procedure" ? "FULLY PAID" : scope === "procedure" ? "PARTIAL" : "PAID"}</span></div>
-                      {collectForm.transactionId && <div className="bill-pay-item"><span>Txn ID</span><strong>{collectForm.transactionId}</strong></div>}
-                      {deptName && <div className="bill-pay-item"><span>Collected By</span><strong>{deptName}</strong></div>}
-                    </div>
+                    {/* ── Payment Collection History ── */}
+                    {(() => {
+                      const allPayments: any[] = paidBill?.payments || selectedItem?.bill?.payments || [];
+                      const fullBillTotal = paidBill?.total ?? selectedItem?.bill?.total ?? 0;
+                      const totalPaid = paidBill?.paidAmount ?? selectedItem?.bill?.paidAmount ?? 0;
+                      const remainingBal = Math.max(0, fullBillTotal - totalPaid);
+                      const isFullyPaid = (paidBill?.status ?? selectedItem?.bill?.status) === "PAID";
+                      return (
+                        <div style={{ marginTop: 16 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase" as const, letterSpacing: ".05em", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ display: "inline-block", width: 3, height: 14, background: "#0E898F", borderRadius: 2 }} />
+                            Payment Collection History
+                          </div>
+                          <table className="bill-items-table" style={{ margin: 0, fontSize: 12, border: "1px solid #e2e8f0" }}>
+                            <thead>
+                              <tr style={{ background: "#f1f5f9" }}>
+                                <th style={{ textAlign: "left" as const, padding: "7px 10px", fontSize: 10 }}>Collected By / Dept</th>
+                                <th style={{ textAlign: "left" as const, padding: "7px 10px", fontSize: 10 }}>Remark</th>
+                                <th style={{ textAlign: "center" as const, padding: "7px 10px", fontSize: 10 }}>Method</th>
+                                <th style={{ textAlign: "left" as const, padding: "7px 10px", fontSize: 10 }}>Date & Time</th>
+                                <th style={{ textAlign: "right" as const, padding: "7px 10px", fontSize: 10 }}>Amount</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {allPayments.length === 0 ? (
+                                <tr><td colSpan={5} style={{ padding: "10px", textAlign: "center" as const, color: "#94a3b8", fontSize: 12 }}>No payment records found</td></tr>
+                              ) : allPayments.map((p: any, idx: number) => {
+                                const notes = p.notes || "";
+                                const collectedByMatch = notes.match(/Collected by ([^—\n]+)/);
+                                const deptLabel = collectedByMatch ? collectedByMatch[0].trim() : (deptName ? `Collected by ${deptName}` : "Payment Received");
+                                const remark = notes.replace(/Collected by [^—]+/g, "").replace(/^[\s\-—|]+/, "").trim();
+                                const isPharmacy = notes.toLowerCase().includes("pharmacy");
+                                const isCurrentDept = !isPharmacy && (notes.includes(deptName || "") || allPayments.length === 1);
+                                const rowColor = isPharmacy ? "#fdf2f8" : (idx % 2 === 0 ? "#f0fdf4" : "#fff");
+                                const textColor = isPharmacy ? "#be185d" : "#166534";
+                                const dtStr = p.paidAt ? new Date(p.paidAt).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+                                return (
+                                  <tr key={idx} style={{ background: rowColor }}>
+                                    <td style={{ padding: "7px 10px", fontWeight: 700, color: textColor }}>{deptLabel}</td>
+                                    <td style={{ padding: "7px 10px", color: "#64748b", fontSize: 11 }}>{remark || (isCurrentDept ? "Consultation / other charges" : isPharmacy ? "Medicine charges" : "—")}</td>
+                                    <td style={{ padding: "7px 10px", textAlign: "center" as const }}><strong>{p.method}</strong>{p.transactionId && <div style={{ fontSize: 9, color: "#94a3b8" }}>{p.transactionId}</div>}</td>
+                                    <td style={{ padding: "7px 10px", color: "#64748b", fontSize: 11 }}>{dtStr}</td>
+                                    <td style={{ padding: "7px 10px", textAlign: "right" as const, fontWeight: 800, color: textColor }}>{fmtCur(p.amount)}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                            <tfoot>
+                              <tr style={{ borderTop: "2px solid #0E898F", background: "#f0fdf4" }}>
+                                <td colSpan={4} style={{ padding: "8px 10px", textAlign: "right" as const, fontWeight: 700, fontSize: 13, color: "#1e293b" }}>Total Collected</td>
+                                <td style={{ padding: "8px 10px", textAlign: "right" as const, fontWeight: 800, fontSize: 14, color: "#166534" }}>{fmtCur(totalPaid)}</td>
+                              </tr>
+                              <tr style={{ borderTop: "1px solid #e2e8f0", background: "#f8fafc" }}>
+                                <td colSpan={4} style={{ padding: "7px 10px", textAlign: "right" as const, fontWeight: 600, color: "#475569", fontSize: 12 }}>Bill Total</td>
+                                <td style={{ padding: "7px 10px", textAlign: "right" as const, fontWeight: 700, color: "#1e293b", fontSize: 13 }}>{fmtCur(fullBillTotal)}</td>
+                              </tr>
+                              {!isFullyPaid && remainingBal > 0.01 && (
+                                <tr style={{ background: "#fffbeb" }}>
+                                  <td colSpan={4} style={{ padding: "7px 10px", textAlign: "right" as const, fontWeight: 700, color: "#92400e" }}>Remaining Balance (pending at billing counter)</td>
+                                  <td style={{ padding: "7px 10px", textAlign: "right" as const, fontWeight: 800, color: "#92400e" }}>{fmtCur(remainingBal)}</td>
+                                </tr>
+                              )}
+                            </tfoot>
+                          </table>
+                          <div style={{ marginTop: 8, fontSize: 10, color: "#64748b", display: "flex", alignItems: "center", gap: 6 }}>
+                            <span style={{ fontWeight: 700, color: isFullyPaid ? "#166534" : "#ea580c" }}>Status: {isFullyPaid ? "FULLY PAID" : "PARTIALLY PAID"}</span>
+                            {collectForm.transactionId && <span>· Txn: {collectForm.transactionId}</span>}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     <div className="bill-footer-note">
                       <p>Thank you for choosing <strong>{hospitalInfo.name}</strong></p>

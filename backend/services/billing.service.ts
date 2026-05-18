@@ -665,12 +665,12 @@ export async function getBills(
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const scopeFilter: any = opts.labOnly ? { billItems: { some: { type: "LAB_TEST" } } } : opts.pharmacyOnly ? { billItems: { some: { type: "PHARMACY" } } } : {};
 
-  let todayRevenueVal = 0, monthRevenueVal = 0, pendingCount = 0;
+  let todayRevenueVal = 0, monthRevenueVal = 0, pendingCount = 0, paidCount = 0;
 
   if (opts.pharmacyOnly) {
     // Sum PHARMACY BillItem amounts via bill.findMany (more reliable than billItem.aggregate with nested relation filter)
     const itemType = "PHARMACY";
-    const [todayBills, monthBills, pc] = await Promise.all([
+    const [todayBills, monthBills, pc, pcPaid] = await Promise.all([
       (prisma as any).bill.findMany({
         where: { hospitalId, status: "PAID", paidAt: { gte: today }, billItems: { some: { type: itemType } } },
         select: { billItems: { where: { type: itemType }, select: { amount: true } } },
@@ -680,14 +680,16 @@ export async function getBills(
         select: { billItems: { where: { type: itemType }, select: { amount: true } } },
       }),
       (prisma as any).bill.count({ where: { hospitalId, status: "PENDING", ...scopeFilter } }),
+      (prisma as any).bill.count({ where: { hospitalId, status: "PAID", ...scopeFilter } }),
     ]);
     const sumItems = (bills: any[]) => bills.reduce((s: number, b: any) => s + (b.billItems || []).reduce((bs: number, i: any) => bs + (i.amount || 0), 0), 0);
     todayRevenueVal = sumItems(todayBills);
     monthRevenueVal = sumItems(monthBills);
     pendingCount = pc;
+    paidCount = pcPaid;
   } else if (opts.labOnly) {
     const itemType = "LAB_TEST";
-    const [todayBills, monthBills, pc] = await Promise.all([
+    const [todayBills, monthBills, pc, pcPaid] = await Promise.all([
       (prisma as any).bill.findMany({
         where: { hospitalId, status: "PAID", paidAt: { gte: today }, billItems: { some: { type: itemType } } },
         select: { billItems: { where: { type: itemType }, select: { amount: true } } },
@@ -697,20 +699,24 @@ export async function getBills(
         select: { billItems: { where: { type: itemType }, select: { amount: true } } },
       }),
       (prisma as any).bill.count({ where: { hospitalId, status: "PENDING", ...scopeFilter } }),
+      (prisma as any).bill.count({ where: { hospitalId, status: "PAID", ...scopeFilter } }),
     ]);
     const sumItems = (bills: any[]) => bills.reduce((s: number, b: any) => s + (b.billItems || []).reduce((bs: number, i: any) => bs + (i.amount || 0), 0), 0);
     todayRevenueVal = sumItems(todayBills);
     monthRevenueVal = sumItems(monthBills);
     pendingCount = pc;
+    paidCount = pcPaid;
   } else {
-    const [todayAgg, monthAgg, pc] = await Promise.all([
+    const [todayAgg, monthAgg, pc, pcPaid] = await Promise.all([
       (prisma as any).bill.aggregate({ where: { hospitalId, status: "PAID", paidAt: { gte: today } }, _sum: { total: true } }),
       (prisma as any).bill.aggregate({ where: { hospitalId, status: "PAID", paidAt: { gte: monthStart } }, _sum: { total: true } }),
       (prisma as any).bill.count({ where: { hospitalId, status: "PENDING" } }),
+      (prisma as any).bill.count({ where: { hospitalId, status: "PAID" } }),
     ]);
     todayRevenueVal = todayAgg._sum.total || 0;
     monthRevenueVal = monthAgg._sum.total || 0;
     pendingCount = pc;
+    paidCount = pcPaid;
   }
 
   return {
@@ -720,6 +726,7 @@ export async function getBills(
       todayRevenue: todayRevenueVal,
       monthRevenue: monthRevenueVal,
       pendingCount,
+      paidCount,
     },
   };
 }

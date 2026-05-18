@@ -71,7 +71,7 @@ export default function BillingDepartmentDashboard({ profile, user, activeTab, o
           monthRevenue: s.monthRevenue || 0,
           pendingCount: s.pendingCount || 0,
           totalBills: p.total || 0,
-          paidCount: (p.total || 0) - (s.pendingCount || 0),
+          paidCount: s.paidCount || 0,
         });
       }
       if (queueRes.success) {

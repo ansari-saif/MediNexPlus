@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (auth.error) return auth.error;
 
   try {
-    const { appointmentId } = await req.json();
+    const { appointmentId, oldDate: reqOldDate, oldTimeSlot: reqOldTimeSlot } = await req.json();
     if (!appointmentId) return errorResponse("appointmentId is required", 400);
 
     const appt = await (prisma as any).appointment.findFirst({
@@ -35,16 +35,19 @@ export async function POST(req: NextRequest) {
     const settings = await getSettings(auth.hospitalId);
     const hospitalLogo = settings?.logo || null;
 
+    const fmtDate = (d: string | Date) => new Date(d).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const fmtSlot = (s: string) => { const [h, m] = s.split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`; };
+
     await sendAppointmentRescheduled({
       to:              email,
       patientName:     appt.patient.name,
       patientId:       appt.patient.patientId,
       doctorName:      appt.doctor?.name   ?? "Doctor",
       departmentName:  appt.department?.name ?? "Department",
-      oldDate:         new Date(appt.appointmentDate).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
-      oldTimeSlot:     appt.timeSlot,
-      newDate:         new Date(appt.appointmentDate).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
-      newTimeSlot:     appt.timeSlot,
+      oldDate:         reqOldDate  ? fmtDate(reqOldDate)  : fmtDate(appt.appointmentDate),
+      oldTimeSlot:     reqOldTimeSlot ? fmtSlot(reqOldTimeSlot) : fmtSlot(appt.timeSlot),
+      newDate:         fmtDate(appt.appointmentDate),
+      newTimeSlot:     fmtSlot(appt.timeSlot),
       tokenNumber:     appt.tokenNumber,
       type:            appt.type,
       hospitalName:    appt.hospital?.name ?? "Hospital",

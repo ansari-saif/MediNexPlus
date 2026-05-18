@@ -60,6 +60,32 @@ export async function GET(req: NextRequest) {
       const data = await service.getDueReminders(auth.hospitalId);
       return successResponse(data, "Due reminders fetched");
     }
+
+    // SUB_DEPT_HEAD: only return purchases belonging to their sub-department
+    if (auth.user.role === "SUB_DEPT_HEAD") {
+      const subDept = await (prisma as any).subDepartment.findFirst({
+        where: { userId: auth.user.userId, hospitalId: auth.hospitalId },
+        select: { id: true },
+      });
+
+      if (!subDept) return successResponse([], "Purchases fetched");
+
+      const where: any = { hospitalId: auth.hospitalId, subDepartmentId: subDept.id };
+      if (paymentStatus) where.paymentStatus = paymentStatus;
+
+      const data = await (prisma as any).purchase.findMany({
+        where,
+        include: {
+          supplier: { select: { name: true, phone: true, email: true, gstNumber: true, address1: true, city: true, state: true } },
+          subDepartment: { select: { id: true, name: true, type: true } },
+          items: { include: { item: { select: { id: true, name: true, unit: true, category: true } } } },
+          _count: { select: { items: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      return successResponse(data, "Purchases fetched");
+    }
+
     const data = await service.getPurchases(auth.hospitalId, paymentStatus || undefined);
     return successResponse(data, "Purchases fetched");
   } catch (e: any) {
@@ -69,15 +95,25 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireHospitalAdmin(req);
+  const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
   try {
     const body = await req.json();
     const result = purchaseSchema.safeParse(body);
     if (!result.success) return errorResponse("Validation failed", 400, result.error.issues);
-    
-    const data = await service.createPurchaseOrder(auth.hospitalId, result.data);
+
+    // Auto-attach subDepartmentId for SUB_DEPT_HEAD users
+    let subDepartmentId: string | null = null;
+    if (auth.user.role === "SUB_DEPT_HEAD") {
+      const subDept = await (prisma as any).subDepartment.findFirst({
+        where: { userId: auth.user.userId, hospitalId: auth.hospitalId },
+        select: { id: true },
+      });
+      subDepartmentId = subDept?.id || null;
+    }
+
+    const data = await service.createPurchaseOrder(auth.hospitalId, { ...result.data, subDepartmentId });
 
     // Auto-log expense if purchase was created with upfront payment
     const paidAmt = data.amountPaid || 0;
@@ -114,7 +150,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const auth = await requireHospitalAdmin(req);
+  const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
   try {

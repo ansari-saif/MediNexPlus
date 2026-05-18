@@ -1057,8 +1057,6 @@ function AppointmentTable({ onRefresh, onViewPatient }: { onRefresh: number; onV
       setAdminRescheduleTarget(null);
       setRescheduledAlertAppt(null);
       setDismissedRescheduledIds(prev => new Set(prev).add(id));
-      // Fire-and-forget email notification
-      api("/api/appointments/reschedule-email", "POST", { appointmentId: id }).catch(() => { });
       load();
     } else {
       setDeleteAlert({ ok: false, text: d.message || "Failed to reschedule" });

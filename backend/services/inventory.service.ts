@@ -52,7 +52,7 @@ export const deleteSupplier = async (id: string, hospitalId: string) => {
 // --- Purchases ---
 export const createPurchaseOrder = async (hospitalId: string, data: any) => {
   const { supplierId, items, purchaseNo, notes, invoiceNumber, invoiceDate,
-    paymentType, paymentMethod, amountPaid, dueDate, transactionId, discount, taxPercent } = data;
+    paymentType, paymentMethod, amountPaid, dueDate, transactionId, discount, taxPercent, subDepartmentId } = data;
   
   const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
   const discountAmt = discount || 0;
@@ -63,6 +63,7 @@ export const createPurchaseOrder = async (hospitalId: string, data: any) => {
   const purchaseData: any = {
     hospitalId,
     supplierId: supplierId || null,
+    subDepartmentId: subDepartmentId || null,
     purchaseNo,
     totalAmount: subtotal,
     discount: discountAmt,

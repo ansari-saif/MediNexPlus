@@ -710,7 +710,8 @@ export async function PATCH(req: NextRequest) {
     }
 
     // ── Post-dispense: collect payment or transfer patient ──
-    const { paymentAction, paymentMethod, transactionId, discount, transferDeptId, transferNote } = body;
+    const { paymentAction, paymentMethod, transactionId, discount, discountRemark, taxPercent: bodyTaxPct, transferDeptId, transferNote } = body;
+    const taxPercent = parseFloat(bodyTaxPct) || 0;
 
     if (paymentAction === "collect" && totalCharge > 0) {
       try {
@@ -745,6 +746,8 @@ export async function PATCH(req: NextRequest) {
           // 3. No bill exists yet — create an empty shell (addWorkflowChargesToBill will populate it)
           const billCount = await (px as any).bill.count({ where: { hospitalId: auth.hospitalId } });
           const billNo = `PH-${String(billCount + 1).padStart(5, "0")}`;
+          const isGst = taxPercent > 0;
+          const halfTax = isGst ? taxPercent / 2 : 0;
           const newBill = await (px as any).bill.create({
             data: {
               hospitalId: auth.hospitalId,
@@ -755,56 +758,90 @@ export async function PATCH(req: NextRequest) {
               items: JSON.stringify([]),
               subtotal: 0,
               discount: discountAmt,
-              tax: 0,
+              tax: taxPercent,
               total: 0,
               paidAmount: 0,
               status: "PENDING",
-              isGst: false,
-              cgst: 0,
-              sgst: 0,
-              notes: `Pharmacy dispense — ${rxForBill?.prescriptionNo || prescriptionId}`,
+              isGst,
+              cgst: halfTax,
+              sgst: halfTax,
+              notes: discountRemark
+                ? `Pharmacy dispense — ${rxForBill?.prescriptionNo || prescriptionId} | Discount: ${discountRemark}`
+                : `Pharmacy dispense — ${rxForBill?.prescriptionNo || prescriptionId}`,
             },
           });
           billId = newBill.id;
         }
 
-        // Ensure prescription is linked to the bill and discount is saved
+        // Ensure prescription is linked to the bill and discount/tax is saved
+        const isGst = taxPercent > 0;
+        const halfTax = isGst ? taxPercent / 2 : 0;
         await (px as any).bill.update({
           where: { id: billId },
-          data: { prescriptionId, discount: discountAmt },
+          data: {
+            prescriptionId,
+            discount: discountAmt,
+            tax: taxPercent,
+            isGst,
+            cgst: halfTax,
+            sgst: halfTax,
+            ...(discountRemark ? { notes: `Pharmacy dispense — ${rxForBill?.prescriptionNo || prescriptionId} | Discount: ${discountRemark}` } : {}),
+          },
         });
 
-        // ── KEY FIX: sync all workflow charges (consultation + pharmacy medicines) as BillItems ──
-        // addWorkflowChargesToBill reads completed PrescriptionWorkflow steps with totalCharge > 0,
-        // creates a BillItem for each (type=PHARMACY), then calls recalculateBill which reads
-        // bill.discount and produces the correct subtotal/total inclusive of all charges.
+        // ── Sync all workflow charges (consultation + pharmacy medicines) as BillItems ──
         await addWorkflowChargesToBill(billId!, auth.hospitalId);
 
-        // Read the recalculated total from the bill
+        // ── PHARMACY COLLECTS ONLY ITS OWN PORTION ──
+        // Read PHARMACY bill items to calculate the pharmacy-only total
+        const allBillItems = await (px as any).billItem.findMany({ where: { billId } });
+        const pharmacyItems = allBillItems.filter((bi: any) => bi.type === "PHARMACY");
+        const pharmacySubtotal = pharmacyItems.reduce((s: number, bi: any) => s + (bi.amount || 0), 0);
+
+        // Apply discount & tax proportionally to pharmacy portion only
+        const pharmacyDiscounted = Math.max(0, pharmacySubtotal - discountAmt);
+        const pharmacyTax = pharmacyDiscounted * taxPercent / 100;
+        const pharmacyTotal = Math.max(0, pharmacyDiscounted + pharmacyTax);
+
+        // Read the full bill total (consultation + pharmacy + tax/discount)
         const updatedBill = await (px as any).bill.findFirst({
           where: { id: billId },
-          select: { total: true, subtotal: true },
+          select: { total: true, subtotal: true, paidAmount: true },
         });
-        const finalTotal = Math.max(0, updatedBill?.total ?? 0);
+        const fullBillTotal = Math.max(0, updatedBill?.total ?? 0);
+        const existingPaid = updatedBill?.paidAmount || 0;
+        const newPaidAmount = existingPaid + pharmacyTotal;
+        const remainingBalance = Math.max(0, fullBillTotal - newPaidAmount);
 
-        // Mark bill as PAID with the correct total (consultation + medicines)
+        // Set bill status: PAID only if nothing remains, otherwise PARTIALLY_PAID
+        const billStatus = remainingBalance <= 0.01 ? "PAID" : "PARTIALLY_PAID";
+        const pharmacyNoteStr = discountRemark
+          ? `Collected by Pharmacy Dept — ₹${pharmacyTotal.toFixed(2)} (Discount: ${discountRemark})`
+          : `Collected by Pharmacy Dept — ₹${pharmacyTotal.toFixed(2)}`;
+
         await (px as any).bill.update({
           where: { id: billId },
-          data: { status: "PAID", paidAt: new Date(), paymentMethod: paymentMethod || "CASH", paidAmount: finalTotal },
+          data: {
+            status: billStatus,
+            paidAt: new Date(),
+            paymentMethod: paymentMethod || "CASH",
+            paidAmount: newPaidAmount,
+            notes: pharmacyNoteStr,
+          },
         });
 
-        // Create payment record
-        if (finalTotal > 0) {
+        // Create payment record for pharmacy portion only
+        if (pharmacyTotal > 0) {
           await (px as any).payment.create({
             data: {
               hospitalId: auth.hospitalId,
               billId,
-              amount: finalTotal,
+              amount: pharmacyTotal,
               method: paymentMethod || "CASH",
               transactionId: transactionId || null,
               status: "SUCCESS",
               paidAt: new Date(),
-              notes: `Pharmacy dispense payment`,
+              notes: pharmacyNoteStr,
             },
           });
 
@@ -816,18 +853,31 @@ export async function PATCH(req: NextRequest) {
                 sourceType: "PHARMACY",
                 referenceId: billId,
                 referenceType: "Bill",
-                amount: finalTotal,
-                description: `Pharmacy dispense — ${prescriptionId}`,
+                amount: pharmacyTotal,
+                description: `Pharmacy dispense — ${rxForBill?.prescriptionNo || prescriptionId} — ${pharmacyItems.length} medicine(s)`,
               },
             });
           } catch (_) { /* non-blocking */ }
         }
 
-        // Mark prescription as BILLED
+        // Mark prescription status
         await px.prescription.update({
           where: { id: prescriptionId },
-          data: { status: "BILLED", currentDeptId: null },
+          data: { status: remainingBalance > 0.01 ? "BILLING_PENDING" : "BILLED", currentDeptId: null },
         });
+
+        // ── Set billingTransferred on appointment so remaining charges appear in admin billing queue ──
+        if (rxForBill?.appointmentId) {
+          await (px as any).appointment.update({
+            where: { id: rxForBill.appointmentId },
+            data: {
+              billingTransferred: true,
+              billingNote: remainingBalance > 0.01
+                ? `${pharmacyNoteStr}. Remaining ₹${remainingBalance.toFixed(2)} pending collection.`
+                : pharmacyNoteStr,
+            },
+          }).catch(() => {});
+        }
 
       } catch (payErr: any) {
         console.warn("[pharmacy/dispense] Payment recording failed:", payErr.message);
@@ -891,7 +941,91 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    return successResponse({ dispensed: true }, "Medication dispensed successfully");
+    // Fetch the final bill with items for invoice display
+    let finalBill = null;
+    try {
+      const rxForFinal = await px.prescription.findFirst({
+        where: { id: prescriptionId, hospitalId: auth.hospitalId },
+        select: {
+          appointmentId: true, patientId: true, prescriptionNo: true,
+          diagnosis: true, chiefComplaint: true, medications: true, doctorNotes: true,
+          doctor: { select: { id: true, name: true, specialization: true } },
+          appointment: { select: { id: true, appointmentDate: true, timeSlot: true, type: true, tokenNumber: true } },
+        },
+      });
+      const billSearch: any = { hospitalId: auth.hospitalId };
+      if (rxForFinal?.appointmentId) billSearch.OR = [{ visitId: rxForFinal.appointmentId }, { prescriptionId }];
+      else billSearch.prescriptionId = prescriptionId;
+      finalBill = await (px as any).bill.findFirst({
+        where: billSearch,
+        include: {
+          billItems: true,
+          patient: { select: { id: true, name: true, patientId: true, phone: true, gender: true, dateOfBirth: true, email: true, address: true, bloodGroup: true } },
+          payments: { select: { id: true, amount: true, method: true, status: true, createdAt: true, transactionId: true, notes: true, paidAt: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      if (finalBill) {
+        // Hospital info + settings for letterhead
+        const hospital = await (px as any).hospital.findFirst({
+          where: { id: auth.hospitalId },
+          select: { name: true, email: true, mobile: true, address: true, gstNumber: true },
+        });
+        let settings: any = null;
+        try {
+          settings = await (px as any).hospitalSettings.findFirst({
+            where: { hospitalId: auth.hospitalId },
+            select: { hospitalName: true, address: true, phone: true, email: true, website: true, gstNumber: true, registrationNo: true, logo: true, letterhead: true, tagline: true },
+          });
+        } catch (_) {}
+        finalBill.hospital = hospital;
+        finalBill.settings = settings;
+        finalBill.prescriptionNo = rxForFinal?.prescriptionNo || null;
+        finalBill.doctor = rxForFinal?.doctor || null;
+        finalBill.diagnosis = rxForFinal?.diagnosis || null;
+        finalBill.chiefComplaint = rxForFinal?.chiefComplaint || null;
+        finalBill.appointmentInfo = rxForFinal?.appointment || null;
+        finalBill.dispensedAt = new Date().toISOString();
+        // Fetch collector (pharmacist) name and department info
+        try {
+          const collector = await (px as any).user.findFirst({
+            where: { id: auth.user.userId },
+            select: { name: true, email: true, role: true },
+          });
+          const subDept = await (px as any).subDepartment.findFirst({
+            where: { userId: auth.user.userId, hospitalId: auth.hospitalId },
+            select: { id: true, name: true, type: true, department: { select: { id: true, name: true } } },
+          });
+          finalBill.collectedBy = {
+            name: collector?.name || "Pharmacist",
+            email: collector?.email || null,
+            role: collector?.role || "SUB_DEPT_HEAD",
+            departmentName: subDept?.department?.name || "Pharmacy",
+            subDepartmentName: subDept?.name || "Pharmacy Store",
+            subDepartmentType: subDept?.type || null,
+          };
+        } catch (_) {
+          finalBill.collectedBy = { name: "Pharmacist", departmentName: "Pharmacy", subDepartmentName: "Pharmacy Store" };
+        }
+        // Parse medications for dosage/frequency info
+        let medsMap: Record<string, any> = {};
+        try {
+          const raw = rxForFinal?.medications;
+          const meds = typeof raw === "string" ? JSON.parse(raw) : Array.isArray(raw) ? raw : [];
+          meds.forEach((m: any) => { medsMap[(m.name || m.medicine || "").toLowerCase().trim()] = m; });
+        } catch (_) {}
+        finalBill.medsMap = medsMap;
+      }
+    } catch (_) { /* non-blocking */ }
+
+    // Calculate pharmacy-only total for the invoice from the final bill
+    let pharmacyCollected = 0;
+    if (finalBill) {
+      const phItems = (finalBill.billItems || []).filter((bi: any) => bi.type === "PHARMACY");
+      pharmacyCollected = phItems.reduce((s: number, bi: any) => s + (bi.amount || 0), 0);
+    }
+
+    return successResponse({ dispensed: true, bill: finalBill, pharmacyCollected }, "Medication dispensed successfully");
   } catch (error: any) {
     console.error("[pharmacy/queue PATCH] Error:", error);
     return errorResponse(error.message || "Failed to dispense medication", 500);

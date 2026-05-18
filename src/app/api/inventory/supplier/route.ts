@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireHospitalAdmin(req);
+  const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
   try {
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const auth = await requireHospitalAdmin(req);
+  const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
   try {

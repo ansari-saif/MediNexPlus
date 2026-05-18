@@ -731,6 +731,7 @@ function DoctorDashboardContent() {
   useEffect(() => {
     const urlTab = (searchParams.get("tab") as Tab) || "schedule";
     setTab(urlTab);
+    setSelectedPatientId(null);
   }, [searchParams]);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -1334,8 +1335,6 @@ function DoctorDashboardContent() {
       appointmentDate: newDate,
       timeSlot: newTime,
     });
-    // Fire-and-forget email notification
-    api("/api/appointments/reschedule-email", "POST", { appointmentId: slotAlertRescheduleAppt.id }).catch(() => { });
     setRescheduleSaving(false);
     setSlotAlertRescheduleAppt(null);
     setDismissedSlotIds(prev => new Set(prev).add(slotAlertRescheduleAppt.id));

@@ -892,6 +892,12 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
   const [dspNotes, setDspNotes] = useState("");
 
+  const [dspTaxPercent, setDspTaxPercent] = useState(0);
+
+  const [dspDiscountRemark, setDspDiscountRemark] = useState("");
+
+  const [dspInvoiceBill, setDspInvoiceBill] = useState<any>(null);
+
 
 
   useEffect(() => {
@@ -914,11 +920,15 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
       setDspItems([]);
 
-      setDspAction("close");
+      setDspAction("collect");
 
       setDspPayMethod("CASH");
 
       setDspDiscount(0);
+
+      setDspDiscountRemark("");
+
+      setDspTaxPercent(0);
 
       setDspTxnId("");
 
@@ -2840,7 +2850,11 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
     const subtotal = dspItems.reduce((s: number, m: any) => s + (m.quantity * m.unitPrice), 0);
 
-    const total = Math.max(0, subtotal - (dspDiscount || 0));
+    const discounted = Math.max(0, subtotal - (dspDiscount || 0));
+
+    const taxAmt = discounted * (dspTaxPercent || 0) / 100;
+
+    const total = Math.max(0, discounted + taxAmt);
 
 
 
@@ -2864,6 +2878,10 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
       discount: dspDiscount || 0,
 
+      discountRemark: dspDiscountRemark || undefined,
+
+      taxPercent: dspTaxPercent || 0,
+
       transferDeptId: dspAction === "transfer" ? dspTransferTarget : undefined,
 
       transferNote: dspAction === "transfer" ? (dspTransferNote || "Transferred from Pharmacy after dispensing") : undefined,
@@ -2886,25 +2904,19 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
       loadInventory();
 
-      setSuccessModal({
-
-        open: true,
-
-        title: dspAction === "collect" ? "Dispensed & Paid!" : dspAction === "transfer" ? "Dispensed & Transferred!" : "Dispensed!",
-
-        message: dspAction === "collect"
-
-          ? `Medicines dispensed and payment of \u20B9${total.toFixed(2)} collected.`
-
-          : dspAction === "transfer"
-
+      // If bill data is returned (collect action), show invoice modal
+      if (res.data?.bill && dspAction === "collect") {
+        setDspInvoiceBill(res.data.bill);
+      } else {
+        setSuccessModal({
+          open: true,
+          title: dspAction === "transfer" ? "Dispensed & Transferred!" : "Dispensed!",
+          message: dspAction === "transfer"
             ? `Medicines dispensed. Patient transferred to ${dspTransferTarget === "BILLING" ? "Billing Counter" : subDepts.find((s: any) => s.id === dspTransferTarget)?.name || "department"}.`
-
             : "Medicines dispensed successfully.",
-
-        details: [],
-
-      });
+          details: [],
+        });
+      }
 
     } else {
 
@@ -5170,13 +5182,17 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
                 const subtotal = dspItems.reduce((s, m) => s + (m.quantity * m.unitPrice), 0);
 
-                const total = Math.max(0, subtotal - (dspDiscount || 0));
+                const discounted = Math.max(0, subtotal - (dspDiscount || 0));
+
+                const taxAmt = discounted * (dspTaxPercent || 0) / 100;
+
+                const total = Math.max(0, discounted + taxAmt);
 
                 return (
 
                   <div style={{ display: "flex", justifyContent: "flex-end" }}>
 
-                    <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 16px", minWidth: 260 }}>
+                    <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "14px 18px", minWidth: 300 }}>
 
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: 12, color: "#64748b" }}>
 
@@ -5184,13 +5200,41 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
                       </div>
 
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 12, color: "#64748b" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, fontSize: 12, color: "#64748b" }}>
 
                         <span>Discount (&#8377;)</span>
 
                         <input type="number" min="0" value={dspDiscount} onChange={e => setDspDiscount(parseFloat(e.target.value) || 0)}
 
                           style={{ width: 80, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 12, textAlign: "right" }} />
+
+                      </div>
+
+                      {dspDiscount > 0 && (
+
+                        <div style={{ marginBottom: 6 }}>
+
+                          <input placeholder="Discount reason (optional)" value={dspDiscountRemark} onChange={e => setDspDiscountRemark(e.target.value)}
+
+                            style={{ width: "100%", padding: "5px 8px", borderRadius: 6, border: "1px solid #e2e8f0", fontSize: 11, color: "#475569" }} />
+
+                        </div>
+
+                      )}
+
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 12, color: "#64748b" }}>
+
+                        <span>Tax %</span>
+
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+
+                          <input type="number" min="0" max="100" step="0.5" value={dspTaxPercent} onChange={e => setDspTaxPercent(parseFloat(e.target.value) || 0)}
+
+                            style={{ width: 60, padding: "4px 8px", borderRadius: 6, border: "1px solid #cbd5e1", fontSize: 12, textAlign: "right" }} />
+
+                          {taxAmt > 0 && <span style={{ fontSize: 11, color: "#94a3b8" }}>(&#8377; {taxAmt.toFixed(2)})</span>}
+
+                        </div>
 
                       </div>
 
@@ -5391,6 +5435,445 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
       )}
 
 
+
+      {/* ── Invoice Modal after Dispense ── */}
+      {dspInvoiceBill && (() => {
+        const b = dspInvoiceBill;
+        const items = (b.billItems || []).filter((it: any) => it.type === "PHARMACY");
+        const medsMap: Record<string, any> = b.medsMap || {};
+        const s = b.settings || {};
+        const hospName = s.hospitalName || b.hospital?.name || "Hospital";
+        const hospAddr = s.address || b.hospital?.address || "";
+        const hospPhone = s.phone || b.hospital?.mobile || "";
+        const hospEmail = s.email || b.hospital?.email || "";
+        const hospGst = s.gstNumber || b.hospital?.gstNumber || "";
+        const hospRegNo = s.registrationNo || "";
+        const hospWebsite = s.website || "";
+        const hospTagline = s.tagline || "";
+        const fmtDT = (d: string) => { try { return new Date(d).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch { return d; } };
+        const fmtD = (d: string) => { try { return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }); } catch { return d; } };
+        const calcAge = (dob: string) => { try { return Math.floor((Date.now() - new Date(dob).getTime()) / 31557600000); } catch { return null; } };
+        const numberToWords = (n: number): string => {
+          if (n === 0) return "Zero";
+          const a = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+          const b2 = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+          const convert = (num: number): string => {
+            if (num < 20) return a[num];
+            if (num < 100) return b2[Math.floor(num / 10)] + (num % 10 ? " " + a[num % 10] : "");
+            if (num < 1000) return a[Math.floor(num / 100)] + " Hundred" + (num % 100 ? " and " + convert(num % 100) : "");
+            if (num < 100000) return convert(Math.floor(num / 1000)) + " Thousand" + (num % 1000 ? " " + convert(num % 1000) : "");
+            if (num < 10000000) return convert(Math.floor(num / 100000)) + " Lakh" + (num % 100000 ? " " + convert(num % 100000) : "");
+            return convert(Math.floor(num / 10000000)) + " Crore" + (num % 10000000 ? " " + convert(num % 10000000) : "");
+          };
+          const rupees = Math.floor(n);
+          const paise = Math.round((n - rupees) * 100);
+          let result = "Rupees " + convert(rupees);
+          if (paise > 0) result += " and " + convert(paise) + " Paise";
+          return result + " Only";
+        };
+        const phSubtotal = items.reduce((acc: number, it: any) => acc + (it.amount || 0), 0);
+        const phDiscount = b.discount || 0;
+        const phDiscounted = Math.max(0, phSubtotal - phDiscount);
+        const phTaxPct = b.tax || 0;
+        const phTaxAmt = phDiscounted * phTaxPct / 100;
+        const phCgst = b.isGst ? phTaxAmt / 2 : 0;
+        const phSgst = b.isGst ? phTaxAmt / 2 : 0;
+        const phTotal = Math.max(0, phDiscounted + phTaxAmt);
+        const fullBillTotal = b.total || 0;
+        const remainingBalance = Math.max(0, fullBillTotal - (b.paidAmount || 0));
+        const pharmacyPayments = (b.payments || []).filter((p: any) => (p.notes || "").includes("Pharmacy"));
+        const downloadPharmacyPDF = async () => {
+          const { jsPDF } = await import('jspdf');
+          const autoTable = (await import('jspdf-autotable')).default;
+          const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          const pw = doc.internal.pageSize.getWidth();
+          const ph = doc.internal.pageSize.getHeight();
+          const mx = 16;
+          const cw = pw - mx * 2;
+          const rs = (v: number) => `Rs. ${Number(v || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          let y = 14;
+
+          // ── Header ──
+          doc.setFillColor(248, 250, 252);
+          doc.rect(0, 0, pw, 48, 'F');
+          doc.setDrawColor(14, 137, 143);
+          doc.setLineWidth(0.8);
+          doc.line(0, 48, pw, 48);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(16);
+          doc.setTextColor(15, 23, 42);
+          doc.text(hospName, mx, y + 6);
+          if (hospTagline) { doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(14, 137, 143); doc.text(hospTagline, mx, y + 12); }
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(100, 116, 139);
+          let hy = y + (hospTagline ? 17 : 13);
+          if (hospAddr) { doc.text(hospAddr, mx, hy); hy += 4; }
+          if (hospPhone) { doc.text('Ph: ' + hospPhone, mx, hy); hy += 4; }
+          if (hospEmail) { doc.text('Email: ' + hospEmail, mx, hy); }
+          const rx = pw - mx;
+          doc.setFillColor(14, 137, 143);
+          doc.roundedRect(rx - 44, y, 44, 8, 1.5, 1.5, 'F');
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
+          doc.text('PHARMACY RECEIPT', rx - 22, y + 5.5, { align: 'center' });
+          doc.setFontSize(11); doc.setTextColor(30, 41, 59);
+          doc.text(b.billNo || 'BILL', rx, y + 18, { align: 'right' });
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+          doc.text('Date: ' + fmtDT(b.dispensedAt || b.paidAt || b.createdAt), rx, y + 24, { align: 'right' });
+          if (hospGst) { doc.text('GSTIN: ' + hospGst, rx, y + 29, { align: 'right' }); }
+
+          y = 54;
+
+          // ── Patient Info ──
+          doc.setFillColor(248, 250, 252);
+          doc.roundedRect(mx, y, cw, 22, 2, 2, 'F');
+          doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.2);
+          doc.roundedRect(mx, y, cw, 22, 2, 2, 'S');
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+          doc.text('PATIENT DETAILS', mx + 4, y + 5);
+          if (b.patient) {
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(30, 41, 59);
+            doc.text(b.patient.name || '', mx + 4, y + 11);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(71, 85, 105);
+            const patLine = ['ID: ' + (b.patient.patientId || ''), b.patient.gender || '', b.patient.phone ? 'Ph: ' + b.patient.phone : ''].filter(Boolean).join('  |  ');
+            doc.text(patLine, mx + 4, y + 16);
+            if (b.patient.email) { doc.text(b.patient.email, mx + 4, y + 20.5); }
+          }
+
+          y += 28;
+
+          // ── Medicines Table ──
+          const medRows = items.map((it: any, idx: number) => {
+            const med = medsMap[(it.name || '').toLowerCase().trim()] || {};
+            return [String(idx + 1), it.name || '', med.dosage || '—', med.frequency || '—', String(it.quantity || 0), rs(it.unitPrice || 0), rs(it.amount || 0)];
+          });
+          autoTable(doc, {
+            startY: y,
+            head: [['#', 'Medicine Name', 'Dosage', 'Frequency', 'Qty', 'Rate', 'Amount']],
+            body: medRows,
+            theme: 'striped',
+            headStyles: { fillColor: [14, 137, 143], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', cellPadding: { top: 3, bottom: 3, left: 3, right: 3 } },
+            bodyStyles: { fontSize: 8.5, textColor: [51, 65, 85], cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 } },
+            alternateRowStyles: { fillColor: [248, 250, 252] },
+            columnStyles: { 0: { cellWidth: 8, halign: 'center' }, 1: { cellWidth: 'auto' }, 2: { cellWidth: 22 }, 3: { cellWidth: 22 }, 4: { cellWidth: 12, halign: 'center' }, 5: { cellWidth: 26, halign: 'right' }, 6: { cellWidth: 26, halign: 'right', fontStyle: 'bold' } },
+            margin: { left: mx, right: mx },
+          });
+          y = (doc as any).lastAutoTable.finalY + 6;
+
+          // ── Totals ──
+          const sW = 74;
+          const sX = pw - mx - sW;
+          const summaryLines: Array<{ label: string; value: string; color?: number[] }> = [
+            { label: `Subtotal (${items.length} items)`, value: rs(phSubtotal) },
+          ];
+          if (phDiscount > 0) summaryLines.push({ label: 'Discount', value: '- ' + rs(phDiscount), color: [5, 150, 105] });
+          if (phTaxPct > 0 && !b.isGst) summaryLines.push({ label: `Tax (${phTaxPct}%)`, value: rs(phTaxAmt) });
+          if (b.isGst && phTaxPct > 0) {
+            summaryLines.push({ label: `CGST (${(phTaxPct / 2).toFixed(1)}%)`, value: rs(phCgst) });
+            summaryLines.push({ label: `SGST (${(phTaxPct / 2).toFixed(1)}%)`, value: rs(phSgst) });
+          }
+          const lineH = 6;
+          const boxH = (summaryLines.length * lineH) + lineH + 14;
+          doc.setFillColor(248, 250, 252);
+          doc.roundedRect(sX, y, sW, boxH, 2, 2, 'F');
+          doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.2);
+          doc.roundedRect(sX, y, sW, boxH, 2, 2, 'S');
+          let sY = y + 6;
+          summaryLines.forEach(row => {
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+            doc.setTextColor(...(row.color || [71, 85, 105]) as [number, number, number]);
+            doc.text(row.label, sX + 4, sY);
+            doc.text(row.value, sX + sW - 4, sY, { align: 'right' });
+            sY += lineH;
+          });
+          doc.setDrawColor(14, 137, 143); doc.setLineWidth(0.4);
+          doc.line(sX + 4, sY - 1, sX + sW - 4, sY - 1);
+          sY += 4;
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(30, 41, 59);
+          doc.text('Net Amount', sX + 4, sY);
+          doc.setTextColor(14, 137, 143); doc.setFontSize(11);
+          doc.text(rs(phTotal), sX + sW - 4, sY, { align: 'right' });
+
+          // ── Amount in Words ──
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(71, 85, 105);
+          doc.text(numberToWords(phTotal), mx, sY);
+
+          y += boxH + 8;
+
+          // ── Payment Details ──
+          if (pharmacyPayments.length > 0) {
+            const payRows = pharmacyPayments.map((p: any) => [
+              fmtDT(p.paidAt || p.createdAt), p.method || '', p.transactionId || '—',
+              rs(p.amount || 0), p.status || 'SUCCESS',
+            ]);
+            autoTable(doc, {
+              startY: y,
+              head: [['Date & Time', 'Method', 'Txn / Ref ID', 'Amount', 'Status']],
+              body: payRows,
+              theme: 'grid',
+              headStyles: { fillColor: [22, 163, 74], textColor: [255, 255, 255], fontSize: 7.5, fontStyle: 'bold', cellPadding: { top: 2.5, bottom: 2.5, left: 3, right: 3 } },
+              bodyStyles: { fontSize: 8, textColor: [30, 41, 59], cellPadding: { top: 3, bottom: 3, left: 3, right: 3 } },
+              columnStyles: { 0: { cellWidth: 42 }, 1: { cellWidth: 22 }, 2: { cellWidth: 'auto' }, 3: { cellWidth: 28, halign: 'right', fontStyle: 'bold' }, 4: { cellWidth: 22, halign: 'center' } },
+              margin: { left: mx, right: mx },
+            });
+            y = (doc as any).lastAutoTable.finalY + 8;
+          }
+
+          // ── Signature lines ──
+          const sigY = Math.max(y + 10, ph - 44);
+          doc.setDrawColor(180, 180, 180); doc.setLineWidth(0.3);
+          doc.line(mx, sigY, mx + 55, sigY);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+          doc.text('Patient / Attendant Signature', mx, sigY + 5);
+          doc.line(pw - mx - 55, sigY, pw - mx, sigY);
+          doc.text((b.collectedBy?.name || 'Pharmacist') + ' — Signature & Stamp', pw - mx - 55, sigY + 5);
+
+          // ── Footer ──
+          doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.15);
+          doc.line(mx, sigY + 14, pw - mx, sigY + 14);
+          doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+          doc.text('Thank you for choosing ' + hospName + '. Get well soon!', pw / 2, sigY + 19, { align: 'center' });
+          doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+          doc.text('This is a computer-generated receipt. Medicines once sold will not be taken back.', pw / 2, sigY + 23, { align: 'center' });
+
+          const fileName = `PharmacyReceipt_${(b.billNo || 'BILL').replace(/\s+/g, '-')}.pdf`;
+          doc.save(fileName);
+        };
+        return (
+          <div className="ph-modal-overlay" onClick={() => setDspInvoiceBill(null)} style={{ zIndex: 9999 }}>
+            <div className="ph-modal" style={{ width: 740, maxHeight: "94vh", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
+
+              {/* Modal Header */}
+              <div className="ph-modal-header" style={{ background: "linear-gradient(135deg, #f0fdf4, #ecfdf5)", borderBottom: "1px solid #bbf7d0" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: "#16a34a22", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <CheckCircle2 size={20} color="#16a34a" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#16a34a" }}>Payment Collected Successfully</div>
+                    <div style={{ fontSize: 11, color: "#64748b" }}>Receipt {b.billNo} &middot; {items.length} medicine(s) dispensed</div>
+                  </div>
+                </div>
+                <button className="ph-icon-btn-sm" onClick={() => setDspInvoiceBill(null)}><X size={16} /></button>
+              </div>
+
+              {/* Printable Invoice Body */}
+              <div className="ph-modal-body" style={{ overflowY: "auto", flex: 1, padding: "20px 24px" }} id="ph-invoice-print">
+
+                {/* ─ Hospital Letterhead ─ */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 14, borderBottom: `3px double ${ACCENT}`, marginBottom: 16 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }}>{hospName}</div>
+                    {hospTagline && <div style={{ fontSize: 10, color: ACCENT, fontStyle: "italic", marginBottom: 2 }}>{hospTagline}</div>}
+                    {hospAddr && <div style={{ fontSize: 10, color: "#64748b", maxWidth: 320, lineHeight: 1.4 }}>{hospAddr}</div>}
+                    <div style={{ fontSize: 10, color: "#64748b", marginTop: 2, display: "flex", flexWrap: "wrap", gap: 10 }}>
+                      {hospPhone && <span>Ph: {hospPhone}</span>}
+                      {hospEmail && <span>Email: {hospEmail}</span>}
+                      {hospWebsite && <span>Web: {hospWebsite}</span>}
+                    </div>
+                    <div style={{ fontSize: 10, color: "#64748b", display: "flex", gap: 12, marginTop: 2 }}>
+                      {hospGst && <span>GSTIN: <strong style={{ color: "#334155" }}>{hospGst}</strong></span>}
+                      {hospRegNo && <span>Reg. No: <strong style={{ color: "#334155" }}>{hospRegNo}</strong></span>}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: ACCENT, letterSpacing: ".02em" }}>PHARMACY RECEIPT</div>
+                    <div style={{ marginTop: 4, fontSize: 11 }}>
+                      <div><span style={{ color: "#94a3b8" }}>Receipt No:</span> <strong>{b.billNo}</strong></div>
+                      <div><span style={{ color: "#94a3b8" }}>Date:</span> <strong>{fmtDT(b.dispensedAt || b.paidAt || b.createdAt)}</strong></div>
+                      {b.prescriptionNo && <div><span style={{ color: "#94a3b8" }}>Rx No:</span> <strong>{b.prescriptionNo}</strong></div>}
+                      {b.appointmentInfo?.tokenNumber && <div><span style={{ color: "#94a3b8" }}>Token:</span> <strong>{b.appointmentInfo.tokenNumber}</strong></div>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* ─ Patient Info ─ */}
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: 8, background: "#fafbfc" }}>
+                    <div style={{ fontSize: 9, color: "#64748b", textTransform: "uppercase", letterSpacing: ".05em", fontWeight: 700, marginBottom: 4 }}>Patient Details</div>
+                    {b.patient && (<>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{b.patient.name}</div>
+                      <div style={{ fontSize: 11, color: "#475569", lineHeight: 1.6, marginTop: 2 }}>
+                        <div>ID: {b.patient.patientId}{b.patient.gender ? ` | ${b.patient.gender}` : ""}{b.patient.dateOfBirth ? ` | Age: ${calcAge(b.patient.dateOfBirth)} yrs` : ""}{b.patient.bloodGroup ? ` | ${b.patient.bloodGroup}` : ""}</div>
+                        {b.patient.phone && <div>Ph: {b.patient.phone}{b.patient.email ? ` | ${b.patient.email}` : ""}</div>}
+                        {b.patient.address && <div>{b.patient.address}</div>}
+                      </div>
+                    </>)}
+                  </div>
+                </div>
+
+                {/* ─ Medicines Table ─ */}
+                <div style={{ fontSize: 9, color: "#64748b", textTransform: "uppercase", letterSpacing: ".05em", fontWeight: 700, marginBottom: 6 }}>Dispensed Medicines</div>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, border: "1px solid #cbd5e1" }}>
+                  <thead>
+                    <tr style={{ background: "#f1f5f9" }}>
+                      <th style={{ padding: "7px 8px", textAlign: "center", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1", width: 30 }}>Sr</th>
+                      <th style={{ padding: "7px 8px", textAlign: "left", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1" }}>Medicine Name</th>
+                      <th style={{ padding: "7px 8px", textAlign: "left", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1", width: 90 }}>Dosage</th>
+                      <th style={{ padding: "7px 8px", textAlign: "left", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1", width: 80 }}>Frequency</th>
+                      <th style={{ padding: "7px 8px", textAlign: "center", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1", width: 40 }}>Qty</th>
+                      <th style={{ padding: "7px 8px", textAlign: "right", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1", width: 80 }}>Rate (&#8377;)</th>
+                      <th style={{ padding: "7px 8px", textAlign: "right", fontWeight: 700, color: "#334155", fontSize: 10, border: "1px solid #cbd5e1", width: 80 }}>Amount (&#8377;)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((it: any, idx: number) => {
+                      const med = medsMap[(it.name || "").toLowerCase().trim()] || {};
+                      return (
+                        <tr key={it.id || idx}>
+                          <td style={{ padding: "6px 8px", textAlign: "center", color: "#94a3b8", border: "1px solid #e2e8f0" }}>{idx + 1}</td>
+                          <td style={{ padding: "6px 8px", fontWeight: 600, color: "#1e293b", border: "1px solid #e2e8f0" }}>{it.name}</td>
+                          <td style={{ padding: "6px 8px", color: "#475569", border: "1px solid #e2e8f0", fontSize: 10 }}>{med.dosage || "\u2014"}</td>
+                          <td style={{ padding: "6px 8px", color: "#475569", border: "1px solid #e2e8f0", fontSize: 10 }}>{med.frequency || "\u2014"}</td>
+                          <td style={{ padding: "6px 8px", textAlign: "center", border: "1px solid #e2e8f0" }}>{it.quantity}</td>
+                          <td style={{ padding: "6px 8px", textAlign: "right", border: "1px solid #e2e8f0" }}>{(it.unitPrice || 0).toFixed(2)}</td>
+                          <td style={{ padding: "6px 8px", textAlign: "right", fontWeight: 600, border: "1px solid #e2e8f0" }}>{(it.amount || 0).toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+
+                {/* ─ Bill Summary ─ */}
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 14, gap: 20 }}>
+                  {/* Amount in Words */}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 10, color: "#64748b", fontWeight: 600, marginBottom: 2 }}>Amount in Words</div>
+                    <div style={{ fontSize: 11, color: "#1e293b", fontStyle: "italic", padding: "6px 10px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 6, lineHeight: 1.4 }}>
+                      {numberToWords(phTotal)}
+                    </div>
+                    {b.notes && (
+                      <div style={{ marginTop: 8, fontSize: 10, color: "#64748b" }}>
+                        <strong>Remark:</strong> {b.notes}
+                      </div>
+                    )}
+                  </div>
+                  {/* Totals */}
+                  <div style={{ minWidth: 240 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", fontSize: 11, color: "#475569" }}>
+                      <span>Subtotal ({items.length} items)</span><span>&#8377; {phSubtotal.toFixed(2)}</span>
+                    </div>
+                    {phDiscount > 0 && (
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", fontSize: 11, color: "#16a34a" }}>
+                        <span>Discount</span><span>- &#8377; {phDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {phTaxPct > 0 && !b.isGst && (
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", fontSize: 11, color: "#475569" }}>
+                        <span>Tax ({phTaxPct}%)</span><span>&#8377; {phTaxAmt.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {b.isGst && phTaxPct > 0 && (<>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", fontSize: 11, color: "#475569" }}>
+                        <span>CGST ({(phTaxPct / 2).toFixed(1)}%)</span><span>&#8377; {phCgst.toFixed(2)}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", fontSize: 11, color: "#475569" }}>
+                        <span>SGST ({(phTaxPct / 2).toFixed(1)}%)</span><span>&#8377; {phSgst.toFixed(2)}</span>
+                      </div>
+                    </>)}
+                    <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0 4px", borderTop: "2px solid #1e293b", fontSize: 14, fontWeight: 800, color: "#1e293b", marginTop: 4 }}>
+                      <span>Net Amount</span><span style={{ color: ACCENT }}>&#8377; {phTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ─ Payment Details ─ */}
+                {pharmacyPayments.length > 0 && (
+                  <div style={{ marginTop: 14, padding: "10px 12px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", textTransform: "uppercase", letterSpacing: ".04em", marginBottom: 6 }}>Payment Details</div>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                      <thead>
+                        <tr>
+                          <th style={{ padding: "4px 8px", textAlign: "left", fontWeight: 600, color: "#475569", fontSize: 10, borderBottom: "1px solid #bbf7d0" }}>Date &amp; Time</th>
+                          <th style={{ padding: "4px 8px", textAlign: "left", fontWeight: 600, color: "#475569", fontSize: 10, borderBottom: "1px solid #bbf7d0" }}>Method</th>
+                          <th style={{ padding: "4px 8px", textAlign: "left", fontWeight: 600, color: "#475569", fontSize: 10, borderBottom: "1px solid #bbf7d0" }}>Txn / Ref ID</th>
+                          <th style={{ padding: "4px 8px", textAlign: "right", fontWeight: 600, color: "#475569", fontSize: 10, borderBottom: "1px solid #bbf7d0" }}>Amount</th>
+                          <th style={{ padding: "4px 8px", textAlign: "center", fontWeight: 600, color: "#475569", fontSize: 10, borderBottom: "1px solid #bbf7d0" }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pharmacyPayments.map((p: any) => (
+                          <tr key={p.id}>
+                            <td style={{ padding: "4px 8px", color: "#475569" }}>{fmtDT(p.paidAt || p.createdAt)}</td>
+                            <td style={{ padding: "4px 8px" }}><strong>{p.method}</strong></td>
+                            <td style={{ padding: "4px 8px", color: "#94a3b8" }}>{p.transactionId || "\u2014"}</td>
+                            <td style={{ padding: "4px 8px", textAlign: "right", fontWeight: 700, color: "#16a34a" }}>&#8377; {(p.amount || 0).toFixed(2)}</td>
+                            <td style={{ padding: "4px 8px", textAlign: "center" }}><span style={{ fontSize: 9, fontWeight: 700, color: "#166534", background: "#dcfce7", padding: "2px 8px", borderRadius: 100 }}>{p.status}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* ─ Collected By / Department Info ─ */}
+                {b.collectedBy && (
+                  <div style={{ marginTop: 14, padding: "10px 14px", background: "#f0f9ff", borderRadius: 8, border: "1px solid #bae6fd" }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: "#0369a1", textTransform: "uppercase", letterSpacing: ".05em", marginBottom: 6 }}>Collection Details</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 11 }}>
+                      <div>
+                        <span style={{ color: "#64748b" }}>Collected By: </span>
+                        <strong style={{ color: "#1e293b" }}>{b.collectedBy.name}</strong>
+                        {b.collectedBy.role && <span style={{ fontSize: 9, color: "#0284c7", background: "#e0f2fe", padding: "1px 6px", borderRadius: 4, marginLeft: 6, fontWeight: 600 }}>{b.collectedBy.role === "SUB_DEPT_HEAD" ? "Dept Head" : b.collectedBy.role}</span>}
+                      </div>
+                      <div>
+                        <span style={{ color: "#64748b" }}>Date &amp; Time: </span>
+                        <strong style={{ color: "#1e293b" }}>{fmtDT(b.dispensedAt || b.paidAt || b.createdAt)}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: "#64748b" }}>Department: </span>
+                        <strong style={{ color: "#1e293b" }}>{b.collectedBy.departmentName || "Pharmacy"}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: "#64748b" }}>Counter / Store: </span>
+                        <strong style={{ color: "#1e293b" }}>{b.collectedBy.subDepartmentName || "Pharmacy Store"}</strong>
+                        {b.collectedBy.subDepartmentType && <span style={{ fontSize: 9, color: "#64748b", marginLeft: 4 }}>({b.collectedBy.subDepartmentType})</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ─ Remaining Balance Warning ─ */}
+                {remainingBalance > 0.01 && (
+                  <div style={{ marginTop: 12, padding: "10px 14px", background: "#fffbeb", borderRadius: 8, border: "1px solid #fde68a", fontSize: 11, color: "#92400e", display: "flex", alignItems: "center", gap: 8 }}>
+                    <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                    <div><strong>Remaining Balance:</strong> &#8377; {remainingBalance.toFixed(2)} (consultation / other charges) to be collected at billing counter or reception.</div>
+                  </div>
+                )}
+
+                {/* ─ Signature Lines ─ */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, marginTop: 44, paddingTop: 0 }}>
+                  <div style={{ borderTop: "1px solid #94a3b8", paddingTop: 6, textAlign: "center" }}>
+                    <div style={{ fontSize: 10, color: "#64748b" }}>Patient / Attendant Signature</div>
+                  </div>
+                  <div style={{ borderTop: "1px solid #94a3b8", paddingTop: 6, textAlign: "center" }}>
+                    <div style={{ fontSize: 10, color: "#64748b" }}>{b.collectedBy?.name || "Pharmacist"} — Signature &amp; Stamp</div>
+                  </div>
+                </div>
+
+                {/* ─ Terms & Footer ─ */}
+                <div style={{ marginTop: 20, paddingTop: 12, borderTop: "1px dashed #cbd5e1", fontSize: 9, color: "#94a3b8", lineHeight: 1.6 }}>
+                  <div style={{ fontWeight: 700, color: "#64748b", marginBottom: 2 }}>Terms &amp; Conditions</div>
+                  <div>1. Medicines once sold will not be taken back or exchanged. &nbsp; 2. Please check the medicines and expiry before leaving the counter.</div>
+                  <div>3. Keep medicines in a cool, dry place away from direct sunlight. &nbsp; 4. This is a computer-generated receipt.</div>
+                  <div style={{ textAlign: "center", marginTop: 8, fontSize: 10, color: "#64748b" }}>Thank you for choosing <strong>{hospName}</strong>. Get well soon!</div>
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="ph-modal-footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #e2e8f0", padding: "14px 20px" }}>
+                <button className="ph-btn-ghost" onClick={() => setDspInvoiceBill(null)}>Close</button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={downloadPharmacyPDF}
+                    style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 20px", borderRadius: 9, border: "none", background: ACCENT, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                    <Download size={13} /> Download PDF
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Counter Sell Tab ── */}
 

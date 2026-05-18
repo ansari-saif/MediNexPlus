@@ -12,7 +12,7 @@ import {
 import { findPatientById } from "../repositories/patient.repo";
 import { findDoctorById } from "../repositories/doctor.repo";
 import { CreateAppointmentInput, UpdateAppointmentInput } from "../validations/appointment.validation";
-import { sendAppointmentConfirmation } from "../utils/mailer";
+import { sendAppointmentConfirmation, sendAppointmentRescheduled } from "../utils/mailer";
 import { generateBillFromAppointment, addWorkflowChargesToBill } from "./billing.service";
 import { getSettings } from "./config.service";
 import prisma from "../config/db";
@@ -286,6 +286,44 @@ export const updateAppointment = async (
         }
       }
     } catch {}
+  }
+
+  // Event: appointment rescheduled (date or time changed) → send reschedule email
+  if (input.appointmentDate || input.timeSlot) {
+    const patientEmail = (existing as any).patient?.email;
+    if (patientEmail) {
+      try {
+        const settings = await getSettings(hospitalId);
+        const hospital = await px.hospital.findUnique({ where: { id: hospitalId }, select: { name: true } });
+        const hospitalName = hospital?.name || "Hospital";
+
+        const fmtDate = (d: string | Date) =>
+          new Date(d).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+        const fmtSlot = (s: string) => {
+          const [h, m] = s.split(":").map(Number);
+          return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`;
+        };
+
+        await sendAppointmentRescheduled({
+          to: patientEmail,
+          patientName: (existing as any).patient?.name || "Patient",
+          patientId: (existing as any).patient?.patientId || "",
+          doctorName: (existing as any).doctor?.name || "Doctor",
+          departmentName: (existing as any).department?.name || "Department",
+          oldDate: fmtDate(existing.appointmentDate),
+          oldTimeSlot: existing.timeSlot ? fmtSlot(existing.timeSlot) : "N/A",
+          newDate: fmtDate(input.appointmentDate ? new Date(input.appointmentDate) : existing.appointmentDate),
+          newTimeSlot: input.timeSlot ? fmtSlot(input.timeSlot) : (existing.timeSlot ? fmtSlot(existing.timeSlot) : "N/A"),
+          tokenNumber: (updated as any).tokenNumber,
+          type: (updated as any).type || "OPD",
+          hospitalName,
+          hospitalLogo: settings?.logo || null,
+        });
+        console.log("[Email] Reschedule email sent to", patientEmail);
+      } catch (emailErr: any) {
+        console.error("[Email] Failed to send reschedule email:", emailErr?.message);
+      }
+    }
   }
 
   // Event: appointment COMPLETED → auto-generate consultation bill

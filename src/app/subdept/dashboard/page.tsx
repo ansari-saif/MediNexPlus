@@ -275,6 +275,7 @@ function SubDeptDashboardContent() {
   const [recentAppointmentsLoading, setRecentAppointmentsLoading] = useState(false);
   const [billingQueue, setBillingQueue] = useState<any[]>([]);
   const [billingQueueLoading, setBillingQueueLoading] = useState(false);
+  const [billingOverviewStats, setBillingOverviewStats] = useState<{ todayRevenue: number; monthRevenue: number; pendingCount: number; totalBills: number }>({ todayRevenue: 0, monthRevenue: 0, pendingCount: 0, totalBills: 0 });
 
   // ── Reception: Load Recent Appointments ──
   const loadRecentAppointments = useCallback(async () => {
@@ -290,6 +291,23 @@ function SubDeptDashboardContent() {
     const res = await fetch("/api/billing/queue", { credentials: "include" }).then(r => r.json());
     if (res.success) setBillingQueue(res.data || []);
     setBillingQueueLoading(false);
+  }, []);
+
+  // ── Reception: Load Billing Stats for Overview Quick Cards ──
+  const loadBillingOverviewStats = useCallback(async () => {
+    try {
+      const res = await fetch("/api/billing?page=1&limit=1", { credentials: "include" }).then(r => r.json());
+      if (res.success) {
+        const s = res.data?.stats || {};
+        const p = res.data?.pagination || {};
+        setBillingOverviewStats({
+          todayRevenue: s.todayRevenue || 0,
+          monthRevenue: s.monthRevenue || 0,
+          pendingCount: s.pendingCount || 0,
+          totalBills: p.total || 0,
+        });
+      }
+    } catch {}
   }, []);
 
   // ── Revenue / Expense ──
@@ -650,13 +668,14 @@ function SubDeptDashboardContent() {
       loadBillingQueue();
       loadReports();
       loadRecords();
+      loadBillingOverviewStats();
     }
     if (tab === "overview" && profile?.type === "CLINICAL_PROCEDURE") {
       loadQueue();
       loadProcs();
       loadRecords();
     }
-  }, [tab, profile, loadRecentAppointments, loadBillingQueue, loadReports, loadRecords, loadQueue, loadProcs]);
+  }, [tab, profile, loadRecentAppointments, loadBillingQueue, loadReports, loadRecords, loadQueue, loadProcs, loadBillingOverviewStats]);
 
   // ── Procedure CRUD ──
   const openAddProc  = () => { setEditingProc(null); setProcForm(BLANK_PROC); setProcMsg(""); setShowProcForm(true); };
@@ -1462,7 +1481,23 @@ function SubDeptDashboardContent() {
                   )}
                   <button
                     style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff", fontSize: 12, fontWeight: 600, color: "#475569", cursor: "pointer" }}
-                    onClick={() => window.location.reload()}
+                    onClick={() => {
+                      if (profile?.type === "RECEPTION") {
+                        loadRecentAppointments();
+                        loadBillingQueue();
+                        loadReports();
+                        loadRecords();
+                        loadBillingOverviewStats();
+                      } else if (profile?.type === "CLINICAL_PROCEDURE") {
+                        loadQueue();
+                        loadProcs();
+                        loadRecords();
+                      } else {
+                        loadQueue();
+                        loadProcs();
+                        loadRecords();
+                      }
+                    }}
                   >
                     <RefreshCw size={13} /> Refresh
                   </button>
@@ -1486,11 +1521,11 @@ function SubDeptDashboardContent() {
                   { label:"New Patients Today", value:recordsMeta.todayRecords||0, Icon:UserPlus, color:meta.accent, bg:meta.lightBg,
                     badge: { text: "TODAY", bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" },
                     onClick:()=>setTab("patients") },
-                  { label:"Billing Today",     value:`₹${(recordsMeta.todayRevenue||0).toLocaleString("en-IN")}`, Icon:IndianRupee, color:"#16a34a", bg:"#f0fdf4",
+                  { label:"Billing Today",     value:`₹${(billingOverviewStats.todayRevenue||0).toLocaleString("en-IN")}`, Icon:IndianRupee, color:"#16a34a", bg:"#f0fdf4",
                     badge: { text: "TODAY", bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" },
                     onClick:()=>setTab("billing") },
-                  { label:"Total Revenue",     value:`₹${(recordsMeta.totalRevenue||0).toLocaleString("en-IN")}`, Icon:IndianRupee, color:"#059669", bg:"#f0fdf4",
-                    onClick:()=>setTab("records") },
+                  { label:"Month Revenue",     value:`₹${(billingOverviewStats.monthRevenue||0).toLocaleString("en-IN")}`, Icon:IndianRupee, color:"#059669", bg:"#f0fdf4",
+                    onClick:()=>setTab("billing") },
                 ] : [
                   { label:"Active Procedures", value:activeProcs.length, Icon:ClipboardList, color:meta.accent, bg:meta.lightBg },
                   { label:"Referrals Today",   value:queue.length||"—",  Icon:UserCheck,     color:meta.accent, bg:meta.lightBg,

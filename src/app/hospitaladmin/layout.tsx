@@ -16,6 +16,7 @@ const initials = (n: string) => n.split(" ").map(x => x[0]).join("").slice(0, 2)
 const NAV_ITEMS = [
   { id: "overview", label: "Dashboard", Icon: LayoutDashboard, section: "General", route: "/hospitaladmin/dashboard" },
   { id: "appointments", label: "Appointments", Icon: CalendarDays, section: "General", route: "/hospitaladmin/appointments" },
+  { id: "consultation", label: "Consultation", Icon: Stethoscope, section: "General", route: "/hospitaladmin/consultation" },
   { id: "billing", label: "Billing", Icon: CreditCard, section: "General", route: "/hospitaladmin/dashboard?tab=billing" },
   { id: "inventory", label: "Inventory", Icon: ClipboardList, section: "General", route: "/hospitaladmin/dashboard?tab=inventory" },
   { id: "ipd", label: "IPD / Wards", Icon: BedDouble, section: "General", route: "/hospitaladmin/dashboard?tab=ipd" },
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
 
 function getActiveId(pathname: string, tab: string | null): string {
   if (pathname.startsWith("/hospitaladmin/appointments")) return "appointments";
+  if (pathname.startsWith("/hospitaladmin/consultation")) return "consultation";
   if (pathname.startsWith("/hospitaladmin/finance")) return "finance";
   if (pathname.startsWith("/hospitaladmin/staff")) return "staff";
   if (pathname.startsWith("/hospitaladmin/doctors")) return "doctors";

@@ -281,7 +281,7 @@ export default function PrescriptionPage() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      setShowAi(false);
+      setShowAi(true);
       setShowHist(false);
       setHist([]);
       setHistLoaded(false);
@@ -305,8 +305,15 @@ export default function PrescriptionPage() {
           api(`/api/appointments/${appointmentId}`),
           api("/api/prescriptions", "POST", { appointmentId }),
         ]);
-        if (!me.success) { router.push("/login"); return; }
-        docData = me.data;
+        if (!me.success) {
+          const authCheck = await api("/api/auth/me");
+          if (!authCheck.success || authCheck.data.role !== "HOSPITAL_ADMIN") {
+            router.push("/login"); return;
+          }
+          docData = _ar?.data?.doctor || {};
+        } else {
+          docData = me.data;
+        }
         ar = _ar;
         rr = _rr;
       }
@@ -431,7 +438,7 @@ export default function PrescriptionPage() {
     autoGenTimerRef.current = setTimeout(() => {
       if (autoGenRef.current) return;
       void aiSmartAssist();
-    }, 2500);
+    }, 1500);
     return () => { if (autoGenTimerRef.current) clearTimeout(autoGenTimerRef.current); };
   }, [complaint, meds.length, diagnosis, rx?.id, locked, viewOnly]);
 
@@ -464,7 +471,7 @@ export default function PrescriptionPage() {
       patientAge: age,
       patientGender: patient?.gender,
       vitals: Object.keys(fv).length > 0 ? fv : undefined,
-      patientHistory: hist.map(h => h.diagnosis || h.chiefComplaint).filter(Boolean).join("; ") || undefined,
+      patientHistory: histLoaded && hist.length > 0 ? hist.map(h => h.diagnosis || h.chiefComplaint).filter(Boolean).join("; ") : undefined,
       doctorSpecialization: doctor?.specialization,
       departmentName: doctor?.department?.name,
     });

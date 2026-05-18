@@ -64,7 +64,7 @@ export async function getAiPrescriptionSuggestions(input: AiPrescriptionInput): 
 }
 
 async function callGemini(prompt: string, apiKey: string): Promise<AiSuggestion | null> {
-  const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
+  const GEMINI_MODELS = ["gemini-2.0-flash-lite", "gemini-2.0-flash"];
   const errors: string[] = [];
   for (const gModel of GEMINI_MODELS) {
     try {
@@ -76,7 +76,7 @@ async function callGemini(prompt: string, apiKey: string): Promise<AiSuggestion 
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 1024,
             responseMimeType: "application/json",
           },
         }),
@@ -190,7 +190,7 @@ function parseAiResponse(parsed: any): AiSuggestion {
       notes: t.notes || "",
     })),
     advice: parsed.advice || [],
-    differentialDiagnosis: parsed.differentialDiagnosis || [],
+    differentialDiagnosis: parsed.differentialDiagnosis || [], // kept for backward compat
     redFlags: parsed.redFlags || [],
   };
 }
@@ -205,47 +205,16 @@ function buildPrompt(input: AiPrescriptionInput): string {
         .join(", ")
     : "not recorded";
 
-  return `You are an experienced medical AI assistant helping a doctor write prescriptions in a hospital management system. 
-Based on the following patient information, provide clinical suggestions.
+  return `Medical AI assistant for hospital prescriptions. Provide concise clinical suggestions (doctor will review).
 
-IMPORTANT: You are ONLY providing suggestions. The doctor will review, modify, and approve everything. Never provide a final diagnosis — only differential diagnoses and suggestions.
+Patient: ${age}, ${gender}
+Chief Complaint: ${input.chiefComplaint}
+Vitals: ${vitalsStr}${input.patientHistory ? `\nHistory: ${input.patientHistory}` : ""}${input.doctorSpecialization ? `\nSpecialization: ${input.doctorSpecialization}` : ""}${input.departmentName ? `\nDept: ${input.departmentName}` : ""}
 
-Patient Details:
-- Age: ${age}
-- Gender: ${gender}
-- Chief Complaint: ${input.chiefComplaint}
-- Vitals: ${vitalsStr}
-${input.patientHistory ? `- Previous History: ${input.patientHistory}` : ""}
-${input.doctorSpecialization ? `- Doctor Specialization: ${input.doctorSpecialization}` : ""}
-${input.departmentName ? `- Department: ${input.departmentName}` : ""}
+Return JSON only:
+{"diagnosis":["top 2-3 diagnoses"],"icdCodes":["matching ICD-10"],"medications":[{"name":"generic name","dosage":"e.g. 500mg","frequency":"e.g. Twice daily (BD)","duration":"e.g. 5 days","route":"Oral/IV/IM/etc","instructions":"e.g. After food"}],"labTests":[{"name":"test","urgency":"Routine/Urgent/STAT","notes":"reason"}],"advice":["3 key advice items"],"redFlags":["warning signs"]}
 
-Respond with a JSON object (no markdown, just pure JSON) with these fields:
-{
-  "diagnosis": ["array of possible diagnoses, most likely first"],
-  "icdCodes": ["ICD-10 codes corresponding to the diagnoses"],
-  "medications": [
-    {
-      "name": "medication name (generic)",
-      "dosage": "e.g. 500mg",
-      "frequency": "e.g. Twice daily (BD)",
-      "duration": "e.g. 5 days",
-      "route": "Oral/IV/IM/Topical/etc",
-      "instructions": "e.g. After food"
-    }
-  ],
-  "labTests": [
-    {
-      "name": "test name",
-      "urgency": "Routine/Urgent/STAT",
-      "notes": "brief reason"
-    }
-  ],
-  "advice": ["array of lifestyle/dietary/follow-up advice strings"],
-  "differentialDiagnosis": ["less likely but possible diagnoses to rule out"],
-  "redFlags": ["warning signs patient should watch for"]
-}
-
-Keep medications practical and commonly prescribed. Include dosages appropriate for the patient's age. Limit to 3-5 most relevant medications, 2-4 lab tests, and 3-5 advice items.`;
+Keep it concise: max 3-4 medications, 2-3 lab tests, 3 advice items.`;
 }
 
 // ── Generic AI caller (returns raw parsed JSON) ──────────────────────────────
@@ -253,7 +222,7 @@ async function callAIRaw(prompt: string): Promise<any | null> {
   // Try Gemini first (primary, stable)
   const geminiKey = getGeminiKey();
   if (geminiKey) {
-    const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
+    const GEMINI_MODELS = ["gemini-2.0-flash-lite", "gemini-2.0-flash"];
     for (const gModel of GEMINI_MODELS) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${gModel}:generateContent?key=${geminiKey}`;
@@ -262,7 +231,7 @@ async function callAIRaw(prompt: string): Promise<any | null> {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.3, maxOutputTokens: 2048, responseMimeType: "application/json" },
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1024, responseMimeType: "application/json" },
           }),
         });
         if (!res.ok) continue; // no retries — quota errors don't resolve in seconds

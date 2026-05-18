@@ -46,12 +46,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const body = await req.json();
     if (!body.amount) return errorResponse("amount is required", 400);
     const payment = await recordPayment(params.id, auth.hospitalId, body);
+    // Fetch fresh bill for receipt display; fire notification in background
+    const freshBill = await getBillById(params.id, auth.hospitalId);
     notifyPaymentReceived(auth.hospitalId, {
-      patientName: (payment as any).bill?.patient?.name || "Patient",
+      patientName: freshBill?.patient?.name || "Patient",
       amount: body.amount,
       method: body.method || "CASH",
     }).catch(() => {});
-    return successResponse(payment, "Payment recorded");
+    return successResponse({ payment, bill: freshBill }, "Payment recorded");
   } catch (e: any) {
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);

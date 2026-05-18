@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { getLocationStockForDept } from "../../../../../backend/repositories/central-inventory.repo";
 
 const px = prisma as any;
 
@@ -18,6 +19,102 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const limit = parseInt(searchParams.get("limit") || "200");
+
+    if (auth.user.role === Role.SUB_DEPT_HEAD) {
+      const subDept = await px.subDepartment.findFirst({
+        where: { userId: auth.user.userId, hospitalId: auth.hospitalId },
+        select: { id: true },
+      });
+
+      if (!subDept) return successResponse([], "Items fetched");
+
+      const locationStock = await getLocationStockForDept(auth.hospitalId, subDept.id);
+
+      const completedPurchases = await px.purchase.findMany({
+        where: {
+          hospitalId: auth.hospitalId,
+          subDepartmentId: subDept.id,
+          status: "COMPLETED",
+        },
+        include: {
+          items: {
+            include: {
+              item: {
+                select: {
+                  id: true, name: true, genericName: true, category: true,
+                  unit: true, purchasePrice: true, mrp: true, sellingPrice: true,
+                  minStock: true, isActive: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const merged: Record<string, any> = {};
+
+      for (const item of locationStock.items) {
+        merged[item.itemId] = {
+          id: item.itemId,
+          name: item.name,
+          genericName: item.genericName || "",
+          category: item.category,
+          unit: item.unit,
+          purchasePrice: item.purchasePrice,
+          mrp: item.mrp,
+          sellingPrice: item.sellingPrice,
+          minStock: item.minStock,
+          isActive: true,
+          totalStock: item.availableQty,
+        };
+      }
+
+      for (const purchase of completedPurchases) {
+        for (const purchaseItem of purchase.items) {
+          if (!purchaseItem.item) continue;
+          if (!merged[purchaseItem.itemId]) {
+            merged[purchaseItem.itemId] = {
+              id: purchaseItem.itemId,
+              name: purchaseItem.item.name,
+              genericName: purchaseItem.item.genericName || "",
+              category: purchaseItem.item.category,
+              unit: purchaseItem.item.unit,
+              purchasePrice: purchaseItem.item.purchasePrice,
+              mrp: purchaseItem.item.mrp,
+              sellingPrice: purchaseItem.item.sellingPrice,
+              minStock: purchaseItem.item.minStock,
+              isActive: purchaseItem.item.isActive,
+              totalStock: 0,
+            };
+          }
+          merged[purchaseItem.itemId].totalStock += purchaseItem.quantity;
+        }
+      }
+
+      // Use actual StockBatch.remainingQty as single source of truth for totalStock
+      const itemIds = Object.keys(merged);
+      if (itemIds.length > 0) {
+        const batches = await px.stockBatch.findMany({
+          where: { hospitalId: auth.hospitalId, itemId: { in: itemIds }, remainingQty: { gt: 0 } },
+          select: { itemId: true, remainingQty: true },
+        });
+        for (const key of itemIds) {
+          merged[key].totalStock = 0;
+        }
+        for (const b of batches) {
+          if (merged[b.itemId]) {
+            merged[b.itemId].totalStock += b.remainingQty;
+          }
+        }
+      }
+
+      const result = Object.values(merged)
+        .filter((item: any) => item.isActive && (!search || item.name?.toLowerCase().includes(search.toLowerCase()) || item.genericName?.toLowerCase().includes(search.toLowerCase()) || item.category?.toLowerCase().includes(search.toLowerCase())))
+        .sort((a: any, b: any) => String(a.name || "").localeCompare(String(b.name || "")))
+        .slice(0, limit);
+
+      return successResponse(result, "Items fetched");
+    }
 
     const where: any = { hospitalId: auth.hospitalId, isActive: true };
     if (search) {
