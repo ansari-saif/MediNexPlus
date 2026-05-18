@@ -31,6 +31,8 @@
   position: relative;
   z-index: 1;
   max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .heroBadge {
@@ -61,6 +63,7 @@
   color: var(--gray-600);
   line-height: 1.7;
   max-width: 640px;
+  margin: 0 auto;
 }
 
 .lastUpdated {
@@ -83,6 +86,7 @@
 
 .contentInner {
   max-width: 800px;
+  margin: 0 auto;
 }
 
 /* Sections */

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -158,9 +158,9 @@ export default function LoginPage() {
         .mn-auth-bg1 { position: absolute; top: -120px; right: -120px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%); pointer-events: none; }
         .mn-auth-bg2 { position: absolute; bottom: -100px; left: -80px; width: 350px; height: 350px; background: radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%); pointer-events: none; }
 
-        .mn-auth-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-bottom: 32px; }
-        .mn-auth-logo-icon { width: 40px; height: 40px; border-radius: 11px; background: linear-gradient(135deg, #7C3AED, #6D28D9); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,0.35); }
-        .mn-auth-logo-text { font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; }
+        .mn-auth-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-bottom: 24px; }
+        .mn-auth-logo-icon { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #7C3AED, #6D28D9); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,0.35); }
+        .mn-auth-logo-text { font-size: 18px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; }
         .mn-auth-logo-plus { color: #7C3AED; }
 
         .mn-auth-card { width: 100%; max-width: 440px; background: #fff; border: 1.5px solid #EDE9FE; border-radius: 20px; padding: 40px 36px; box-shadow: 0 4px 32px rgba(124,58,237,0.08), 0 1px 4px rgba(0,0,0,0.04); position: relative; z-index: 1; }
@@ -168,20 +168,20 @@ export default function LoginPage() {
 
         .mn-auth-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: #EDE9FE; border: 1px solid #DDD6FE; border-radius: 100px; font-size: 11px; font-weight: 700; color: #7C3AED; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
         .mn-auth-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #7C3AED; box-shadow: 0 0 6px #7C3AED; }
-        .mn-auth-title { font-size: 26px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; margin-bottom: 6px; line-height: 1.2; }
-        .mn-auth-sub { font-size: 14px; color: #64748B; line-height: 1.6; margin-bottom: 28px; }
+        .mn-auth-title { font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; margin-bottom: 6px; line-height: 1.2; }
+        .mn-auth-sub { font-size: 12px; color: #64748B; line-height: 1.6; margin-bottom: 20px; }
 
         .mn-auth-err { display: flex; align-items: flex-start; gap: 10px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 10px; padding: 11px 14px; margin-bottom: 18px; font-size: 13px; color: #DC2626; line-height: 1.5; animation: mn-shake 0.3s ease; }
         @keyframes mn-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
         .mn-auth-suc { display: flex; align-items: center; gap: 10px; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 11px 14px; margin-bottom: 18px; font-size: 13px; color: #059669; font-weight: 600; }
 
-        .mn-field { margin-bottom: 18px; }
+        .mn-field { margin-bottom: 14px; }
         .mn-field-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px; }
-        .mn-label { font-size: 12px; font-weight: 600; color: #475569; letter-spacing: 0.01em; }
+        .mn-label { font-size: 11px; font-weight: 600; color: #475569; letter-spacing: 0.01em; }
         .mn-forgot-btn { font-size: 12px; font-weight: 600; color: #7C3AED; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: opacity 0.2s; padding: 0; }
         .mn-forgot-btn:hover { opacity: 0.75; }
         .mn-input-wrap { position: relative; }
-        .mn-input { width: 100%; background: #FAFAFA; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 12px 42px 12px 14px; font-size: 14px; color: #0F172A; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .mn-input { width: 100%; background: #FAFAFA; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 10px 40px 10px 12px; font-size: 13px; color: #0F172A; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
         .mn-input::placeholder { color: #94A3B8; }
         .mn-input:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); background: #fff; }
         .mn-input.err { border-color: #EF4444; }
@@ -189,7 +189,7 @@ export default function LoginPage() {
         .mn-eye:hover { color: #475569; }
         .mn-ferr { font-size: 12px; color: #EF4444; margin-top: 5px; display: block; }
 
-        .mn-auth-btn { width: 100%; padding: 13px; border: none; border-radius: 11px; font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #7C3AED, #6D28D9); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.3); transition: transform 0.15s, box-shadow 0.15s; position: relative; overflow: hidden; margin-top: 4px; }
+        .mn-auth-btn { width: 100%; padding: 10px; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #7C3AED, #6D28D9); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.3); transition: transform 0.15s, box-shadow 0.15s; position: relative; overflow: hidden; margin-top: 4px; }
         .mn-auth-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%); background-size: 200% 100%; animation: mn-shine 3s infinite; }
         @keyframes mn-shine { 0%{background-position:200% center} 100%{background-position:-200% center} }
         .mn-auth-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,58,237,0.4); }
@@ -259,7 +259,7 @@ export default function LoginPage() {
         <div className="mn-auth-bg2" />
 
         <Link href="/" className="mn-auth-logo">
-          <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" style={{ height: 42, width: "auto", objectFit: "contain" }} />
+          <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" style={{ height: 32, width: "auto", objectFit: "contain" }} />
         </Link>
 
         <div className="mn-auth-card">

@@ -1,22 +1,126 @@
-import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { FileText, Calendar } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { FileText, Calendar, ArrowRight } from "lucide-react";
 import styles from "../policy.module.css";
 
-export const metadata: Metadata = {
-  title: "Terms of Service | MediNex+",
-  description:
-    "Read the Terms of Service for MediNex+. Understand the terms and conditions that govern your use of our platform and hospital management services.",
-};
+const PURPLE = "#7C3AED";
+const PURPLE_DARK = "#6D28D9";
+const PURPLE_200 = "#DDD6FE";
+const PURPLE_50 = "#F5F3FF";
+const DARK = "#0F172A";
+const GRAY = "#64748B";
 
 export default function TermsOfServicePage() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <Navbar />
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        .mn-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 0 5%; transition: all 0.3s; font-family: 'Inter', sans-serif; }
+        .mn-nav.scrolled { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); box-shadow: 0 1px 32px rgba(124,58,237,0.08); }
+        .mn-nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+        .mn-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .mn-nav-links { display: flex; align-items: center; gap: 32px; }
+        .mn-nav-links a { font-size: 14px; font-weight: 500; color: ${GRAY}; text-decoration: none; transition: color 0.2s; }
+        .mn-nav-links a:hover { color: ${PURPLE}; }
+        .mn-nav-cta { display: flex; align-items: center; gap: 12px; }
+        .mn-btn-ghost { padding: 6px 18px; font-size: 13px; font-weight: 600; color: ${PURPLE}; background: transparent; border: 1.5px solid ${PURPLE_200}; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; text-decoration: none; }
+        .mn-btn-ghost:hover { background: ${PURPLE_50}; border-color: ${PURPLE}; }
+        .mn-btn-free-trial { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 9px 22px; font-size: 13px; font-weight: 600; color: #fff; background: #DC2626; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; position: relative; overflow: hidden; text-transform: lowercase; letter-spacing: 0.05em; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+        .mn-btn-free-trial:hover { transform: translateY(-2px); background: #B91C1C; }
+        .mn-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 8px; position: relative; z-index: 1001; }
+        .mn-burger span { display: block; width: 24px; height: 2.5px; background: ${DARK}; border-radius: 2px; transition: all 0.3s ease; }
+        .mn-burger.open span:nth-child(1) { transform: rotate(45deg) translateY(8px); }
+        .mn-burger.open span:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+        .mn-burger.open span:nth-child(3) { transform: rotate(-45deg) translateY(-8px); }
+        .mn-mobile-menu { position: fixed; top: 0; right: -100%; bottom: 0; width: 320px; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); z-index: 1000; padding: 100px 24px 24px; display: flex; flex-direction: column; gap: 16px; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: -10px 0 40px rgba(0,0,0,0.05); border-left: 1px solid rgba(255,255,255,0.5); }
+        .mn-mobile-menu.open { right: 0; }
+        .mn-mobile-menu a { font-size: 16px; font-weight: 600; color: ${DARK}; text-decoration: none; padding: 12px 16px; border-radius: 12px; transition: all 0.2s; }
+        .mn-mobile-menu a:hover { background: #F8FAFC; color: ${PURPLE}; transform: translateX(4px); }
+        .mn-mobile-menu-divider { height: 1px; background: linear-gradient(90deg, transparent, #F1F5F9, transparent); margin: 8px 0; }
+        .mn-mobile-menu-buttons { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; margin-top: auto; }
+        .mn-mobile-menu-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.3); backdrop-filter: blur(4px); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .mn-mobile-menu-backdrop.open { opacity: 1; pointer-events: auto; }
+
+        .mn-footer { background: ${DARK}; padding: 72px 5% 32px; font-family: 'Inter', sans-serif; }
+        .mn-footer-inner { max-width: 1200px; margin: 0 auto; }
+        .mn-footer-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; margin-bottom: 48px; }
+        .mn-footer-brand { max-width: 340px; }
+        .mn-footer-brand p { font-size: 14px; color: #94A3B8; line-height: 1.7; margin-top: 16px; }
+        .mn-footer-col-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
+        .mn-footer-links { display: flex; flex-direction: column; gap: 12px; }
+        .mn-footer-links a { font-size: 14px; color: #94A3B8; text-decoration: none; transition: color 0.2s; }
+        .mn-footer-links a:hover { color: #fff; }
+        .mn-footer-divider { height: 1px; background: rgba(255,255,255,0.1); margin-bottom: 24px; }
+        .mn-footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+        .mn-footer-copy { font-size: 13px; color: #64748B; }
+        .mn-footer-legal { display: flex; gap: 24px; }
+        .mn-footer-legal a { font-size: 13px; color: #64748B; text-decoration: none; transition: color 0.2s; }
+        .mn-footer-legal a:hover { color: #94A3B8; }
+
+        @media (max-width: 900px) {
+          .mn-nav-links, .mn-nav-cta { display: none; }
+          .mn-burger { display: flex; }
+        }
+        `
+      }} />
+
+      {/* NAVBAR */}
+      <nav className={`mn-nav${scrolled ? " scrolled" : ""}`}>
+        <div className="mn-nav-inner">
+          <Link href="/" className="mn-logo">
+            <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" className="mn-logo-img" style={{ height: 38, width: "auto", objectFit: "contain" }} />
+          </Link>
+
+          <div className="mn-nav-links">
+            <Link href="/#solutions">Solutions</Link>
+            <Link href="/#ai-prescription">AI Rx</Link>
+            <Link href="/#features">Features</Link>
+            <Link href="/#pricing">Pricing</Link>
+            <Link href="/#faq">FAQ</Link>
+          </div>
+
+          <div className="mn-nav-cta">
+            <Link href="/login" className="mn-btn-ghost">Sign In</Link>
+            <Link href="/signup" className="mn-btn-free-trial">free 14 days trial</Link>
+          </div>
+
+          <button className={`mn-burger${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+            <span /><span /><span />
+          </button>
+        </div>
+        
+        <div className={`mn-mobile-menu-backdrop${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)} />
+        
+        <div className={`mn-mobile-menu${menuOpen ? ' open' : ''}`}>
+          <Link href="/#solutions" onClick={() => setMenuOpen(false)}>Solutions</Link>
+          <Link href="/#ai-prescription" onClick={() => setMenuOpen(false)}>AI Rx</Link>
+          <Link href="/#features" onClick={() => setMenuOpen(false)}>Features</Link>
+          <Link href="/#pricing" onClick={() => setMenuOpen(false)}>Pricing</Link>
+          <Link href="/#faq" onClick={() => setMenuOpen(false)}>FAQ</Link>
+          <div className="mn-mobile-menu-divider" />
+          <div className="mn-mobile-menu-buttons">
+            <Link href="/login" className="mn-btn-ghost" onClick={() => setMenuOpen(false)}>Sign In</Link>
+            <Link href="/signup" className="mn-btn-free-trial" onClick={() => setMenuOpen(false)}>Free Trial</Link>
+          </div>
+        </div>
+      </nav>
+
       <main className={styles.page}>
         {/* Hero */}
-        <section className={styles.hero}>
+        <section className={styles.hero} style={{ paddingTop: "120px" }}>
           <div className="container">
             <div className={styles.heroInner}>
               <div className={styles.heroBadge}>
@@ -25,12 +129,11 @@ export default function TermsOfServicePage() {
               </div>
               <h1 className={styles.heroTitle}>Terms of Service</h1>
               <p className={styles.heroSubtitle}>
-                These Terms of Service govern your use of the MediNex+ platform and
-                services. By accessing or using our services, you agree to be bound by these terms.
+                These Terms govern your subscription and use of the MediNex+ Hospital Management SaaS Platform.
               </p>
               <div className={styles.lastUpdated}>
                 <Calendar size={14} />
-                Last updated: April 1, 2026
+                Last updated: May 18, 2026
               </div>
             </div>
           </div>
@@ -40,243 +143,140 @@ export default function TermsOfServicePage() {
         <section className={styles.content}>
           <div className="container">
             <div className={styles.contentInner}>
-              {/* Table of Contents */}
               <div className={styles.toc}>
                 <h3 className={styles.tocTitle}>Table of Contents</h3>
                 <ul className={styles.tocList}>
                   <li className={styles.tocItem}><a href="#acceptance" className={styles.tocLink}>Acceptance of Terms</a></li>
-                  <li className={styles.tocItem}><a href="#services" className={styles.tocLink}>Our Services</a></li>
-                  <li className={styles.tocItem}><a href="#user-obligations" className={styles.tocLink}>User Obligations</a></li>
-                  <li className={styles.tocItem}><a href="#appointments" className={styles.tocLink}>Appointments & Cancellations</a></li>
-                  <li className={styles.tocItem}><a href="#payment" className={styles.tocLink}>Payment & Billing</a></li>
-                  <li className={styles.tocItem}><a href="#medical-disclaimer" className={styles.tocLink}>Medical Disclaimer</a></li>
-                  <li className={styles.tocItem}><a href="#intellectual-property" className={styles.tocLink}>Intellectual Property</a></li>
+                  <li className={styles.tocItem}><a href="#services" className={styles.tocLink}>SaaS Services</a></li>
+                  <li className={styles.tocItem}><a href="#user-obligations" className={styles.tocLink}>Client Obligations</a></li>
+                  <li className={styles.tocItem}><a href="#payment" className={styles.tocLink}>Billing & Subscriptions</a></li>
+                  <li className={styles.tocItem}><a href="#data" className={styles.tocLink}>Data & Privacy</a></li>
                   <li className={styles.tocItem}><a href="#limitation" className={styles.tocLink}>Limitation of Liability</a></li>
-                  <li className={styles.tocItem}><a href="#indemnification" className={styles.tocLink}>Indemnification</a></li>
-                  <li className={styles.tocItem}><a href="#privacy" className={styles.tocLink}>Privacy</a></li>
-                  <li className={styles.tocItem}><a href="#modifications" className={styles.tocLink}>Modifications to Terms</a></li>
-                  <li className={styles.tocItem}><a href="#governing-law" className={styles.tocLink}>Governing Law</a></li>
+                  <li className={styles.tocItem}><a href="#modifications" className={styles.tocLink}>Modifications</a></li>
                   <li className={styles.tocItem}><a href="#contact" className={styles.tocLink}>Contact Us</a></li>
                 </ul>
               </div>
 
-              {/* 1. Acceptance of Terms */}
+              {/* 1. Acceptance */}
               <div id="acceptance" className={styles.section}>
                 <h2 className={styles.sectionTitle}>1. Acceptance of Terms</h2>
                 <p className={styles.sectionText}>
-                  By accessing or using the MediNex+ website, booking appointments, or
-                  receiving any of our services, you acknowledge that you have read, understood,
-                  and agree to be bound by these Terms of Service, as well as our{" "}
-                  <a href="/privacy-policy" className={styles.contactLink}>Privacy Policy</a> and{" "}
-                  <a href="/cookie-policy" className={styles.contactLink}>Cookie Policy</a>.
-                </p>
-                <p className={styles.sectionText}>
-                  If you do not agree with any part of these terms, you must not use our website or services.
+                  By creating an account, subscribing to, or using the MediNex+ SaaS platform, you (the "Hospital" or "Client") agree to these Terms of Service. If you do not agree, you must not use our software.
                 </p>
               </div>
 
-              {/* 2. Our Services */}
+              {/* 2. Services */}
               <div id="services" className={styles.section}>
-                <h2 className={styles.sectionTitle}>2. Our Services</h2>
+                <h2 className={styles.sectionTitle}>2. SaaS Services</h2>
                 <p className={styles.sectionText}>
-                  MediNex+ provides a range of healthcare and aesthetic services including,
-                  but not limited to:
+                  MediNex+ provides a cloud-based hospital management system including modules for OPD, IPD, Billing, Pharmacy, and AI Prescriptions.
                 </p>
                 <ul className={styles.list}>
-                  <li className={styles.listItem}>Dental treatments and oral healthcare</li>
-                  <li className={styles.listItem}>Dermatology and skin care treatments</li>
-                  <li className={styles.listItem}>Hair restoration and trichology services</li>
-                  <li className={styles.listItem}>Body contouring and shaping procedures</li>
-                  <li className={styles.listItem}>Oncology and cancer care services</li>
-                  <li className={styles.listItem}>Facial trauma and reconstructive surgery</li>
-                  <li className={styles.listItem}>Nutrition and wellness counseling</li>
-                  <li className={styles.listItem}>Sexual health consultations</li>
-                  <li className={styles.listItem}>Premium aesthetic procedures</li>
-                  <li className={styles.listItem}>Dental and medical tourism services</li>
+                  <li className={styles.listItem}>We guarantee a 99.9% uptime SLA for Enterprise customers.</li>
+                  <li className={styles.listItem}>Features available depend on your active subscription tier.</li>
                 </ul>
-                <p className={styles.sectionText}>
-                  We reserve the right to modify, suspend, or discontinue any service at any time
-                  without prior notice.
-                </p>
               </div>
 
-              {/* 3. User Obligations */}
+              {/* 3. Client Obligations */}
               <div id="user-obligations" className={styles.section}>
-                <h2 className={styles.sectionTitle}>3. User Obligations</h2>
-                <p className={styles.sectionText}>
-                  By using our services, you agree to:
-                </p>
+                <h2 className={styles.sectionTitle}>3. Client Obligations</h2>
                 <ul className={styles.list}>
-                  <li className={styles.listItem}>Provide accurate, current, and complete information when creating an account or booking appointments</li>
-                  <li className={styles.listItem}>Maintain the confidentiality of your account credentials</li>
-                  <li className={styles.listItem}>Notify us immediately of any unauthorized use of your account</li>
-                  <li className={styles.listItem}>Not use our services for any unlawful or unauthorized purpose</li>
-                  <li className={styles.listItem}>Not attempt to gain unauthorized access to any part of our systems</li>
-                  <li className={styles.listItem}>Not provide false or misleading medical information</li>
-                  <li className={styles.listItem}>Comply with all applicable laws and regulations</li>
+                  <li className={styles.listItem}>You are responsible for the accuracy of all medical data entered into the system.</li>
+                  <li className={styles.listItem}>You must maintain the confidentiality of admin and staff credentials.</li>
+                  <li className={styles.listItem}>You agree not to reverse engineer or attempt to breach the security of the SaaS platform.</li>
                 </ul>
               </div>
 
-              {/* 4. Appointments & Cancellations */}
-              <div id="appointments" className={styles.section}>
-                <h2 className={styles.sectionTitle}>4. Appointments &amp; Cancellations</h2>
-                <p className={styles.sectionText}>
-                  When booking an appointment with MediNex+, the following terms apply:
-                </p>
-                <ul className={styles.list}>
-                  <li className={styles.listItem}>Appointments are subject to availability and confirmation by our team</li>
-                  <li className={styles.listItem}>You may reschedule or cancel an appointment with at least 24 hours&apos; notice</li>
-                  <li className={styles.listItem}>Late cancellations or no-shows may be subject to a cancellation fee</li>
-                  <li className={styles.listItem}>We reserve the right to reschedule appointments due to unforeseen circumstances</li>
-                  <li className={styles.listItem}>Arriving more than 15 minutes late may result in rescheduling</li>
-                </ul>
-                <div className={styles.callout}>
-                  <p className={styles.calloutText}>
-                    We value your time and strive to maintain punctual schedules. We kindly request
-                    that you arrive at least 10 minutes before your scheduled appointment time to
-                    complete any necessary paperwork.
-                  </p>
-                </div>
-              </div>
-
-              {/* 5. Payment & Billing */}
+              {/* 4. Billing */}
               <div id="payment" className={styles.section}>
-                <h2 className={styles.sectionTitle}>5. Payment &amp; Billing</h2>
+                <h2 className={styles.sectionTitle}>4. Billing & Subscriptions</h2>
                 <ul className={styles.list}>
-                  <li className={styles.listItem}>All fees for services are quoted in Indian Rupees (INR) and are inclusive of applicable taxes unless stated otherwise</li>
-                  <li className={styles.listItem}>Payment is due at the time of service unless a payment plan has been arranged in advance</li>
-                  <li className={styles.listItem}>We accept various payment methods including cash, credit/debit cards, and digital wallets</li>
-                  <li className={styles.listItem}>Treatment packages and promotions are subject to specific terms and may not be combined with other offers</li>
-                  <li className={styles.listItem}>Refund policies vary by treatment type and are discussed prior to the procedure</li>
+                  <li className={styles.listItem}>Subscriptions are billed on a recurring monthly or annual basis.</li>
+                  <li className={styles.listItem}>Failure to pay may result in account suspension after a 15-day grace period.</li>
+                  <li className={styles.listItem}>You may cancel your subscription at any time; however, prepaid fees are non-refundable.</li>
                 </ul>
               </div>
 
-              {/* 6. Medical Disclaimer */}
-              <div id="medical-disclaimer" className={styles.section}>
-                <h2 className={styles.sectionTitle}>6. Medical Disclaimer</h2>
+              {/* 5. Data & Privacy */}
+              <div id="data" className={styles.section}>
+                <h2 className={styles.sectionTitle}>5. Data & Privacy</h2>
                 <p className={styles.sectionText}>
-                  The information provided on our website and during consultations is for general
-                  informational purposes only and should not be considered a substitute for
-                  professional medical advice, diagnosis, or treatment.
+                  You retain full ownership of all patient data. MediNex+ acts solely as a data processor. Please refer to our <a href="/privacy-policy" className={styles.contactLink}>Privacy Policy</a> for more details on how we protect your data.
                 </p>
-                <ul className={styles.list}>
-                  <li className={styles.listItem}>Treatment outcomes may vary from person to person</li>
-                  <li className={styles.listItem}>Before-and-after images shown are for illustrative purposes and do not guarantee similar results</li>
-                  <li className={styles.listItem}>All procedures carry inherent risks, which will be discussed during your consultation</li>
-                  <li className={styles.listItem}>You should always seek the advice of a qualified healthcare provider with any questions regarding a medical condition</li>
-                </ul>
-                <div className={styles.callout}>
-                  <p className={styles.calloutText}>
-                    Never disregard professional medical advice or delay in seeking it because of
-                    something you have read on our website. If you think you may have a medical
-                    emergency, call your doctor or emergency services immediately.
-                  </p>
-                </div>
               </div>
 
-              {/* 7. Intellectual Property */}
-              <div id="intellectual-property" className={styles.section}>
-                <h2 className={styles.sectionTitle}>7. Intellectual Property</h2>
-                <p className={styles.sectionText}>
-                  All content on the MediNex+ website, including but not limited to text,
-                  graphics, logos, images, audio clips, digital downloads, and data compilations,
-                  is the property of MediNex+ or its content suppliers and is protected by
-                  Indian and international copyright, trademark, and other intellectual property laws.
-                </p>
-                <ul className={styles.list}>
-                  <li className={styles.listItem}>You may not reproduce, distribute, modify, or create derivative works from our content without prior written consent</li>
-                  <li className={styles.listItem}>The MediNex+ name, logo, and all related marks are trademarks of MediNex+</li>
-                  <li className={styles.listItem}>Unauthorized use of any content or trademarks may violate copyright, trademark, and other laws</li>
-                </ul>
-              </div>
-
-              {/* 8. Limitation of Liability */}
+              {/* 6. Limitation */}
               <div id="limitation" className={styles.section}>
-                <h2 className={styles.sectionTitle}>8. Limitation of Liability</h2>
+                <h2 className={styles.sectionTitle}>6. Limitation of Liability</h2>
                 <p className={styles.sectionText}>
-                  To the fullest extent permitted by applicable law, MediNex+ shall not be
-                  liable for any indirect, incidental, special, consequential, or punitive damages,
-                  including but not limited to loss of profits, data, or goodwill, arising out of or
-                  in connection with your use of our services.
+                  MediNex+ provides software tools, not medical advice. We are not liable for medical errors, misdiagnoses, or patient outcomes resulting from the use or misuse of our software.
                 </p>
                 <p className={styles.sectionText}>
-                  Our total liability for any claim arising from or related to these terms shall not
-                  exceed the amount you paid to MediNex+ for the specific service giving rise
-                  to the claim.
+                  Our total liability shall not exceed the amount paid for the software subscription in the 12 months preceding the claim.
                 </p>
               </div>
 
-              {/* 9. Indemnification */}
-              <div id="indemnification" className={styles.section}>
-                <h2 className={styles.sectionTitle}>9. Indemnification</h2>
-                <p className={styles.sectionText}>
-                  You agree to indemnify, defend, and hold harmless MediNex+, its officers,
-                  directors, employees, agents, and affiliates from and against any claims, liabilities,
-                  damages, losses, or expenses arising out of or in any way connected with your access
-                  to or use of our services, or your violation of these Terms of Service.
-                </p>
-              </div>
-
-              {/* 10. Privacy */}
-              <div id="privacy" className={styles.section}>
-                <h2 className={styles.sectionTitle}>10. Privacy</h2>
-                <p className={styles.sectionText}>
-                  Your use of our services is also governed by our{" "}
-                  <a href="/privacy-policy" className={styles.contactLink}>Privacy Policy</a>, which
-                  describes how we collect, use, and protect your personal information. By using our
-                  services, you consent to the data practices outlined in our Privacy Policy.
-                </p>
-              </div>
-
-              {/* 11. Modifications to Terms */}
-              <div id="modifications" className={styles.section}>
-                <h2 className={styles.sectionTitle}>11. Modifications to Terms</h2>
-                <p className={styles.sectionText}>
-                  We reserve the right to modify these Terms of Service at any time. Changes will
-                  be effective immediately upon posting on our website. Your continued use of our
-                  services after any changes constitutes your acceptance of the new terms.
-                </p>
-                <p className={styles.sectionText}>
-                  We encourage you to review these terms periodically for updates. Significant
-                  changes will be communicated through a notice on our website.
-                </p>
-              </div>
-
-              {/* 12. Governing Law */}
-              <div id="governing-law" className={styles.section}>
-                <h2 className={styles.sectionTitle}>12. Governing Law</h2>
-                <p className={styles.sectionText}>
-                  These Terms of Service shall be governed by and construed in accordance with the
-                  laws of India, without regard to its conflict of law provisions. Any disputes
-                  arising from these terms shall be subject to the exclusive jurisdiction of the
-                  courts in Nashik, Maharashtra, India.
-                </p>
-              </div>
-
-              {/* 13. Contact Us */}
+              {/* 7. Contact Us */}
               <div id="contact" className={styles.section}>
-                <h2 className={styles.sectionTitle}>13. Contact Us</h2>
-                <p className={styles.sectionText}>
-                  If you have any questions about these Terms of Service, please contact us:
-                </p>
+                <h2 className={styles.sectionTitle}>7. Contact Us</h2>
                 <ul className={styles.list}>
-                  <li className={styles.listItem}><strong>Email:</strong>{" "}
-                    <a href="mailto:medinexplus666@gmail.com" className={styles.contactLink}>
-                      medinexplus666@gmail.com
-                    </a>
-                  </li>
-                  <li className={styles.listItem}><strong>Phone:</strong> +91 90590 53938</li>
-                  <li className={styles.listItem}>
-                    <strong>Address:</strong> 3/Alampat Business Centre, Near Cycle Circle,
-                    Krushi Nagar, College Road, Nashik 422001
-                  </li>
+                  <li className={styles.listItem}><strong>Email:</strong> <a href="mailto:legal@medinexplus.com" className={styles.contactLink}>legal@medinexplus.com</a></li>
+                  <li className={styles.listItem}><strong>Address:</strong> 3/Alampat Business Centre, Near Cycle Circle, Krushi Nagar, Nashik 422001</li>
                 </ul>
               </div>
             </div>
           </div>
         </section>
       </main>
-      <Footer />
+
+      {/* FOOTER */}
+      <footer className="mn-footer">
+        <div className="mn-footer-inner">
+          <div className="mn-footer-top">
+            <div className="mn-footer-brand">
+              <Link href="/" className="mn-logo">
+                <img src="/logo/medinexplus-logo-white.png" alt="MediNexPlus" style={{ height: 36, width: "auto", objectFit: "contain" }} />
+              </Link>
+              <p>Smarter healthcare connecting doctors and patients. The multi-tenant HMS SaaS platform for modern healthcare providers.</p>
+            </div>
+            <div>
+              <div className="mn-footer-col-title">Product</div>
+              <div className="mn-footer-links">
+                <Link href="/#solutions">Solutions</Link>
+                <Link href="/#features">Features</Link>
+                <Link href="/#pricing">Pricing</Link>
+                <Link href="/signup">Get Started</Link>
+              </div>
+            </div>
+            <div>
+              <div className="mn-footer-col-title">Company</div>
+              <div className="mn-footer-links">
+                <Link href="/#">About Us</Link>
+                <Link href="/#">Blog</Link>
+                <Link href="/#">Careers</Link>
+                <Link href="/contact">Contact</Link>
+              </div>
+            </div>
+            <div>
+              <div className="mn-footer-col-title">Legal</div>
+              <div className="mn-footer-links">
+                <Link href="/privacy-policy">Privacy Policy</Link>
+                <Link href="/terms-of-service">Terms of Service</Link>
+                <Link href="/cookie-policy">Cookie Policy</Link>
+              </div>
+            </div>
+          </div>
+          <div className="mn-footer-divider" />
+          <div className="mn-footer-bottom">
+            <p className="mn-footer-copy">© {new Date().getFullYear()} MediNex+. All rights reserved. | Product By <a href="https://theblueintellect.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#A78BFA', textDecoration: 'none', fontWeight: 600 }}>The Blue Intellect</a></p>
+            <div className="mn-footer-legal">
+              <Link href="/privacy-policy">Privacy</Link>
+              <Link href="/terms-of-service">Terms</Link>
+              <Link href="/cookie-policy">Cookies</Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

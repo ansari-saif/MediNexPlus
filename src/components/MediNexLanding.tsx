@@ -561,8 +561,8 @@ export default function MediNexLanding() {
         .mn-cta h2 em { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-weight: 700; color: ${DARK}; }
         .mn-cta-sub { font-size: 16px; color: ${GRAY}; line-height: 1.65; margin-bottom: 36px; max-width: 620px; margin-left: auto; margin-right: auto; }
         .mn-cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .mn-btn-cta-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 26px; font-size: 14px; font-weight: 600; color: #fff; background: linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK}); border: none; border-radius: 100px; cursor: pointer; transition: all 0.25s; font-family: 'Inter', sans-serif; text-decoration: none; box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
-        .mn-btn-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.4); }
+        .mn-btn-cta-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 26px; font-size: 14px; font-weight: 600; color: #fff; background: linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK}); border: none; border-radius: 8px; cursor: pointer; transition: all 0.25s; font-family: 'Inter', sans-serif; text-decoration: none; }
+        .mn-btn-cta-primary:hover { transform: translateY(-2px); }
         .mn-btn-cta-outline { display: inline-flex; align-items: center; gap: 8px; padding: 9px 26px; font-size: 14px; font-weight: 500; color: ${DARK}; background: rgba(255,255,255,0.85); border: 1.5px solid rgba(124,58,237,0.2); border-radius: 100px; cursor: pointer; transition: all 0.25s; font-family: 'Inter', sans-serif; text-decoration: none; backdrop-filter: blur(8px); }
         .mn-btn-cta-outline:hover { border-color: ${PURPLE}; color: ${PURPLE}; transform: translateY(-2px); }
 

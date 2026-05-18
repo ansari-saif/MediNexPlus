@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -142,9 +142,9 @@ export default function HospitalSignupPage() {
         .mn-sp-bg1 { position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%); pointer-events: none; }
         .mn-sp-bg2 { position: absolute; bottom: -80px; left: -80px; width: 350px; height: 350px; background: radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%); pointer-events: none; }
 
-        .mn-sp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-bottom: 28px; }
-        .mn-sp-logo-icon { width: 40px; height: 40px; border-radius: 11px; background: linear-gradient(135deg, #7C3AED, #6D28D9); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,0.35); }
-        .mn-sp-logo-text { font-size: 22px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; }
+        .mn-sp-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-bottom: 20px; }
+        .mn-sp-logo-icon { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #7C3AED, #6D28D9); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,0.35); }
+        .mn-sp-logo-text { font-size: 18px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; }
         .mn-sp-logo-plus { color: #7C3AED; }
 
         .mn-sp-steps-nav { display: flex; align-items: center; gap: 0; margin-bottom: 24px; }
@@ -167,8 +167,8 @@ export default function HospitalSignupPage() {
         .mn-sp-badge.s1 { background: #EDE9FE; border: 1px solid #DDD6FE; color: #7C3AED; }
         .mn-sp-badge.s2 { background: #FFF7ED; border: 1px solid #FED7AA; color: #D97706; }
         .mn-sp-badge.s3 { background: #F0FDF4; border: 1px solid #BBF7D0; color: #059669; }
-        .mn-sp-title { font-size: 24px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; margin-bottom: 6px; }
-        .mn-sp-sub { font-size: 14px; color: #64748B; line-height: 1.6; margin-bottom: 6px; }
+        .mn-sp-title { font-size: 20px; font-weight: 800; color: #0F172A; letter-spacing: -0.03em; margin-bottom: 6px; }
+        .mn-sp-sub { font-size: 12px; color: #64748B; line-height: 1.6; margin-bottom: 6px; }
         .mn-sp-progress { height: 3px; background: #F1F5F9; border-radius: 10px; margin: 18px 0 24px; overflow: hidden; }
         .mn-sp-progress-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #7C3AED, #8B5CF6); transition: width 0.4s ease; }
 
@@ -178,10 +178,10 @@ export default function HospitalSignupPage() {
         .mn-sp-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
         @media (max-width: 480px) { .mn-sp-grid2 { grid-template-columns: 1fr; gap: 0; } }
 
-        .mn-field { margin-bottom: 16px; }
-        .mn-label { display: block; font-size: 12px; font-weight: 600; color: #475569; letter-spacing: 0.01em; margin-bottom: 7px; }
+        .mn-field { margin-bottom: 14px; }
+        .mn-label { display: block; font-size: 11px; font-weight: 600; color: #475569; letter-spacing: 0.01em; margin-bottom: 7px; }
         .mn-input-wrap { position: relative; }
-        .mn-input { width: 100%; background: #FAFAFA; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 12px 42px 12px 14px; font-size: 14px; color: #0F172A; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .mn-input { width: 100%; background: #FAFAFA; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 10px 40px 10px 12px; font-size: 13px; color: #0F172A; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
         .mn-input::placeholder { color: #94A3B8; }
         .mn-input:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); background: #fff; }
         .mn-input.err { border-color: #EF4444; }
@@ -195,7 +195,7 @@ export default function HospitalSignupPage() {
         .mn-str-seg { height: 3px; flex: 1; border-radius: 4px; transition: background 0.3s; }
         .mn-str-label { font-size: 11px; font-weight: 600; }
 
-        .mn-sp-btn { width: 100%; padding: 13px; border: none; border-radius: 11px; font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #7C3AED, #6D28D9); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.3); transition: transform 0.15s, box-shadow 0.15s; position: relative; overflow: hidden; margin-top: 4px; }
+        .mn-sp-btn { width: 100%; padding: 10px; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #7C3AED, #6D28D9); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.3); transition: transform 0.15s, box-shadow 0.15s; position: relative; overflow: hidden; margin-top: 4px; }
         .mn-sp-btn::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%); background-size: 200% 100%; animation: mn-shine 3s infinite; }
         @keyframes mn-shine { 0%{background-position:200% center} 100%{background-position:-200% center} }
         .mn-sp-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,58,237,0.4); }
@@ -235,7 +235,7 @@ export default function HospitalSignupPage() {
         <div className="mn-sp-bg2" />
 
         <Link href="/" className="mn-sp-logo">
-          <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" style={{ height: 42, width: "auto", objectFit: "contain" }} />
+          <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" style={{ height: 32, width: "auto", objectFit: "contain" }} />
         </Link>
 
         {/* Step indicator */}
