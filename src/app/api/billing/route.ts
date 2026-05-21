@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
       pharmacyOnly:   url.searchParams.get("pharmacyOnly") === "true",
       labOnly:        url.searchParams.get("labOnly") === "true",
       departmentId:   url.searchParams.get("departmentId")   || undefined,
+      statsOnly:      url.searchParams.get("statsOnly") === "true",
     });
     return successResponse(result, "Bills fetched");
   } catch (e: any) {

@@ -59,9 +59,11 @@ export default function BillingDepartmentDashboard({ profile, user, activeTab, o
   const loadStats = useCallback(async () => {
     setStatsLoading(true);
     try {
+      // Fetch billing stats + a small recent-queue preview in parallel.
+      // pendingCount comes from billing stats (no full queue scan needed).
       const [billRes, queueRes] = await Promise.all([
-        apiFetch("/api/billing?page=1&limit=1"),
-        apiFetch("/api/billing/queue"),
+        apiFetch("/api/billing?statsOnly=true"),
+        apiFetch("/api/billing/queue?limit=10"),
       ]);
       if (billRes.success) {
         const s = billRes.data?.stats || {};
@@ -73,11 +75,11 @@ export default function BillingDepartmentDashboard({ profile, user, activeTab, o
           totalBills: p.total || 0,
           paidCount: s.paidCount || 0,
         });
+        // Use server-side pendingCount for the queue badge (no full queue scan)
+        setQueueCount(s.pendingCount || 0);
       }
       if (queueRes.success) {
-        const all   = queueRes.data || [];
-        const pend  = all.filter((item: any) => item.bill?.status !== "PAID");
-        setQueueCount(pend.length);
+        const pend = (queueRes.data || []).filter((item: any) => item.bill?.status !== "PAID");
         setRecentQueue(pend.slice(0, 5));
       }
     } catch {}

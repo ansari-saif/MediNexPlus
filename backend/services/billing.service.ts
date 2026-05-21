@@ -603,7 +603,7 @@ export async function recordPayment(
 // ── Get bills list ─────────────────────────────────────────────────────────
 export async function getBills(
   hospitalId: string,
-  opts: { page?: number; limit?: number; search?: string; status?: string; dateFrom?: string; dateTo?: string; patientId?: string; prescriptionId?: string; pharmacyOnly?: boolean; labOnly?: boolean; departmentId?: string }
+  opts: { page?: number; limit?: number; search?: string; status?: string; dateFrom?: string; dateTo?: string; patientId?: string; prescriptionId?: string; pharmacyOnly?: boolean; labOnly?: boolean; departmentId?: string; statsOnly?: boolean }
 ) {
   const page  = Math.max(1, opts.page  || 1);
   const limit = Math.min(opts.pharmacyOnly ? 200 : 50, opts.limit || 20);
@@ -645,20 +645,23 @@ export async function getBills(
     }
   }
 
-  const [bills, total] = await Promise.all([
-    (prisma as any).bill.findMany({
-      where,
-      include: {
-        patient:   { select: { id: true, name: true, patientId: true, phone: true } },
-        billItems: true,
-        payments:  { orderBy: { paidAt: "desc" } },
-      },
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    (prisma as any).bill.count({ where }),
-  ]);
+  // statsOnly: skip heavy bill findMany but still count for totalBills
+  const [bills, total] = opts.statsOnly
+    ? [[], await (prisma as any).bill.count({ where })]
+    : await Promise.all([
+        (prisma as any).bill.findMany({
+          where,
+          include: {
+            patient:   { select: { id: true, name: true, patientId: true, phone: true } },
+            billItems: true,
+            payments:  { orderBy: { paidAt: "desc" } },
+          },
+          orderBy: { createdAt: "desc" },
+          skip: (page - 1) * limit,
+          take: limit,
+        }),
+        (prisma as any).bill.count({ where }),
+      ]);
 
   // Stats — scope to lab-only or pharmacy-only when requested
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -881,26 +884,20 @@ export async function transferToBilling(
 // ── Get billing queue (transferred appointments + pharmacy walk-in bills) ──
 export async function getBillingQueue(
   hospitalId: string,
-  opts: { search?: string; date?: string; procedureOnly?: boolean; subDeptId?: string }
+  opts: { search?: string; date?: string; procedureOnly?: boolean; subDeptId?: string; limit?: number }
 ): Promise<any[]> {
-  // ── 1. Appointment-based queue (billingTransferred = true) ──
-  const apptWhere: any = {
-    hospitalId,
-    billingTransferred: true,
-  };
+  // ── Build appointment where clause ──
+  const apptWhere: any = { hospitalId, billingTransferred: true };
+  if (opts.procedureOnly && opts.subDeptId) apptWhere.subDepartmentId = opts.subDeptId;
 
-  // ── Sub-department filter: scope to this sub-dept's referred appointments ──
-  if (opts.procedureOnly && opts.subDeptId) {
-    apptWhere.subDepartmentId = opts.subDeptId;
-  }
-
+  // ── Build date range once, reuse across all queries ──
+  let dateRange: { gte: Date; lt: Date } | undefined;
   if (opts.date) {
     const d = new Date(opts.date);
-    const nextDay = new Date(d);
-    nextDay.setDate(nextDay.getDate() + 1);
-    apptWhere.appointmentDate = { gte: d, lt: nextDay };
+    const nextDay = new Date(d); nextDay.setDate(nextDay.getDate() + 1);
+    dateRange = { gte: d, lt: nextDay };
+    apptWhere.appointmentDate = dateRange;
   }
-
   if (opts.search) {
     apptWhere.OR = [
       { patient: { name: { contains: opts.search } } },
@@ -910,19 +907,74 @@ export async function getBillingQueue(
     ];
   }
 
-  const appointments = await (prisma as any).appointment.findMany({
-    where: apptWhere,
-    include: {
-      patient: { select: { id: true, name: true, patientId: true, phone: true, email: true } },
-      doctor: { select: { id: true, name: true, specialization: true, consultationFee: true } },
-      department: { select: { id: true, name: true } },
-      subDepartment: { select: { id: true, name: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-    take: 100,
-  });
+  // ── Shared search filter for bill queries ──
+  const billSearchOr = opts.search ? [
+    { patient: { name: { contains: opts.search } } },
+    { patient: { patientId: { contains: opts.search } } },
+    { patient: { phone: { contains: opts.search } } },
+    { billNo: { contains: opts.search } },
+  ] : undefined;
 
-  // Attach bill info for each appointment
+  const sharedBillInclude = {
+    patient: { select: { id: true, name: true, patientId: true, phone: true, email: true } },
+    billItems: true,
+    payments: true,
+  };
+
+  // ── Build non-appointment bill where clauses ──
+  const rxBillWhere: any = { hospitalId, prescriptionId: { not: null }, visitId: null };
+  if (dateRange) rxBillWhere.createdAt = dateRange;
+  if (billSearchOr) rxBillWhere.OR = billSearchOr;
+
+  const csBillWhere: any = { hospitalId, prescriptionId: null, visitId: null, notes: { contains: "PHARMACY_COUNTER_SALE" } };
+  if (dateRange) csBillWhere.createdAt = dateRange;
+  if (billSearchOr) csBillWhere.OR = billSearchOr;
+
+  const labBillWhere: any = { hospitalId, prescriptionId: null, visitId: null, billItems: { some: { type: "LAB_TEST" } }, NOT: { notes: { contains: "PHARMACY_COUNTER_SALE" } } };
+  if (dateRange) labBillWhere.createdAt = dateRange;
+  if (billSearchOr) labBillWhere.OR = billSearchOr;
+
+  // ── Run ALL 4 independent queries in PARALLEL ──
+  const [appointments, pharmacyBills, counterSaleBills, labBills] = await Promise.all([
+    (prisma as any).appointment.findMany({
+      where: apptWhere,
+      include: {
+        patient: { select: { id: true, name: true, patientId: true, phone: true, email: true } },
+        doctor: { select: { id: true, name: true, specialization: true, consultationFee: true } },
+        department: { select: { id: true, name: true } },
+        subDepartment: { select: { id: true, name: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+      take: 100,
+    }),
+    (prisma as any).bill.findMany({
+      where: rxBillWhere,
+      include: {
+        ...sharedBillInclude,
+        prescription: {
+          select: { id: true, prescriptionNo: true, diagnosis: true, medications: true, doctorId: true,
+            doctor: { select: { id: true, name: true, specialization: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+    (prisma as any).bill.findMany({
+      where: csBillWhere,
+      include: sharedBillInclude,
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+    (prisma as any).bill.findMany({
+      where: labBillWhere,
+      include: sharedBillInclude,
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+  ]);
+
+  // ── Attach bill info for each appointment (second parallel fetch once we have IDs) ──
   const apptIds = appointments.map((a: any) => a.id);
   const apptBills = apptIds.length > 0
     ? await (prisma as any).bill.findMany({
@@ -948,9 +1000,9 @@ export async function getBillingQueue(
     source: "appointment",
   }));
 
-  // Auto-generate bills for appointments that are transferred but have no bill yet.
-  // Sequential (not parallel) to avoid @@unique([hospitalId, billNo]) race conditions.
-  const missingBill = apptQueue.filter((a: any) => !a.bill);
+  // ── Auto-generate bills for appointments missing one — capped at 5 to avoid blocking ──
+  // Sequential to avoid @@unique([hospitalId, billNo]) race conditions.
+  const missingBill = apptQueue.filter((a: any) => !a.bill).slice(0, 5);
   for (const a of missingBill) {
     try {
       a.bill = await generateBillFromAppointment(a.id, hospitalId);
@@ -959,54 +1011,14 @@ export async function getBillingQueue(
     }
   }
 
-  // ── Procedure-only filter: return only bills that have at least one PROCEDURE item ──
-  // (sub-dept scoping is already applied at DB level via apptWhere.subDepartmentId above)
+  // ── Procedure-only filter ──
   if (opts.procedureOnly) {
     return apptQueue.filter((a: any) =>
       (a.bill?.billItems || []).some((bi: any) => bi.type === "PROCEDURE")
     );
   }
 
-  // ── 2. Pharmacy walk-in bills (no appointment, created from pharmacy queue) ──
-  const rxBillWhere: any = {
-    hospitalId,
-    prescriptionId: { not: null },
-    visitId: null,       // no appointment link — these are pharmacy walk-ins
-  };
-
-  if (opts.date) {
-    const d = new Date(opts.date);
-    const nextDay = new Date(d);
-    nextDay.setDate(nextDay.getDate() + 1);
-    rxBillWhere.createdAt = { gte: d, lt: nextDay };
-  }
-
-  if (opts.search) {
-    rxBillWhere.OR = [
-      { patient: { name: { contains: opts.search } } },
-      { patient: { patientId: { contains: opts.search } } },
-      { patient: { phone: { contains: opts.search } } },
-      { billNo: { contains: opts.search } },
-    ];
-  }
-
-  const pharmacyBills = await (prisma as any).bill.findMany({
-    where: rxBillWhere,
-    include: {
-      patient: { select: { id: true, name: true, patientId: true, phone: true, email: true } },
-      billItems: true,
-      payments: true,
-      prescription: {
-        select: { id: true, prescriptionNo: true, diagnosis: true, medications: true, doctorId: true,
-          doctor: { select: { id: true, name: true, specialization: true } },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
-
-  // Shape pharmacy bills to look like queue items (compatible with BillingQueue component)
+  // ── Shape non-appointment bills into queue item format ──
   const rxQueue = pharmacyBills.map((b: any) => ({
     id: b.prescriptionId || b.id,
     appointmentDate: b.createdAt,
@@ -1022,41 +1034,6 @@ export async function getBillingQueue(
     source: "pharmacy",
     prescriptionNo: b.prescription?.prescriptionNo || b.billNo,
   }));
-
-  // ── 3. Pharmacy counter-sale bills (no prescription, no visit — direct POS) ──
-  const csBillWhere: any = {
-    hospitalId,
-    prescriptionId: null,
-    visitId: null,
-    notes: { contains: "PHARMACY_COUNTER_SALE" },
-  };
-
-  if (opts.date) {
-    const d = new Date(opts.date);
-    const nextDay = new Date(d);
-    nextDay.setDate(nextDay.getDate() + 1);
-    csBillWhere.createdAt = { gte: d, lt: nextDay };
-  }
-
-  if (opts.search) {
-    csBillWhere.OR = [
-      { patient: { name: { contains: opts.search } } },
-      { patient: { patientId: { contains: opts.search } } },
-      { patient: { phone: { contains: opts.search } } },
-      { billNo: { contains: opts.search } },
-    ];
-  }
-
-  const counterSaleBills = await (prisma as any).bill.findMany({
-    where: csBillWhere,
-    include: {
-      patient: { select: { id: true, name: true, patientId: true, phone: true, email: true } },
-      billItems: true,
-      payments: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
 
   const csQueue = counterSaleBills.map((b: any) => ({
     id: b.id,
@@ -1074,42 +1051,6 @@ export async function getBillingQueue(
     prescriptionNo: b.billNo,
   }));
 
-  // ── 4. Lab order bills (no appointment, no prescription — created from pathology orders) ──
-  const labBillWhere: any = {
-    hospitalId,
-    prescriptionId: null,
-    visitId: null,
-    billItems: { some: { type: "LAB_TEST" } },
-    NOT: { notes: { contains: "PHARMACY_COUNTER_SALE" } },
-  };
-
-  if (opts.date) {
-    const d = new Date(opts.date);
-    const nextDay = new Date(d);
-    nextDay.setDate(nextDay.getDate() + 1);
-    labBillWhere.createdAt = { gte: d, lt: nextDay };
-  }
-
-  if (opts.search) {
-    labBillWhere.OR = [
-      { patient: { name: { contains: opts.search } } },
-      { patient: { patientId: { contains: opts.search } } },
-      { patient: { phone: { contains: opts.search } } },
-      { billNo: { contains: opts.search } },
-    ];
-  }
-
-  const labBills = await (prisma as any).bill.findMany({
-    where: labBillWhere,
-    include: {
-      patient: { select: { id: true, name: true, patientId: true, phone: true, email: true } },
-      billItems: true,
-      payments: true,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 100,
-  });
-
   const labQueue = labBills.map((b: any) => ({
     id: b.id,
     appointmentDate: b.createdAt,
@@ -1126,10 +1067,11 @@ export async function getBillingQueue(
     timeSlot: null,
   }));
 
-  // Only return appointment items that have a bill — ensures frontend never sees DRAFT rows
+  // Only return appointment items that have a bill
   const billedApptQueue = apptQueue.filter((a: any) => a.bill);
 
-  return [...billedApptQueue, ...rxQueue, ...csQueue, ...labQueue];
+  const combined = [...billedApptQueue, ...rxQueue, ...csQueue, ...labQueue];
+  return opts.limit ? combined.slice(0, opts.limit) : combined;
 }
 
 // ── Revert bill to PENDING (for regeneration) ───────────────────────────

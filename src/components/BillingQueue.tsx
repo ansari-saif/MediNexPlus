@@ -185,36 +185,36 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
   // Global all-time stats (independent of date filter) — refreshed after every queue load
   const [globalStats, setGlobalStats] = useState({ queueCount: 0, pendingCount: 0, pendingAmount: 0, totalCollected: 0, todayCollected: 0, totalDiscount: 0 });
 
-  const loadGlobalStats = useCallback(async () => {
-    const params = new URLSearchParams();
-    if (scope === "pharmacy") params.set("pharmacyOnly", "true");
-    if (scope === "lab") params.set("labOnly", "true");
-    if (scope === "procedure") { params.set("procedureOnly", "true"); if (subDeptId) params.set("subDeptId", subDeptId); }
-    // Fetch all queue items (no date filter) for accurate all-time stats
-    const [queueRes, billingRes] = await Promise.all([
-      api(`/api/billing/queue?${params}`),
-      fetch(`/api/billing?page=1&limit=1${scope === "pharmacy" ? "&pharmacyOnly=true" : scope === "lab" ? "&labOnly=true" : ""}`, { credentials: "include" }).then(r => r.json()).catch(() => null),
-    ]);
-    const items: QueueItem[] = queueRes.data || [];
+  // Compute stats from already-loaded items; fetch only todayRevenue from billing API (lightweight)
+  const computeGlobalStats = useCallback(async (items: QueueItem[]) => {
     const todayStr = new Date().toISOString().split("T")[0];
     const getAmt = (q: QueueItem) => scope === "pharmacy" ? getPharmacyItemsTotal(q.bill) : scope === "procedure" ? getProcedureItemsTotal(q.bill) : (q.bill?.total || 0);
     const getRemainingAmt = (q: QueueItem) => {
       if (scope !== "procedure" && q.bill?.status === "PARTIALLY_PAID") return Math.max(0, (q.bill?.total || 0) - (q.bill?.paidAmount || 0));
       return getAmt(q);
     };
-    // Use billing API stats for revenue figures when available (more accurate)
-    const apiStats = billingRes?.success ? billingRes.data?.stats : null;
+    // Compute queue-based stats immediately (no extra API call)
+    const pending = items.filter(q => q.bill?.status === "PENDING" || q.bill?.status === "PARTIALLY_PAID");
     setGlobalStats({
       queueCount: items.length,
-      pendingCount: apiStats ? (apiStats.pendingCount || 0) : items.filter(q => q.bill?.status === "PENDING" || q.bill?.status === "PARTIALLY_PAID").length,
+      pendingCount: pending.length,
       pendingAmount: items.reduce((s, q) => s + (q.bill?.status !== "PAID" && q.bill?.status !== "CANCELLED" ? getRemainingAmt(q) : 0), 0),
-      totalCollected: apiStats ? ((apiStats.paidCount || 0) > 0 ? items.filter(q => q.bill?.status === "PAID").reduce((s, q) => s + getAmt(q), 0) : 0) : items.reduce((s, q) => s + (q.bill?.status === "PAID" ? getAmt(q) : 0), 0),
-      todayCollected: apiStats ? (apiStats.todayRevenue || 0) : items.filter(q => q.bill?.paidAt && new Date(q.bill.paidAt).toISOString().slice(0, 10) === todayStr && q.bill?.status === "PAID").reduce((s, q) => s + getAmt(q), 0),
+      totalCollected: items.reduce((s, q) => s + (q.bill?.status === "PAID" ? getAmt(q) : 0), 0),
+      todayCollected: items.filter(q => q.bill?.paidAt && new Date(q.bill.paidAt).toISOString().slice(0, 10) === todayStr && q.bill?.status === "PAID").reduce((s, q) => s + getAmt(q), 0),
       totalDiscount: items.reduce((s, q) => s + (q.bill?.discount || 0), 0),
     });
-  }, [scope, subDeptId]);
+    // Fetch accurate todayRevenue from billing API in background (does not block queue render)
+    try {
+      const billingRes = await fetch(`/api/billing?statsOnly=true${scope === "pharmacy" ? "&pharmacyOnly=true" : scope === "lab" ? "&labOnly=true" : ""}`, { credentials: "include" }).then(r => r.json()).catch(() => null);
+      const apiStats = billingRes?.success ? billingRes.data?.stats : null;
+      if (apiStats) {
+        setGlobalStats(prev => ({ ...prev, todayCollected: apiStats.todayRevenue || prev.todayCollected, pendingCount: apiStats.pendingCount || prev.pendingCount }));
+      }
+    } catch {}
+  }, [scope]);
 
-  useEffect(() => { loadGlobalStats(); }, [loadGlobalStats]);
+  // Expose a stable loadGlobalStats for callers (delete, payment) that re-computes from current queue
+  const loadGlobalStats = useCallback(() => { computeGlobalStats(queue); }, [computeGlobalStats, queue]);
 
   // Status filter
   const [statusFilter, setStatusFilter] = useState<"all" | "PAID" | "PENDING">("all");
@@ -257,9 +257,13 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
     if (scope === "lab") items = items.filter((q: any) => q.source === "lab_order" || q.bill?.billItems?.some((bi: any) => bi.type === "LAB_TEST") || q.bill?.notes?.includes("Lab Order") || q.bill?.billNo?.startsWith("LAB-"));
     if (scope === "pharmacy") items = items.filter((q: any) => q.source === "pharmacy" || q.source === "pharmacy_counter" || q.bill?.billItems?.some((bi: any) => bi.type === "PHARMACY"));
     if (scope === "procedure") items = items.filter((q: any) => q.bill?.billItems?.some((bi: any) => bi.type === "PROCEDURE"));
-    if (d.success) setQueue(items);
+    if (d.success) {
+      setQueue(items);
+      // Compute stats immediately from the freshly-loaded items (no extra queue fetch)
+      computeGlobalStats(items);
+    }
     setLoading(false);
-  }, [search, dateFilter, scope, subDeptId]);
+  }, [search, dateFilter, scope, subDeptId, computeGlobalStats]);
 
   useEffect(() => { loadQueue(); }, [loadQueue]);
 
