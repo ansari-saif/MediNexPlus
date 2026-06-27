@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { setSessionCookie } from "../../../../../backend/utils/session-cookie";
 import { generateToken } from "../../../../../backend/utils/jwt";
 import { Role } from "@prisma/client";
 import { env } from "../../../../../backend/config/env";
@@ -37,17 +38,7 @@ export async function POST(req: NextRequest) {
         "Super Admin Login Successful"
       );
 
-      const secureFlag = process.env.NODE_ENV === "production";
-      
-      response.cookies.set({
-        name: "hms_session",
-        value: token,
-        httpOnly: true,
-        secure: secureFlag,
-        sameSite: "strict",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60, // 7 days
-      });
+      setSessionCookie(response, req, token, "lax");
 
       return response;
     }

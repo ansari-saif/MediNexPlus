@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { loginUserService } from "../../../../../backend/services/auth.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { setSessionCookie } from "../../../../../backend/utils/session-cookie";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -20,20 +21,7 @@ export async function POST(req: NextRequest) {
     const { token, user } = await loginUserService(result.data.email, result.data.password);
 
     const response = successResponse({ user }, "Login Successful");
-
-    // Extract env variable conditionally to handle type warnings
-    const secureFlag = process.env.NODE_ENV === "production";
-    
-    // Set HTTP-only Cookie
-    response.cookies.set({
-      name: "hms_session",
-      value: token,
-      httpOnly: true,
-      secure: secureFlag,
-      sameSite: "strict",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    });
+    setSessionCookie(response, req, token, "lax");
 
     return response;
   } catch (error: any) {

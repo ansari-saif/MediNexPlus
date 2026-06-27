@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { errorResponse } from "../../../../../../backend/utils/response";
+import { setSessionCookie } from "../../../../../../backend/utils/session-cookie";
 import prisma from "../../../../../../backend/config/db";
 import { comparePassword } from "../../../../../../backend/utils/hash";
 import { generateToken } from "../../../../../../backend/utils/jwt";
@@ -40,12 +41,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    response.cookies.set("hms_session", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60,
-      path: "/",
-    });
+    setSessionCookie(response, req, token);
 
     return response;
   } catch (error: any) {
