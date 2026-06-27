@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:8.4
+    image: mysql:8.0.32
     container_name: medinexplus-mysql
     restart: unless-stopped
     environment:
@@ -29,6 +29,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: migrate
+      provenance: false
+      sbom: false
     container_name: medinexplus-db-init
     env_file:
       - .env
@@ -43,6 +45,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      provenance: false
+      sbom: false
     container_name: medinexplus
     ports:
       - "3000:3000"
