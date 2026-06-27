@@ -184,7 +184,7 @@ model Department {
 
   @@unique([hospitalId, code])
   @@index([hospitalId])
-  @@index([hodDoctorId], map: "Department_hodDoctorId_fkey")
+  @@index([hodDoctorId], map: "Department_hodDoctorId_idx")
 }
 
 model SubDepartment {
@@ -232,7 +232,7 @@ model SubDepartment {
 
   @@unique([hospitalId, name, type])
   @@index([hospitalId])
-  @@index([departmentId], map: "SubDepartment_departmentId_fkey")
+  @@index([departmentId], map: "SubDepartment_departmentId_idx")
   @@index([hospitalId, displayOrder])
 }
 
@@ -318,7 +318,7 @@ model Doctor {
   @@unique([hospitalId, email])
   @@index([hospitalId])
   @@index([hospitalId, departmentId])
-  @@index([departmentId], map: "Doctor_departmentId_fkey")
+  @@index([departmentId], map: "Doctor_departmentId_idx")
 }
 
 model DoctorAvailability {
@@ -447,7 +447,7 @@ model Staff {
   @@unique([hospitalId, email])
   @@index([hospitalId])
   @@index([email])
-  @@index([departmentId], map: "Staff_departmentId_fkey")
+  @@index([departmentId], map: "Staff_departmentId_idx")
 }
 
 model Ward {
@@ -561,7 +561,7 @@ model Pricing {
 
   @@index([hospitalId])
   @@index([hospitalId, type])
-  @@index([departmentId], map: "Pricing_departmentId_fkey")
+  @@index([departmentId], map: "Pricing_departmentId_idx")
 }
 
 model InventoryItem {
@@ -1775,7 +1775,7 @@ model Blog {
   title         String
   slug          String
   excerpt       String?    @db.Text
-  content       String?    @db.LongText
+  content       String?    @db.Text
   coverImage    String?    @db.Text
   category      String?
   tags          String?    @db.Text
@@ -2065,7 +2065,7 @@ model LabReport {
   id             String          @id @default(uuid())
   orderId        String          @unique
   hospitalId     String
-  reportData     String?         @db.LongText
+  reportData     String?         @db.Text
   verifiedBy     String?
   verifiedAt     DateTime?
   deliveredAt    DateTime?
@@ -2298,7 +2298,7 @@ model IPDDischargeSummary {
   admissionId           String       @unique
   finalDiagnosis        String?      @db.Text
   conditionAtDischarge  String?
-  dischargeMedications  String?      @db.LongText
+  dischargeMedications  String?      @db.Text
   followUpInstructions  String?      @db.Text
   dietaryInstructions   String?      @db.Text
   billingCleared        Boolean      @default(false)

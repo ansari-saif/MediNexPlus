@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: medinexplus-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-medinexplus}
+      MYSQL_USER: ${MYSQL_USER:-medinex}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-medinexpassword}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data_dev:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: medinexplus-dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+      DATABASE_URL: mysql://${MYSQL_USER:-medinex}:${MYSQL_PASSWORD:-medinexpassword}@mysql:3306/${MYSQL_DATABASE:-medinexplus}
+    volumes:
+      - .:/app
+      - web_node_modules:/app/node_modules
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql_data_dev:
+  web_node_modules:

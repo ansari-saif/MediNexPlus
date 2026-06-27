@@ -46,7 +46,7 @@ export default function SuperAdminLogin() {
 
   return (
     <>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -484,7 +484,7 @@ export default function SuperAdminLogin() {
           color: var(--warning-color);
           line-height: 1.4;
         }
-      `}</style>
+      ` }} />
 
       {/* Theme Toggle */}
       <button className="sa-toggle" onClick={() => setDark(!dark)} title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
