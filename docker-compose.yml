@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:8.0.32
+    image: mariadb:10.11
     container_name: medinexplus-mysql
     restart: unless-stopped
     environment:
