@@ -6,11 +6,12 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --ignore-scripts
 COPY prisma ./prisma
 COPY scripts/db-init.sh ./scripts/db-init.sh
-RUN chmod +x ./scripts/db-init.sh
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci
+RUN chmod +x ./scripts/db-init.sh \
+  && npx prisma generate
 
 FROM deps AS migrate
 CMD ["./scripts/db-init.sh"]
