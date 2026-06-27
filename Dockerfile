@@ -21,7 +21,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV SKIP_DOCKER_TYPECHECK=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=cache,target=/app/.next/cache \
+    --mount=type=cache,target=/app/node_modules/.cache \
     npx next build
 
 FROM base AS runner

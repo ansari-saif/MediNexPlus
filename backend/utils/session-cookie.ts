@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60;
 
@@ -35,7 +35,7 @@ export function buildSessionCookieOptions(req: NextRequest, sameSite: SessionSam
 }
 
 export function setSessionCookie(
-  response: { cookies: { set: (name: string, value: string, options: object) => void } },
+  response: NextResponse,
   req: NextRequest,
   token: string,
   sameSite: SessionSameSite = "lax"
@@ -43,10 +43,7 @@ export function setSessionCookie(
   response.cookies.set("hms_session", token, buildSessionCookieOptions(req, sameSite));
 }
 
-export function clearSessionCookie(
-  response: { cookies: { set: (options: object) => void } },
-  req: NextRequest
-) {
+export function clearSessionCookie(response: NextResponse, req: NextRequest) {
   const opts = buildSessionCookieOptions(req);
   response.cookies.set({
     name: "hms_session",

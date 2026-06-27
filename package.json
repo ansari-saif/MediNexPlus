@@ -8,12 +8,14 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "dev:local": "sh scripts/local-dev.sh",
     "docker:db": "docker compose -f docker-compose.db.yml up -d",
     "docker:dev": "docker compose -f docker-compose.dev.yml up",
     "docker:dev:build": "docker compose -f docker-compose.dev.yml up --build",
-    "docker:prod": "docker compose up",
-    "docker:prod:build": "BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose up --build"
+    "docker:prod": "docker compose up -d",
+    "docker:prod:build": "BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose up --build -d",
+    "docker:prod:web": "BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose build web && docker compose up -d web"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
