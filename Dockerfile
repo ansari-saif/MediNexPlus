@@ -7,7 +7,8 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci --ignore-scripts
+    npm ci --ignore-scripts \
+  && npm rebuild sharp
 COPY prisma ./prisma
 COPY scripts/db-init.sh ./scripts/db-init.sh
 RUN chmod +x ./scripts/db-init.sh \
@@ -38,14 +39,18 @@ RUN apk add --no-cache vips openssl \
   && adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/sharp ./node_modules/sharp
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@img ./node_modules/@img
+# Standalone trace omits sharp; install Linux binary in runner (npm ci uses --ignore-scripts).
+RUN npm install --no-save sharp \
+  && chown -R nextjs:nodejs ./node_modules/sharp ./node_modules/@img 2>/dev/null || true \
+  && chown -R nextjs:nodejs ./node_modules
+ENV NEXT_SHARP_PATH=/app/node_modules/sharp
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 

@@ -8,6 +8,9 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: skipDockerTypecheck },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
+    outputFileTracingIncludes: {
+      "/**": ["./node_modules/sharp/**/*", "./node_modules/@img/**/*"],
+    },
   },
   images: {
     remotePatterns: [
