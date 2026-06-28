@@ -15,7 +15,8 @@
     "docker:dev:build": "docker compose -f docker-compose.dev.yml up --build",
     "docker:prod": "docker compose up -d",
     "docker:prod:build": "BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose up --build -d",
-    "docker:prod:web": "BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose build web && docker compose up -d web"
+    "docker:prod:web": "BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose build web && docker compose up -d web",
+    "docker:db:reset": "sh scripts/db-reset.sh"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
