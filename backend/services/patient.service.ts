@@ -68,7 +68,7 @@ export const registerPatient = async (
         patientId,
         name: input.name,
         phone: input.phone,
-        whatsapp: (input as any).whatsapp || null,
+        whatsapp: input.whatsapp || null,
         email: input.email || null,
         gender: input.gender || null,
         dateOfBirth: input.dateOfBirth || null,
@@ -157,6 +157,7 @@ export const updatePatient = async (
   const updateData: any = {};
   if (input.name !== undefined) updateData.name = input.name;
   if (input.phone !== undefined) updateData.phone = input.phone;
+  if (input.whatsapp !== undefined) updateData.whatsapp = input.whatsapp;
   if (input.email !== undefined) updateData.email = input.email;
   if (input.gender !== undefined) updateData.gender = input.gender;
   if (input.dateOfBirth !== undefined) updateData.dateOfBirth = input.dateOfBirth;

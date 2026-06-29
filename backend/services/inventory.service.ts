@@ -7,13 +7,19 @@ export class InventoryServiceError extends Error {
   }
 }
 
+/** Fields accepted by API but not stored on InventoryItem (handled separately). */
+const stripInventoryApiFields = <T extends Record<string, unknown>>(data: T) => {
+  const { openingStock: _openingStock, ...itemData } = data;
+  return itemData;
+};
+
 // --- Items ---
 export const addItem = async (hospitalId: string, data: any) => {
-  return repo.createInventoryItem({ ...data, hospitalId });
+  return repo.createInventoryItem({ ...stripInventoryApiFields(data), hospitalId });
 };
 
 export const updateItem = async (id: string, hospitalId: string, data: any) => {
-  return repo.updateInventoryItem(id, hospitalId, data);
+  return repo.updateInventoryItem(id, hospitalId, stripInventoryApiFields(data));
 };
 
 export const deleteItem = async (id: string, hospitalId: string) => {

@@ -1,12 +1,24 @@
 import * as repo from "../repositories/central-inventory.repo";
 
+const pickLocationFields = (data: Record<string, unknown>) => {
+  const { name, code, type, subDepartmentId, departmentId, isActive } = data;
+  return {
+    ...(name !== undefined && { name }),
+    ...(code !== undefined && { code }),
+    ...(type !== undefined && { type }),
+    ...(subDepartmentId !== undefined && { subDepartmentId }),
+    ...(departmentId !== undefined && { departmentId }),
+    ...(isActive !== undefined && { isActive }),
+  };
+};
+
 // ─── Locations ───
 export const createLocation = async (hospitalId: string, data: any) => {
-  return repo.createLocation({ ...data, hospitalId });
+  return repo.createLocation({ ...pickLocationFields(data), hospitalId });
 };
 
 export const updateLocation = async (id: string, hospitalId: string, data: any) => {
-  return repo.updateLocation(id, hospitalId, data);
+  return repo.updateLocation(id, hospitalId, pickLocationFields(data));
 };
 
 export const getLocations = async (hospitalId: string) => {

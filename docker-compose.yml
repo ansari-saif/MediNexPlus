@@ -143,7 +143,7 @@ services:
       - observability
 
   mysqld-exporter:
-    image: prom/mysqld-exporter:latest
+    image: prom/mysqld-exporter:v0.14.0
     container_name: medinexplus-mysqld-exporter
     restart: unless-stopped
     environment:

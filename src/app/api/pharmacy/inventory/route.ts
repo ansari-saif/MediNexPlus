@@ -8,6 +8,38 @@ import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
+async function resolvePreferredVendorId(
+  hospitalId: string,
+  supplierName?: string | null
+): Promise<string | null> {
+  if (!supplierName) return null;
+  const supplier = await px.supplier.findFirst({
+    where: { hospitalId, name: supplierName, isActive: true },
+    select: { id: true },
+  });
+  return supplier?.id || null;
+}
+
+function withSupplierName(item: any, vendorsById: Map<string, string>) {
+  return {
+    ...item,
+    supplierName: item.preferredVendorId
+      ? vendorsById.get(item.preferredVendorId) || null
+      : null,
+  };
+}
+
+async function loadVendorNameMap(hospitalId: string, vendorIds: string[]) {
+  const uniqueIds = [...new Set(vendorIds.filter(Boolean))];
+  if (uniqueIds.length === 0) return new Map<string, string>();
+
+  const vendors = await px.supplier.findMany({
+    where: { hospitalId, id: { in: uniqueIds } },
+    select: { id: true, name: true },
+  });
+  return new Map(vendors.map((v: any) => [v.id, v.name]));
+}
+
 /**
  * GET /api/pharmacy/inventory
  * List inventory items — SUB_DEPT_HEAD, HOSPITAL_ADMIN
@@ -131,17 +163,28 @@ export const GET = withApiRoute("pharmacy.inventory.get", async (req: NextReques
       select: {
         id: true, name: true, genericName: true, category: true,
         unit: true, purchasePrice: true, mrp: true, sellingPrice: true,
-        minStock: true, isActive: true,
+        minStock: true, isActive: true, preferredVendorId: true,
         batches: { select: { remainingQty: true } },
       },
       orderBy: { name: "asc" },
       take: limit,
     });
 
-    const result = items.map((i: any) => ({
-      ...i,
-      totalStock: i.batches.reduce((s: number, b: any) => s + b.remainingQty, 0),
-    }));
+    const vendorsById = await loadVendorNameMap(
+      auth.hospitalId,
+      items.map((i: any) => i.preferredVendorId)
+    );
+
+    const result = items.map((i: any) =>
+      withSupplierName(
+        {
+          ...i,
+          totalStock: i.batches.reduce((s: number, b: any) => s + b.remainingQty, 0),
+          batches: undefined,
+        },
+        vendorsById
+      )
+    );
 
     return successResponse(result, "Items fetched");
   } catch (error: any) {
@@ -167,6 +210,8 @@ export const POST = withApiRoute("pharmacy.inventory.post", async (req: NextRequ
 
     if (!name || !category) return errorResponse("name and category are required", 400);
 
+    const preferredVendorId = await resolvePreferredVendorId(auth.hospitalId, supplierName);
+
     const item = await px.inventoryItem.create({
       data: {
         hospitalId: auth.hospitalId,
@@ -185,7 +230,7 @@ export const POST = withApiRoute("pharmacy.inventory.post", async (req: NextRequ
         description: description || null,
         hsnCode: hsnCode || null,
         barcode: barcode || null,
-        supplierName: supplierName || null,
+        preferredVendorId,
       },
     });
 
@@ -242,6 +287,11 @@ export const PUT = withApiRoute("pharmacy.inventory.put", async (req: NextReques
     const existing = await px.inventoryItem.findFirst({ where: { id, hospitalId: auth.hospitalId } });
     if (!existing) return errorResponse("Item not found", 404);
 
+    let preferredVendorId: string | null | undefined;
+    if (supplierName !== undefined) {
+      preferredVendorId = await resolvePreferredVendorId(auth.hospitalId, supplierName);
+    }
+
     const updated = await px.inventoryItem.update({
       where: { id },
       data: {
@@ -259,7 +309,7 @@ export const PUT = withApiRoute("pharmacy.inventory.put", async (req: NextReques
         ...(description !== undefined && { description: description || null }),
         ...(hsnCode !== undefined && { hsnCode: hsnCode || null }),
         ...(barcode !== undefined && { barcode: barcode || null }),
-        ...(supplierName !== undefined && { supplierName: supplierName || null }),
+        ...(preferredVendorId !== undefined && { preferredVendorId }),
         ...(isActive !== undefined && { isActive }),
       },
     });

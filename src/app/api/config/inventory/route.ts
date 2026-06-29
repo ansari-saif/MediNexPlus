@@ -270,8 +270,9 @@ export const PUT = withApiRoute("config.inventory.put", async (req: NextRequest)
     
     const result = itemSchema.partial().safeParse(updateData);
     if (!result.success) return errorResponse("Validation failed", 400, result.error.issues);
-    
-    const data = await service.updateItem(id, auth.hospitalId, result.data);
+
+    const { openingStock: _openingStock, ...itemData } = result.data;
+    const data = await service.updateItem(id, auth.hospitalId, itemData);
     return successResponse(data, "Item updated");
   } catch (e: any) {
     return errorResponse(e.message, 500);

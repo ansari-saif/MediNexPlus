@@ -14,13 +14,14 @@ import {
 import {
   createSubDepartment,
   findAllSubDepartments,
-  updateSubDepartment,
   deleteSubDepartment,
 } from "../../../../../backend/repositories/department.repo";
+import { updateSubDepartment as updateSubDepartmentService } from "../../../../../backend/services/subdepartment.service";
 import {
   createDepartmentSchema,
   queryDepartmentSchema,
 } from "../../../../../backend/validations/department.validation";
+import { updateSubDepartmentSchema } from "../../../../../backend/validations/subdepartment.validation";
 import { z } from "zod";
 import { DepartmentType } from "@prisma/client";
 import { withApiRoute } from "../../../../../backend/utils/api-route";
@@ -208,7 +209,11 @@ export const PUT = withApiRoute("config.departments.put", async (req: NextReques
 
     // Only handle sub-departments here for backwards compatibility
     if (sub) {
-      await updateSubDepartment(id, auth.hospitalId, updateData);
+      const parsed = updateSubDepartmentSchema.safeParse(updateData);
+      if (!parsed.success) {
+        return errorResponse("Validation failed", 400, parsed.error.issues);
+      }
+      await updateSubDepartmentService(id, auth.hospitalId, parsed.data);
       return successResponse(null, "Sub-department updated");
     }
 
