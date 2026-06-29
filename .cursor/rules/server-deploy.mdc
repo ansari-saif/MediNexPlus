@@ -1,0 +1,42 @@
+---
+description: Production server SSH access and deploy commands for MediNexPlus
+alwaysApply: true
+---
+
+# Production server deploy
+
+When the user asks to deploy, verify, or debug on the production server, read SSH credentials from the project root `.env` file (gitignored):
+
+| Variable | Purpose |
+|----------|---------|
+| `DEPLOY_SSH_HOST` | Server IP |
+| `DEPLOY_SSH_USER` | SSH user (root) |
+| `DEPLOY_SSH_PASSWORD` | SSH password |
+| `DEPLOY_SSH_PATH` | App directory on server (`/root/MediNexPlus`) |
+
+## SSH pattern
+
+Use `sshpass` for non-interactive commands. Do **not** echo or commit passwords.
+
+```bash
+# Read vars from .env first, then:
+sshpass -p "$DEPLOY_SSH_PASSWORD" ssh -o StrictHostKeyChecking=accept-new \
+  "${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}" 'cd /root/MediNexPlus && <command>'
+```
+
+## Deploy observability stack
+
+See `OBSERVABILITY_DEPLOYMENT.md`. Typical flow:
+
+```bash
+cd "$DEPLOY_SSH_PATH"
+git pull --ff-only origin main
+OTEL_ENABLED=1 BUILDX_NO_DEFAULT_ATTESTATIONS=1 \
+  docker compose --profile observability up -d --build
+```
+
+## Safety
+
+- Never put `DEPLOY_SSH_PASSWORD` in committed files, rules, or chat logs when avoidable.
+- Grafana UI: tunnel only — `ssh -L 3001:127.0.0.1:3001 ${DEPLOY_SSH_USER}@${DEPLOY_SSH_HOST}`.
+- Before `git reset --hard` on the server, check `git stash list` for uncommitted work.

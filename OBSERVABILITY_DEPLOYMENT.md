@@ -67,6 +67,17 @@ npm run docker:prod
 
 ### On the server
 
+Credentials for agent SSH are in local `.env` (gitignored):
+
+```bash
+DEPLOY_SSH_HOST=151.243.146.218
+DEPLOY_SSH_USER=root
+DEPLOY_SSH_PASSWORD=<set in .env>
+DEPLOY_SSH_PATH=/root/MediNexPlus
+```
+
+Cursor rule: `.cursor/rules/server-deploy.mdc` tells the agent to read these vars.
+
 ```bash
 cd /root/MediNexPlus
 git pull --ff-only origin main
