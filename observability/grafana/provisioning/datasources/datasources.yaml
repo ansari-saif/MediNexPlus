@@ -10,9 +10,10 @@ datasources:
     jsonData:
       derivedFields:
         - datasourceUid: tempo
-          matcherRegex: '"trace_id":"(\w+)"'
-          name: TraceID
+          matcherRegex: '"traceId":"(\w+)"'
+          name: Trace
           url: "$${__value.raw}"
+          urlDisplayLabel: "View trace"
 
   - name: Tempo
     type: tempo
@@ -22,12 +23,32 @@ datasources:
     jsonData:
       tracesToLogsV2:
         datasourceUid: loki
-        filterByTraceID: true
+        spanStartTimeShift: "-5m"
+        spanEndTimeShift: "5m"
+        filterByTraceID: false
         filterBySpanID: false
+        customQuery: true
+        query: '{service="medinexplus-web"} | json | traceId="$${__span.traceId}"'
+      tracesToProfiles:
+        datasourceUid: pyroscope
+        profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+        tags:
+          - key: service.name
+            value: service_name
+        spanStartTimeShift: "-60s"
+        spanEndTimeShift: "60s"
+        customQuery: true
+        query: '{service_name="$${__span.tags["service.name"]}"}'
       serviceMap:
         datasourceUid: prometheus
       nodeGraph:
         enabled: true
+      search:
+        hide: false
+      traceQuery:
+        timeShiftEnabled: true
+        spanStartTimeShift: "-1h"
+        spanEndTimeShift: "1h"
 
   - name: Prometheus
     type: prometheus

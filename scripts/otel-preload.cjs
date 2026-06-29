@@ -50,6 +50,9 @@ if (pyroscopeAddress) {
     serverAddress: pyroscopeAddress,
     appName: process.env.PYROSCOPE_APPLICATION_NAME || serviceName,
     tags: { service: serviceName },
+    wall: {
+      collectCpuTime: true,
+    },
   });
   Pyroscope.start();
 }
