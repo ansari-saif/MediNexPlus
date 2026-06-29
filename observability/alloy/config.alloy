@@ -56,3 +56,30 @@ prometheus.remote_write "default" {
     url = "http://prometheus:9090/api/v1/write"
   }
 }
+
+// Ship medinexplus container stdout (pino JSON logs) to Loki
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "medinexplus_logs" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "medinexplus$"
+    action        = "keep"
+  }
+}
+
+loki.source.docker "medinexplus" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.medinexplus_logs.output
+  forward_to = [loki.write.default.receiver]
+}

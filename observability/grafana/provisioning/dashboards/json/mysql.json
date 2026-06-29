@@ -40,7 +40,7 @@
       "id": 3,
       "targets": [
         {
-          "expr": "rate(mysql_global_status_slow_queries[5m])",
+          "expr": "rate(mysql_global_status_slow_queries[$__rate_interval])",
           "legendFormat": "slow queries/s",
           "refId": "A"
         }
@@ -71,5 +71,5 @@
   "timezone": "browser",
   "title": "MySQL",
   "uid": "medinex-mysql",
-  "version": 1
+  "version": 2
 }

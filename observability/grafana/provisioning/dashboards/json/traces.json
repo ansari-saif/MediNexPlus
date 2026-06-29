@@ -8,16 +8,42 @@
   "panels": [
     {
       "datasource": { "type": "tempo", "uid": "tempo" },
-      "gridPos": { "h": 16, "w": 24, "x": 0, "y": 0 },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "targets": [
         {
+          "datasource": { "type": "tempo", "uid": "tempo" },
           "queryType": "traceqlSearch",
           "refId": "A",
-          "serviceName": "medinexplus-web"
+          "limit": 20,
+          "filters": [
+            {
+              "id": "service-name",
+              "operator": "=",
+              "scope": "resource",
+              "tag": "service.name",
+              "value": ["medinexplus-web"],
+              "valueType": "string"
+            }
+          ]
         }
       ],
-      "title": "Traces",
+      "title": "Recent Traces",
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 10 },
+      "id": 2,
+      "targets": [
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "queryType": "traceql",
+          "query": "{ resource.service.name = \"medinexplus-web\" }",
+          "refId": "A"
+        }
+      ],
+      "title": "Trace Timeline",
       "type": "traces"
     }
   ],
@@ -28,5 +54,5 @@
   "timezone": "browser",
   "title": "Traces",
   "uid": "medinex-traces",
-  "version": 1
+  "version": 2
 }

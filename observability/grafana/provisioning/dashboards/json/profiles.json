@@ -7,7 +7,7 @@
   "links": [],
   "panels": [
     {
-      "datasource": { "type": "grafana-pyroscope-datasource", "uid": "Pyroscope" },
+      "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
       "gridPos": { "h": 16, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "targets": [
@@ -28,5 +28,5 @@
   "timezone": "browser",
   "title": "Profiles",
   "uid": "medinex-profiles",
-  "version": 1
+  "version": 2
 }

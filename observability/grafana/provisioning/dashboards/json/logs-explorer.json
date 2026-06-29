@@ -7,13 +7,13 @@
   "links": [],
   "panels": [
     {
-      "datasource": { "type": "loki", "uid": "Loki" },
+      "datasource": { "type": "loki", "uid": "loki" },
       "gridPos": { "h": 16, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "options": { "showTime": true, "sortOrder": "Descending" },
       "targets": [
         {
-          "expr": "{service=\"medinexplus-web\"} | json | level=~\"info|warn|error\"",
+          "expr": "{container=\"medinexplus\"} | json | level=~\"info|warn|error\"",
           "refId": "A"
         }
       ],
@@ -29,5 +29,5 @@
   "timezone": "browser",
   "title": "Logs Explorer",
   "uid": "medinex-logs",
-  "version": 1
+  "version": 2
 }
