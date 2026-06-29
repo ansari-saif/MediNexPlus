@@ -9,6 +9,16 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
     instrumentationHook: true,
+    serverComponentsExternalPackages: [
+      "@opentelemetry/sdk-node",
+      "@opentelemetry/auto-instrumentations-node",
+      "@opentelemetry/instrumentation",
+      "@pyroscope/nodejs",
+      "@datadog/pprof",
+      "require-in-the-middle",
+      "import-in-the-middle",
+      "pino",
+    ],
     outputFileTracingIncludes: {
       "/**": [
         "./node_modules/sharp/**/*",
