@@ -8,8 +8,9 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-medinexplus}
       MYSQL_USER: ${MYSQL_USER:-medinex}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-medinexpassword}
-    ports:
-      - "${MYSQL_PORT:-3306}:3306"
+    # Do not expose MySQL to the public internet in production.
+    # Web/db-init reach mysql via the Docker network (hostname: mysql).
+    # For local admin: docker compose exec mysql mariadb -u medinex -p ...
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
