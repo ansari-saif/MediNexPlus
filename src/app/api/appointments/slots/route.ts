@@ -2,13 +2,14 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getAvailableSlots, AppointmentServiceError } from "../../../../../backend/services/appointment.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD"];
 
 export const dynamic = "force-dynamic";
 
 // GET /api/appointments/slots?doctorId=...&date=YYYY-MM-DD
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("appointments.slots.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -27,4 +28,4 @@ export async function GET(req: NextRequest) {
     if (e instanceof AppointmentServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

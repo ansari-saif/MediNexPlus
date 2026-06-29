@@ -3,6 +3,7 @@ import { requireHospitalAdmin, requireRole } from "../../../../../backend/middle
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import * as service from "../../../../../backend/services/inventory.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const supplierSchema = z.object({
   name: z.string().min(2),
@@ -39,7 +40,7 @@ const supplierSchema = z.object({
 
 const INV_READ_ROLES = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "SUB_DEPT_HEAD"];
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("inventory.supplier.get", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -56,9 +57,9 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("inventory.supplier.post", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -72,9 +73,9 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("inventory.supplier.put", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -91,9 +92,9 @@ export async function PUT(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("inventory.supplier.delete", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -106,4 +107,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

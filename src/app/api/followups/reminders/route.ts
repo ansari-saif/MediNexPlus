@@ -4,9 +4,10 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
 import { notify } from "../../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 // GET /api/followups/reminders — fetch overdue + today's PENDING follow-ups
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("followups.reminders.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -35,11 +36,11 @@ export async function GET(req: NextRequest) {
     { overdue, dueToday, counts: { overdue: overdue.length, dueToday: dueToday.length } },
     "Reminders fetched"
   );
-}
+});
 
 // POST /api/followups/reminders — fire notifications for overdue/today follow-ups
 // Body: { type?: "overdue"|"today"|"both", followUpId?: string } — followUpId for individual send
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("followups.reminders.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   const allowed = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF"];
@@ -109,4 +110,4 @@ export async function POST(req: NextRequest) {
   }
 
   return successResponse({ fired, total: followUps.length }, `Sent ${fired} reminder notification(s)`);
-}
+});

@@ -4,6 +4,7 @@ import { updateUser } from "../../../../../backend/repositories/user.repo";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const updateProfileSchema = z.object({
   name: z.string().min(2).optional(),
@@ -11,7 +12,7 @@ const updateProfileSchema = z.object({
   profilePhoto: z.string().nullish(),
 });
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("auth.profile.put", async (req: NextRequest) => {
   try {
     const { user, error: authError } = await authMiddleware(req);
     if (authError) return authError;
@@ -49,4 +50,4 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 500);
   }
-}
+});

@@ -5,6 +5,7 @@ import {
   getAllBeds, createBedService, bulkCreateBeds, getBedStatsService, BedServiceError,
 } from "../../../../../backend/services/bed.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const createSchema = z.object({
   wardId: z.string().min(1),
@@ -24,7 +25,7 @@ const bulkSchema = z.object({
   pricePerDay: z.number().min(0).optional(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.beds.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -43,9 +44,9 @@ export async function GET(req: NextRequest) {
     const data = await getAllBeds(auth.hospitalId, filters);
     return successResponse(data, "Beds fetched");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.beds.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -64,4 +65,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof BedServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

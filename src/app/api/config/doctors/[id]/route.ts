@@ -8,6 +8,7 @@ import {
   toggleStatus,
   DoctorServiceError,
 } from "../../../../../../backend/services/doctor.service";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 import {
   updateDoctorSchema,
   toggleDoctorStatusSchema,
@@ -20,7 +21,7 @@ type Params = { params: Promise<{ id: string }> };
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/config/doctors/[id] - Get single doctor with full details
 // ─────────────────────────────────────────────────────────────────────────────
-export async function GET(req: NextRequest, { params }: Params) {
+export const GET = withApiRoute("config.doctors.id.get", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -34,12 +35,12 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PUT /api/config/doctors/[id] - Update doctor
 // ─────────────────────────────────────────────────────────────────────────────
-export async function PUT(req: NextRequest, { params }: Params) {
+export const PUT = withApiRoute("config.doctors.id.put", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -63,12 +64,12 @@ export async function PUT(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PATCH /api/config/doctors/[id] - Toggle status (isActive/isAvailable)
 // ─────────────────────────────────────────────────────────────────────────────
-export async function PATCH(req: NextRequest, { params }: Params) {
+export const PATCH = withApiRoute("config.doctors.id.patch", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -93,12 +94,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/config/doctors/[id] - Delete doctor
 // ─────────────────────────────────────────────────────────────────────────────
-export async function DELETE(req: NextRequest, { params }: Params) {
+export const DELETE = withApiRoute("config.doctors.id.delete", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -112,4 +113,4 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

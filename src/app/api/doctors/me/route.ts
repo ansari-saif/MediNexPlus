@@ -3,6 +3,7 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const updateDoctorSelfSchema = z.object({
   name: z.string().min(2).optional(),
@@ -26,7 +27,7 @@ const updateDoctorSelfSchema = z.object({
   isAvailable: z.boolean().optional(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("doctors.me.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -93,9 +94,9 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch doctor profile", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("doctors.me.put", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -152,4 +153,4 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to update doctor profile", 500);
   }
-}
+});

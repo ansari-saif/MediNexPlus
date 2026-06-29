@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_appointments_stream_route = logger.child("src/app/api/appointments/stream/route");
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -10,7 +13,7 @@ export const runtime = "nodejs";
  * SSE stream for real-time new appointment alerts (admin & reception dashboards)
  * Polls for appointments created since last check and pushes them as events
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("appointments.stream.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -114,7 +117,7 @@ export async function GET(req: NextRequest) {
 
           lastCheckTime = new Date();
         } catch (err) {
-          console.error("Appointment stream error:", err);
+          log_src_app_api_appointments_stream_route.error("Appointment stream error:", err);
         }
       }, 3000);
 
@@ -147,4 +150,4 @@ export async function GET(req: NextRequest) {
       "X-Accel-Buffering": "no",
     },
   });
-}
+});

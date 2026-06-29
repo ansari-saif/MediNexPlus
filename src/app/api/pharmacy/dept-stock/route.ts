@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from "../../../../../backend/utils/res
 import { Role } from "@prisma/client";
 import { getLocationStockForDept } from "../../../../../backend/repositories/central-inventory.repo";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -16,7 +17,7 @@ const px = prisma as any;
  * SUB_DEPT_HEAD  — auto-resolves their own subDepartmentId
  * HOSPITAL_ADMIN — requires ?subDepartmentId= query param
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.dept-stock.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -150,4 +151,4 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch dept stock", 500);
   }
-}
+});

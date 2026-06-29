@@ -2,10 +2,11 @@ import { NextRequest } from "next/server";
 import { requireHospitalAdmin, requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import * as service from "../../../../../backend/services/central-inventory.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const INV_READ_ROLES = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "SUB_DEPT_HEAD"];
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("inventory.transfers.get", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -30,9 +31,9 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("inventory.transfers.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -49,9 +50,9 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("inventory.transfers.patch", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -84,4 +85,4 @@ export async function PATCH(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

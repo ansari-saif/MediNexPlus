@@ -1,13 +1,14 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/config/doctors/[id]/schedule-overrides?month=2026-01
-export async function GET(req: NextRequest, { params }: Params) {
+export const GET = withApiRoute("config.doctors.id.schedule-overrides.get", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -46,10 +47,10 @@ export async function GET(req: NextRequest, { params }: Params) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch overrides", 500);
   }
-}
+});
 
 // POST /api/config/doctors/[id]/schedule-overrides
-export async function POST(req: NextRequest, { params }: Params) {
+export const POST = withApiRoute("config.doctors.id.schedule-overrides.post", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -125,10 +126,10 @@ export async function POST(req: NextRequest, { params }: Params) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to save override", 500);
   }
-}
+});
 
 // DELETE /api/config/doctors/[id]/schedule-overrides?date=2026-01-15 or ?month=2026-01
-export async function DELETE(req: NextRequest, { params }: Params) {
+export const DELETE = withApiRoute("config.doctors.id.schedule-overrides.delete", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -167,4 +168,4 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to delete override", 500);
   }
-}
+});

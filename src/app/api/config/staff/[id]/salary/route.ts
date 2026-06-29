@@ -4,8 +4,9 @@ import { requireRole } from "../../../../../../../backend/middlewares/role.middl
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.staff.id.salary.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -16,9 +17,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch salary structure", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("config.staff.id.salary.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -49,4 +50,4 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   } catch (e: any) {
     return errorResponse(e.message || "Failed to save salary structure", 500);
   }
-}
+});

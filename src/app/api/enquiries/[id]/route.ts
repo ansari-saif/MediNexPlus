@@ -2,13 +2,14 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF"];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/enquiries/[id] — Get single enquiry
 // ─────────────────────────────────────────────────────────────────────────────
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const GET = withApiRoute("enquiries.id.get", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -23,12 +24,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch enquiry", 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PATCH /api/enquiries/[id] — Update status, notes, assignedTo
 // ─────────────────────────────────────────────────────────────────────────────
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const PATCH = withApiRoute("enquiries.id.patch", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -62,12 +63,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   } catch (e: any) {
     return errorResponse(e.message || "Failed to update enquiry", 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/enquiries/[id] — Delete enquiry
 // ─────────────────────────────────────────────────────────────────────────────
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const DELETE = withApiRoute("enquiries.id.delete", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -84,4 +85,4 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   } catch (e: any) {
     return errorResponse(e.message || "Failed to delete enquiry", 500);
   }
-}
+});

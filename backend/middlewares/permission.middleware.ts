@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "../utils/jwt";
+import { getSessionToken } from "../utils/session-cookie";
 
 export interface AuthUser {
   id: string;
@@ -17,13 +18,25 @@ export interface AuthenticatedRequest extends NextRequest {
 export function getUserFromRequest(req: NextRequest): AuthUser | undefined {
   try {
     const token =
-      req.cookies.get("hms_session")?.value ||
+      getSessionToken(req, "default") ||
+      getSessionToken(req, "superadmin") ||
       req.headers.get("authorization")?.replace("Bearer ", "");
 
     if (!token) return undefined;
 
     const payload = verifyToken(token);
-    if (!payload || !payload.hospitalId) return undefined;
+    if (!payload) return undefined;
+
+    // Superadmin has no hospitalId — only used on routes that allow SUPER_ADMIN
+    if (payload.role === "SUPER_ADMIN") {
+      return {
+        id: payload.userId,
+        role: payload.role,
+        hospitalId: payload.hospitalId || "",
+      };
+    }
+
+    if (!payload.hospitalId) return undefined;
 
     return {
       id: payload.userId,

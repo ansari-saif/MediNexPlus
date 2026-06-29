@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireHospitalAdmin } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_inventory_import_route = logger.child("src/app/api/inventory/import/route");
 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -148,7 +151,7 @@ async function callOpenRouterText(textContent: string, prompt: string = EXTRACT_
         }),
       });
 
-      if (!res.ok) { console.error(`OpenRouter ${model} status ${res.status}`); continue; }
+      if (!res.ok) { log_src_app_api_inventory_import_route.error({}, "OpenRouter ${model} status ${res.status}"); continue; }
 
       const data = await res.json();
       const text = data?.choices?.[0]?.message?.content || "";
@@ -158,7 +161,7 @@ async function callOpenRouterText(textContent: string, prompt: string = EXTRACT_
       const match = cleaned.match(/\[[\s\S]*\]/);
       if (match) return JSON.parse(match[0]);
     } catch (err: any) {
-      console.error(`OpenRouter ${model} error:`, err.message);
+      log_src_app_api_inventory_import_route.error(`OpenRouter ${model} error:`, err.message);
     }
   }
   throw new Error("All OpenRouter models failed");
@@ -262,7 +265,7 @@ function inferUnit(name: string, rawUnit?: string): string {
   return "pcs";
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("inventory.import.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -282,7 +285,7 @@ export async function POST(req: NextRequest) {
         try {
           rawItems = await callOpenRouterText(dataStr, prompt);
         } catch (e1: any) {
-          console.warn("OpenRouter failed, trying Gemini fallback:", e1.message);
+          log_src_app_api_inventory_import_route.warn("OpenRouter failed, trying Gemini fallback:", e1.message);
           rawItems = await callGeminiText(dataStr, prompt);
         }
       } else {
@@ -293,7 +296,7 @@ export async function POST(req: NextRequest) {
       try {
         rawItems = await callGeminiDocument(base64, mimeType, prompt);
       } catch (e1: any) {
-        console.warn("Gemini document failed:", e1.message);
+        log_src_app_api_inventory_import_route.warn("Gemini document failed:", e1.message);
         if (rawText) {
           const orKey = process.env.OPENROUTER_API_KEY;
           if (orKey) {
@@ -317,7 +320,7 @@ export async function POST(req: NextRequest) {
         try {
           rawItems = await callOpenRouterText(rawText.slice(0, 10000), prompt);
         } catch (e1: any) {
-          console.warn("OpenRouter failed, trying Gemini fallback:", e1.message);
+          log_src_app_api_inventory_import_route.warn("OpenRouter failed, trying Gemini fallback:", e1.message);
           rawItems = await callGeminiText(rawText.slice(0, 10000), prompt);
         }
       } else {
@@ -330,7 +333,7 @@ export async function POST(req: NextRequest) {
     const items = isRestock ? normalizeRestockEntries(rawItems) : normalizeItems(rawItems);
     return successResponse({ items, total: items.length }, `Extracted ${items.length} ${isRestock ? "restock entries" : "items"}`);
   } catch (e: any) {
-    console.error("Inventory import error:", e);
+    log_src_app_api_inventory_import_route.error("Inventory import error:", e);
     return errorResponse(e.message || "AI extraction failed", 500);
   }
-}
+});

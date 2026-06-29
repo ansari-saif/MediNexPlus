@@ -6,12 +6,13 @@ import { successResponse, errorResponse } from "../../../../../../backend/utils/
 import { createStaffCredentials } from "../../../../../../backend/services/staff.service";
 import { sendStaffCredentials } from "../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // POST /api/config/staff/send-credentials-bulk
 // Sends credentials to all staff where credentialsSent=false
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.staff.send-credentials-bulk.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -67,4 +68,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getRevenueStats } from "../../../../../backend/services/finance.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED = ["HOSPITAL_ADMIN", "FINANCE_HEAD"];
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("finance.revenue.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   
@@ -21,4 +22,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

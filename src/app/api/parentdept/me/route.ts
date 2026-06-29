@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getDeptProfile, DepartmentServiceError } from "../../../../../backend/services/department.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("parentdept.me.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -14,4 +15,4 @@ export async function GET(req: NextRequest) {
     if (error instanceof DepartmentServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to fetch profile", 500);
   }
-}
+});

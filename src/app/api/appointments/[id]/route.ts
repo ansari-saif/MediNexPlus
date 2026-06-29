@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import {
@@ -9,6 +10,8 @@ import {
 import { updateAppointmentSchema } from "../../../../../backend/validations/appointment.validation";
 import { notifyAppointmentStatusChanged } from "../../../../../backend/services/notification.service";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_appointments__id__route = logger.child("src/app/api/appointments/[id]/route");
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD", "DEPT_HEAD"];
 
@@ -19,7 +22,7 @@ type Params = { params: Promise<{ id: string }> };
 const px = prisma as any;
 
 // GET /api/appointments/[id]
-export async function GET(req: NextRequest, { params }: Params) {
+export const GET = withApiRoute("appointments.id.get", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -30,10 +33,10 @@ export async function GET(req: NextRequest, { params }: Params) {
     if (e instanceof AppointmentServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/appointments/[id]
-export async function PUT(req: NextRequest, { params }: Params) {
+export const PUT = withApiRoute("appointments.id.put", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -55,10 +58,10 @@ export async function PUT(req: NextRequest, { params }: Params) {
     if (e instanceof AppointmentServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/appointments/[id] — cancel appointment (sets status to CANCELLED, frees the slot)
-export async function DELETE(req: NextRequest, { params }: Params) {
+export const DELETE = withApiRoute("appointments.id.delete", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -79,7 +82,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       "Appointment cancelled and slot freed successfully"
     );
   } catch (e: any) {
-    console.error("Cancel appointment error:", e);
+    log_src_app_api_appointments__id__route.error("Cancel appointment error:", e);
     return errorResponse(e.message || "Failed to cancel appointment", 500);
   }
-}
+});

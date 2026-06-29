@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const SESSION_COOKIE = "hms_session";
+export const SUPERADMIN_SESSION_COOKIE = "hms_superadmin_session";
+
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60;
 
 function cookieSecureOverride(): boolean | undefined {
@@ -34,19 +37,39 @@ export function buildSessionCookieOptions(req: NextRequest, sameSite: SessionSam
   };
 }
 
+export type SessionPortal = "default" | "superadmin";
+
+export function getSessionCookieName(portal: SessionPortal = "default"): string {
+  return portal === "superadmin" ? SUPERADMIN_SESSION_COOKIE : SESSION_COOKIE;
+}
+
+export function getSessionToken(req: NextRequest, portal: SessionPortal = "default"): string {
+  return req.cookies.get(getSessionCookieName(portal))?.value || "";
+}
+
 export function setSessionCookie(
   response: NextResponse,
   req: NextRequest,
   token: string,
   sameSite: SessionSameSite = "lax"
 ) {
-  response.cookies.set("hms_session", token, buildSessionCookieOptions(req, sameSite));
+  response.cookies.set(SESSION_COOKIE, token, buildSessionCookieOptions(req, sameSite));
 }
 
-export function clearSessionCookie(response: NextResponse, req: NextRequest) {
+/** Superadmin uses a separate cookie so hospital/staff login cannot overwrite it. */
+export function setSuperAdminSessionCookie(
+  response: NextResponse,
+  req: NextRequest,
+  token: string,
+  sameSite: SessionSameSite = "lax"
+) {
+  response.cookies.set(SUPERADMIN_SESSION_COOKIE, token, buildSessionCookieOptions(req, sameSite));
+}
+
+function clearNamedSessionCookie(response: NextResponse, req: NextRequest, name: string) {
   const opts = buildSessionCookieOptions(req);
   response.cookies.set({
-    name: "hms_session",
+    name,
     value: "",
     httpOnly: true,
     secure: opts.secure,
@@ -54,4 +77,17 @@ export function clearSessionCookie(response: NextResponse, req: NextRequest) {
     path: "/",
     expires: new Date(0),
   });
+}
+
+export function clearSessionCookie(response: NextResponse, req: NextRequest) {
+  clearNamedSessionCookie(response, req, SESSION_COOKIE);
+}
+
+export function clearSuperAdminSessionCookie(response: NextResponse, req: NextRequest) {
+  clearNamedSessionCookie(response, req, SUPERADMIN_SESSION_COOKIE);
+}
+
+export function clearAllSessionCookies(response: NextResponse, req: NextRequest) {
+  clearSessionCookie(response, req);
+  clearSuperAdminSessionCookie(response, req);
 }

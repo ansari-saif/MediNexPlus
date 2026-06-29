@@ -4,6 +4,7 @@ import { requireRole } from "../../../../../../../backend/middlewares/role.middl
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 function numberToWords(num: number): string {
   if (num === 0) return "Zero";
@@ -33,7 +34,7 @@ function numberToWords(num: number): string {
 }
 
 // GET: list payslips for a staff member
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.staff.id.payslip.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -53,10 +54,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   } catch (e: any) {
     return errorResponse(e.message || "Failed", 500);
   }
-}
+});
 
 // POST: generate payslip for a month/year
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("config.staff.id.payslip.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -177,4 +178,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   } catch (e: any) {
     return errorResponse(e.message || "Failed to generate payslip", 500);
   }
-}
+});

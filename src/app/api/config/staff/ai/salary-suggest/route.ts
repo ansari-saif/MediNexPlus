@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../../backend/middlewares/role.middleware";
+const log_src_app_api_config_staff_ai_salary_suggest_route = logger.child("src/app/api/config/staff/ai/salary-suggest/route");
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 const getGeminiKey = () => process.env.GEMINI_API_KEY || "";
 
@@ -41,7 +44,7 @@ function calculateSalaryFallback(totalCTC: number) {
   };
 }
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.staff.ai.salary-suggest.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -104,7 +107,7 @@ All values should be monthly amounts rounded to nearest integer. Ensure: basic +
 
     if (!res.ok) {
       const err = await res.text();
-      console.error("Gemini salary suggest error:", err);
+      log_src_app_api_config_staff_ai_salary_suggest_route.error("Gemini salary suggest error:", err);
       
       // Fallback to rule-based calculation if Gemini quota exceeded
       const fallback = calculateSalaryFallback(totalCTC);
@@ -118,7 +121,7 @@ All values should be monthly amounts rounded to nearest integer. Ensure: basic +
 
     return successResponse(suggestion, "AI salary suggestion generated");
   } catch (e: any) {
-    console.error("AI salary suggest error:", e);
+    log_src_app_api_config_staff_ai_salary_suggest_route.error("AI salary suggest error:", e);
     return errorResponse(e.message || "AI suggestion failed", 500);
   }
-}
+});

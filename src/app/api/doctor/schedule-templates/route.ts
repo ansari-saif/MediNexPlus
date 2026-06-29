@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 async function getDoctor(userId: string) {
   const prisma = (await import("../../../../../backend/config/db")).default;
@@ -8,7 +9,7 @@ async function getDoctor(userId: string) {
 }
 
 // GET /api/doctor/schedule-templates
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("doctor.schedule-templates.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -33,10 +34,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch templates", 500);
   }
-}
+});
 
 // POST /api/doctor/schedule-templates
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("doctor.schedule-templates.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -66,4 +67,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to create template", 500);
   }
-}
+});

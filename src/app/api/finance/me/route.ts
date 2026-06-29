@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/finance/me — profile for FINANCE_HEAD
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("finance.me.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   const role = (user as any)?.role;
@@ -22,4 +23,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

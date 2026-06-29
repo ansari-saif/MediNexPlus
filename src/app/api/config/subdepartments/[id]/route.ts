@@ -9,8 +9,9 @@ import {
   SubDeptServiceError,
 } from "../../../../../../backend/services/subdepartment.service";
 import { updateSubDepartmentSchema } from "../../../../../../backend/validations/subdepartment.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.subdepartments.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -20,9 +21,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to fetch sub-department", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("config.subdepartments.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -35,9 +36,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to update sub-department", 500);
   }
-}
+});
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withApiRoute("config.subdepartments.id.patch", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -51,9 +52,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to update", 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("config.subdepartments.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -63,4 +64,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to delete sub-department", 500);
   }
-}
+});

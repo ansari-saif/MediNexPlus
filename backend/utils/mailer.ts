@@ -1,4 +1,7 @@
 import nodemailer from "nodemailer";
+import { logger } from "./logger";
+import { recordExternalCall } from "../../src/lib/observability/metrics";
+const log_backend_utils_mailer = logger.child("backend/utils/mailer");
 
 export const sendLabReport = async (opts: {
   to: string;
@@ -49,7 +52,7 @@ export const sendLabReport = async (opts: {
 const smtpUser = (process.env.EMAIL_USERNAME || process.env.SMTP_USER || "").trim();
 const smtpPass = (process.env.EMAIL_PASSWORD || process.env.SMTP_PASS || "").replace(/\s/g, "");
 
-console.log("[Mailer] Config:", {
+log_backend_utils_mailer.info("[Mailer] Config:", {
   user: smtpUser ? `${smtpUser.slice(0, 4)}***${smtpUser.slice(-10)}` : "NOT SET",
   passLength: smtpPass.length,
 });
@@ -59,7 +62,17 @@ const transporter = nodemailer.createTransport({
   auth: { user: smtpUser, pass: smtpPass },
 } as any);
 
-transporter.verify().then(() => console.log("[Mailer] Gmail connected ✓")).catch((err) => console.error("[Mailer] Gmail FAILED:", err.message));
+const baseSendMail = transporter.sendMail.bind(transporter);
+transporter.sendMail = async (...args: Parameters<typeof baseSendMail>) => {
+  const start = Date.now();
+  try {
+    return await baseSendMail(...args);
+  } finally {
+    recordExternalCall("nodemailer", Date.now() - start);
+  }
+};
+
+transporter.verify().then(() => log_backend_utils_mailer.info({}, "[Mailer] Gmail connected ✓")).catch((err) => log_backend_utils_mailer.error("[Mailer] Gmail FAILED:", err.message));
 
 export const sendDoctorCredentials = async (opts: {
   to: string;
@@ -528,7 +541,7 @@ export const sendEnquiryConfirmation = async (opts: {
     ? `<img src="${opts.hospitalLogo}" alt="${opts.hospitalName}" style="max-height:60px;max-width:200px;object-fit:contain;margin-bottom:12px;" />`
     : `<div style="font-size:18px;font-weight:700;color:#334155;margin-bottom:12px;">${opts.hospitalName}</div>`;
 
-  console.log("[Mailer] sendEnquiryConfirmation - Sending to:", opts.to);
+  log_backend_utils_mailer.info("[Mailer] sendEnquiryConfirmation - Sending to:", opts.to);
   
   await transporter.sendMail({
     from: `"${opts.hospitalName}" <${smtpUser}>`,
@@ -597,7 +610,7 @@ export const sendEnquiryNotificationToHospital = async (opts: {
     ? `<img src="${opts.hospitalLogo}" alt="${opts.hospitalName}" style="max-height:50px;max-width:180px;object-fit:contain;margin-bottom:10px;" />`
     : `<div style="font-size:16px;font-weight:700;color:#334155;margin-bottom:10px;">${opts.hospitalName}</div>`;
 
-  console.log("[Mailer] sendEnquiryNotificationToHospital - Sending to:", opts.to);
+  log_backend_utils_mailer.info("[Mailer] sendEnquiryNotificationToHospital - Sending to:", opts.to);
   
   await transporter.sendMail({
     from: `"${opts.hospitalName}" <${smtpUser}>`,

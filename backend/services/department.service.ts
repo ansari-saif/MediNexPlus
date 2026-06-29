@@ -1,4 +1,5 @@
 import prisma from "../config/db";
+import { logger } from "../utils/logger";
 import { hashPassword } from "../utils/hash";
 import {
   createDepartment as createDepartmentRepo,
@@ -22,6 +23,8 @@ import {
   generateCodeFromName,
   DEFAULT_DEPARTMENTS,
 } from "../validations/department.validation";
+
+const log_backend_services_department_service = logger.child("backend/services/department.service");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DEPARTMENT SERVICE - Business logic layer
@@ -327,7 +330,7 @@ export const handleDeptCredentialsOnSave = async (
       data: { password: hashed, role: "DEPT_HEAD" as any, name: deptName },
     });
     userId = existingByEmail.id;
-    console.log(`[DeptCredentials] Updated existing User: email=${loginEmail}, id=${userId}`);
+    log_backend_services_department_service.info({}, "[DeptCredentials] Updated existing User: email=${loginEmail}, id=${userId}");
   } else {
     // Create a fresh User
     const newUser = await prisma.user.create({
@@ -340,13 +343,13 @@ export const handleDeptCredentialsOnSave = async (
       },
     });
     userId = newUser.id;
-    console.log(`[DeptCredentials] Created new User: email=${loginEmail}, id=${userId}`);
+    log_backend_services_department_service.info({}, "[DeptCredentials] Created new User: email=${loginEmail}, id=${userId}");
   }
 
   // Link user to department + save loginEmail
   await setDepartmentCredentials(deptId, userId, true);
   await (prisma as any).department.update({ where: { id: deptId }, data: { loginEmail } });
-  console.log(`[DeptCredentials] Linked userId=${userId} to deptId=${deptId}`);
+  log_backend_services_department_service.info({}, "[DeptCredentials] Linked userId=${userId} to deptId=${deptId}");
 
   return { email: loginEmail, password: loginPassword };
 };

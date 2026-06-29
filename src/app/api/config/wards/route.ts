@@ -5,6 +5,7 @@ import {
   getAllWards, createWardService, updateWardService, deleteWardService, WardServiceError,
 } from "../../../../../backend/services/ward.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const createSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -15,16 +16,16 @@ const createSchema = z.object({
 
 const updateSchema = createSchema.partial().extend({ isActive: z.boolean().optional() });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.wards.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
     const data = await getAllWards(auth.hospitalId);
     return successResponse(data, "Wards fetched");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.wards.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -37,4 +38,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof WardServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

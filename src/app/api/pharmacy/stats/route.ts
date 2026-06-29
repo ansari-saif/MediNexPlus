@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_pharmacy_stats_route = logger.child("src/app/api/pharmacy/stats/route");
 
 const px = prisma as any;
 
@@ -10,7 +13,7 @@ const px = prisma as any;
  * GET /api/pharmacy/stats
  * Dashboard stats for pharmacy: today's dispensing, inventory alerts, revenue
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.stats.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -221,7 +224,7 @@ export async function GET(req: NextRequest) {
       topMedicines,
     }, "Pharmacy stats fetched");
   } catch (error: any) {
-    console.error("[pharmacy/stats] Error:", error);
+    log_src_app_api_pharmacy_stats_route.error("[pharmacy/stats] Error:", error);
     return errorResponse(error.message || "Failed to fetch pharmacy stats", 500);
   }
-}
+});

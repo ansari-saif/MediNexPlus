@@ -29,6 +29,16 @@ RUN --mount=type=cache,target=/app/.next/cache \
     --mount=type=cache,target=/app/node_modules/.cache \
     npx next build
 
+# Generate Prisma Client on Debian (same libc/OpenSSL as the runtime container).
+FROM node:20-bookworm-slim AS prisma-runner
+WORKDIR /app
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
+RUN npm ci --ignore-scripts && npx prisma generate
+
 FROM node:20-bookworm-slim AS runner
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -45,9 +55,9 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=prisma-runner --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=prisma-runner --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=prisma-runner --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 

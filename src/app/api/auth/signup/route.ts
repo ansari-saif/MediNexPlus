@@ -2,13 +2,14 @@ import { NextRequest } from "next/server";
 import { requestOTP } from "../../../../../backend/services/otp.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const requestOTPSchema = z.object({
   email: z.string().email("Invalid email format"),
   mobile: z.string().optional(),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.signup.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const result = requestOTPSchema.safeParse(body);
@@ -22,4 +23,4 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 500);
   }
-}
+});

@@ -1,3 +1,7 @@
+import { logger } from "../utils/logger";
+import { aiRequestsTotal, recordExternalCall } from "../../src/lib/observability/metrics";
+const log_backend_services_ai_service = logger.child("backend/services/ai.service");
+
 // Read at runtime (not module level) to always pick up .env values
 const getGeminiKey = () => process.env.GEMINI_API_KEY || "";
 const getOpenRouterKey = () => process.env.OPENROUTER_API_KEY || "";
@@ -37,30 +41,41 @@ export async function getAiPrescriptionSuggestions(input: AiPrescriptionInput): 
 
   const geminiKey = getGeminiKey();
   const openRouterKey = getOpenRouterKey();
-  console.log("AI keys present — Gemini:", !!geminiKey, "OpenRouter:", !!openRouterKey);
+  log_backend_services_ai_service.info("AI keys present — Gemini:", !!geminiKey, "OpenRouter:", !!openRouterKey);
 
-  // Try Gemini first — primary provider (stable model names)
-  if (geminiKey) {
-    try {
-      const result = await callGemini(prompt, geminiKey);
-      if (result) return result;
-    } catch (err: any) {
-      console.error("Gemini failed, trying OpenRouter fallback:", err.message);
+  try {
+    // Try Gemini first — primary provider (stable model names)
+    if (geminiKey) {
+      try {
+        const result = await callGemini(prompt, geminiKey);
+        if (result) {
+          aiRequestsTotal.inc({ feature: "prescription_assist", result: "success" });
+          return result;
+        }
+      } catch (err: any) {
+        log_backend_services_ai_service.error("Gemini failed, trying OpenRouter fallback:", err.message);
+      }
     }
-  }
 
-  // Fallback to OpenRouter
-  if (openRouterKey) {
-    try {
-      const result = await callOpenRouter(prompt, openRouterKey);
-      if (result) return result;
-    } catch (err: any) {
-      console.error("OpenRouter fallback also failed:", err.message);
+    // Fallback to OpenRouter
+    if (openRouterKey) {
+      try {
+        const result = await callOpenRouter(prompt, openRouterKey);
+        if (result) {
+          aiRequestsTotal.inc({ feature: "prescription_assist", result: "success" });
+          return result;
+        }
+      } catch (err: any) {
+        log_backend_services_ai_service.error("OpenRouter fallback also failed:", err.message);
+      }
     }
-  }
 
-  // All providers failed — throw so the API route returns a 500 error instead of silent empty result
-  throw new Error("AI service unavailable. Please ensure OPENROUTER_API_KEY or GEMINI_API_KEY is set in environment variables.");
+    aiRequestsTotal.inc({ feature: "prescription_assist", result: "error" });
+    throw new Error("AI service unavailable. Please ensure OPENROUTER_API_KEY or GEMINI_API_KEY is set in environment variables.");
+  } catch (err) {
+    aiRequestsTotal.inc({ feature: "prescription_assist", result: "error" });
+    throw err;
+  }
 }
 
 async function callGemini(prompt: string, apiKey: string): Promise<AiSuggestion | null> {
@@ -69,6 +84,7 @@ async function callGemini(prompt: string, apiKey: string): Promise<AiSuggestion 
   for (const gModel of GEMINI_MODELS) {
     try {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${gModel}:generateContent?key=${apiKey}`;
+      const start = Date.now();
       const res = await fetch(geminiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -81,9 +97,10 @@ async function callGemini(prompt: string, apiKey: string): Promise<AiSuggestion 
           },
         }),
       });
+      recordExternalCall("gemini", Date.now() - start);
       if (!res.ok) {
         const errText = await res.text();
-        console.error(`[AI] Gemini ${gModel} HTTP ${res.status}:`, errText.slice(0, 200));
+        log_backend_services_ai_service.error(`[AI] Gemini ${gModel} HTTP ${res.status}:`, errText.slice(0, 200));
         errors.push(`${gModel} HTTP ${res.status}`);
         continue; // skip to next model — no retries for quota/access errors
       }
@@ -91,7 +108,7 @@ async function callGemini(prompt: string, apiKey: string): Promise<AiSuggestion 
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
       const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       const parsed = JSON.parse(cleaned);
-      console.log(`[AI] Success with Gemini ${gModel}`);
+      log_backend_services_ai_service.info({}, "[AI] Success with Gemini ${gModel}");
       return parseAiResponse(parsed);
     } catch (err: any) {
       errors.push(`${gModel}: ${err.message?.slice(0, 60)}`);
@@ -106,8 +123,9 @@ async function callOpenRouter(prompt: string, apiKey: string): Promise<AiSuggest
   // Try each free model sequentially with retry on 429
   for (const model of OPENROUTER_MODELS) {
     for (let attempt = 0; attempt < 2; attempt++) {
-      console.log(`Trying OpenRouter model: ${model}${attempt > 0 ? ` (retry ${attempt})` : ""}`);
+      log_backend_services_ai_service.info(`Trying OpenRouter model: ${model}${attempt > 0 ? ` (retry ${attempt})` : ""}`);
       try {
+        const start = Date.now();
         const res = await fetch(OPENROUTER_URL, {
           method: "POST",
           headers: {
@@ -128,19 +146,20 @@ async function callOpenRouter(prompt: string, apiKey: string): Promise<AiSuggest
             max_tokens: 2048,
           }),
         });
+        recordExternalCall("openrouter", Date.now() - start);
 
         if (res.status === 429 && attempt === 0) {
-          console.log(`[AI] ${model} rate-limited, retrying in 3s...`);
+          log_backend_services_ai_service.info({}, "[AI] ${model} rate-limited, retrying in 3s...");
           await sleep(3000);
           continue;
         }
         if (res.status === 404) {
-          console.error(`[AI] ${model} not found (404), skipping`);
+          log_backend_services_ai_service.error({}, "[AI] ${model} not found (404), skipping");
           break;
         }
         if (!res.ok) {
           const errText = await res.text();
-          console.error(`OpenRouter ${model} error (${res.status}):`, errText.slice(0, 200));
+          log_backend_services_ai_service.error(`OpenRouter ${model} error (${res.status}):`, errText.slice(0, 200));
           break;
         }
 
@@ -148,22 +167,22 @@ async function callOpenRouter(prompt: string, apiKey: string): Promise<AiSuggest
         const text = data?.choices?.[0]?.message?.content || "";
 
         if (!text) {
-          console.error(`OpenRouter ${model} returned empty content`);
+          log_backend_services_ai_service.error({}, "OpenRouter ${model} returned empty content");
           break;
         }
 
         const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
         const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-          console.error(`No JSON found in ${model} response:`, cleaned.slice(0, 200));
+          log_backend_services_ai_service.error(`No JSON found in ${model} response:`, cleaned.slice(0, 200));
           break;
         }
 
         const parsed = JSON.parse(jsonMatch[0]);
-        console.log(`Successfully got response from OpenRouter model: ${model}`);
+        log_backend_services_ai_service.info({}, "Successfully got response from OpenRouter model: ${model}");
         return parseAiResponse(parsed);
       } catch (err: any) {
-        console.error(`OpenRouter ${model} threw:`, err.message);
+        log_backend_services_ai_service.error(`OpenRouter ${model} threw:`, err.message);
         break;
       }
     }

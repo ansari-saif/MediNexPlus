@@ -14,8 +14,11 @@ import {
   getPatientPrescriptionHistory,
 } from "../repositories/prescription.repo";
 import { CreatePrescriptionInput, UpdatePrescriptionInput } from "../validations/prescription.validation";
+import { logger } from "../utils/logger";
 import prisma from "../config/db";
 import { generateBillFromAppointment, addWorkflowChargesToBill, recalculateBill } from "./billing.service";
+import { prescriptionsCreatedTotal } from "../../src/lib/observability/metrics";
+const log_backend_services_prescription_service = logger.child("backend/services/prescription.service");
 
 const px = prisma as any;
 
@@ -87,6 +90,8 @@ export async function createOrGetPrescription(hospitalId: string, input: CreateP
     where: { id: input.appointmentId },
     data: { status: "CONFIRMED" },
   }).catch(() => {}); // Non-blocking — don't fail prescription creation if status update fails
+
+  prescriptionsCreatedTotal.inc();
 
   return { prescription, isNew: true };
 }
@@ -259,7 +264,7 @@ export async function completePrescription(id: string, hospitalId: string, input
   try {
     generatedBill = await generateBillFromAppointment(existing.appointmentId, hospitalId);
   } catch (billErr: any) {
-    console.error("[completePrescription] Bill generation failed:", billErr?.message);
+    log_backend_services_prescription_service.error("[completePrescription] Bill generation failed:", billErr?.message);
   }
 
   // If a treatment plan is assigned, link patient and add plan cost to bill
@@ -301,7 +306,7 @@ export async function completePrescription(id: string, hospitalId: string, input
         }
       }
     } catch (planErr: any) {
-      console.error("[completePrescription] Treatment plan assignment failed:", planErr?.message);
+      log_backend_services_prescription_service.error("[completePrescription] Treatment plan assignment failed:", planErr?.message);
     }
   }
 

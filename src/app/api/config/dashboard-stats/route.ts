@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { withAuth, createUnauthorizedError } from "../../../../../backend/middlewares/permission.middleware";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_config_dashboard_stats_route = logger.child("src/app/api/config/dashboard-stats/route");
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.dashboard-stats.get", async (req: NextRequest) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) return createUnauthorizedError();
@@ -112,10 +115,10 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Dashboard stats error:", error);
+    log_src_app_api_config_dashboard_stats_route.error("Dashboard stats error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch stats" },
       { status: 500 }
     );
   }
-}
+});

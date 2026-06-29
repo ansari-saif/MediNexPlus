@@ -3,11 +3,12 @@ import { requireRole } from "../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
 import * as service from "../../../../backend/services/central-inventory.service";
 import { getSubDeptProfile } from "../../../../backend/services/subdepartment.service";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 // GET /api/dept-inventory — Returns stock for the logged-in user's department
 // For SUB_DEPT_HEAD: auto-detects subDepartmentId from profile
 // For HOSPITAL_ADMIN: requires ?subDepartmentId= query param
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("dept-inventory.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
 
@@ -34,4 +35,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

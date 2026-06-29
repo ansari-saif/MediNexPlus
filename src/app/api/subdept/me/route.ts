@@ -3,8 +3,9 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getSubDeptProfile, SubDeptServiceError } from "../../../../../backend/services/subdepartment.service";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.me.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -27,9 +28,9 @@ export async function GET(req: NextRequest) {
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
     return errorResponse(err.message || "Failed to fetch profile", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("subdept.me.put", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -55,4 +56,4 @@ export async function PUT(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to update department profile", 500);
   }
-}
+});

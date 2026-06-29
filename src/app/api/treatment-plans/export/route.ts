@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth, checkPermission, createPermissionError, createUnauthorizedError } from "../../../../../backend/middlewares/permission.middleware";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 const px = prisma as any;
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("treatment-plans.export.get", async (req: NextRequest) => {
   const authReq = withAuth(req);
   if (!authReq.user) return createUnauthorizedError();
   if (!checkPermission(authReq, "REPORTS_VIEW")) return createPermissionError("REPORTS_VIEW");
@@ -85,4 +86,4 @@ export async function GET(req: NextRequest) {
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
-}
+});

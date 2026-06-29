@@ -1,7 +1,5 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
-
-const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import {
   createStaff,
@@ -9,12 +7,15 @@ import {
   getStaffStats,
   StaffServiceError,
 } from "../../../../../backend/services/staff.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 import {
   createStaffSchema,
   queryStaffSchema,
 } from "../../../../../backend/validations/staff.validation";
 
-export async function GET(req: NextRequest) {
+const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
+
+export const GET = withApiRoute("config.staff.get", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -54,9 +55,9 @@ export async function GET(req: NextRequest) {
     }
     return errorResponse(error.message || "Failed to fetch staff", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.staff.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -76,4 +77,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(error.message || "Failed to create staff member", 500);
   }
-}
+});

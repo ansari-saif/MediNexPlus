@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { logger } from "../../../../backend/utils/logger";
+import { withApiRoute } from "../../../../backend/utils/api-route";
+const log_src_app_api_chat_route = logger.child("src/app/api/chat/route");
 
 const getOpenRouterKey = () => process.env.OPENROUTER_API_KEY || "";
 const getGeminiKey    = () => process.env.GEMINI_API_KEY || "";
@@ -92,12 +95,12 @@ async function tryOpenRouter(msgs: ReturnType<typeof buildMessages>): Promise<st
         },
         body: JSON.stringify({ model, messages: msgs, temperature: 0.5, max_tokens: 600 }),
       });
-      if (!res.ok) { console.error(`OpenRouter ${model} ${res.status}`); continue; }
+      if (!res.ok) { log_src_app_api_chat_route.error({}, "OpenRouter ${model} ${res.status}"); continue; }
       const data = await res.json();
       const text = data?.choices?.[0]?.message?.content || "";
-      if (text) { console.log(`Chat: OpenRouter model used — ${model}`); return text; }
+      if (text) { log_src_app_api_chat_route.info({}, "Chat: OpenRouter model used — ${model}"); return text; }
     } catch (err: any) {
-      console.error(`OpenRouter ${model} threw:`, err.message);
+      log_src_app_api_chat_route.error(`OpenRouter ${model} threw:`, err.message);
     }
   }
   return null;
@@ -124,17 +127,17 @@ async function tryGemini(msgs: ReturnType<typeof buildMessages>): Promise<string
         generationConfig: { temperature: 0.5, maxOutputTokens: 600 },
       }),
     });
-    if (!res.ok) { console.error("Gemini fallback", res.status); return null; }
+    if (!res.ok) { log_src_app_api_chat_route.error("Gemini fallback", res.status); return null; }
     const data = await res.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    if (text) { console.log("Chat: Gemini 2.0 Flash used"); return text; }
+    if (text) { log_src_app_api_chat_route.info({}, "Chat: Gemini 2.0 Flash used"); return text; }
   } catch (err: any) {
-    console.error("Gemini threw:", err.message);
+    log_src_app_api_chat_route.error("Gemini threw:", err.message);
   }
   return null;
 }
 
-export async function POST(req: Request) {
+export const POST = withApiRoute("chat.post", async (req: Request) => {
   try {
     const { message, history } = await req.json();
     const msgs = buildMessages(history, message);
@@ -152,10 +155,10 @@ export async function POST(req: Request) {
       text: "I'm having trouble connecting to AI services right now. Please call us at **+91 90590 53938** or visit /contact.",
     });
   } catch (error: any) {
-    console.error("Chat API Error:", error);
+    log_src_app_api_chat_route.error("Chat API Error:", error);
     return NextResponse.json(
       { text: "Something went wrong. Please call us at **+91 90590 53938**." },
       { status: 500 }
     );
   }
-}
+});

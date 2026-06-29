@@ -2,12 +2,13 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 const px = prisma as any;
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("dashboard.overview.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN"]);
   if (auth.error) return auth.error;
 
@@ -259,4 +260,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

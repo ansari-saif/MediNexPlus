@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../backend/utils/logger";
 import { requireRole } from "../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
 import {
@@ -7,13 +8,15 @@ import {
   PrescriptionServiceError,
 } from "../../../../backend/services/prescription.service";
 import { createPrescriptionSchema } from "../../../../backend/validations/prescription.validation";
+import { withApiRoute } from "../../../../backend/utils/api-route";
+const log_src_app_api_prescriptions_route = logger.child("src/app/api/prescriptions/route");
 
 const ALLOWED = ["DOCTOR", "HOSPITAL_ADMIN"];
 
 export const dynamic = "force-dynamic";
 
 // GET /api/prescriptions — list prescriptions
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("prescriptions.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [...ALLOWED, "STAFF", "RECEPTIONIST"]);
   if (auth.error) return auth.error;
 
@@ -32,10 +35,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/prescriptions — create or get existing prescription
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("prescriptions.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
 
@@ -66,7 +69,7 @@ export async function POST(req: NextRequest) {
     if (e instanceof PrescriptionServiceError) {
       return errorResponse(e.message, e.status);
     }
-    console.error("Create Prescription Error:", e);
+    log_src_app_api_prescriptions_route.error("Create Prescription Error:", e);
     return errorResponse("Could not create prescription", 500);
   }
-}
+});

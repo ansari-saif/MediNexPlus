@@ -3,6 +3,7 @@ import { requireHospitalAdmin } from "../../../../../backend/middlewares/role.mi
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { dischargeBed, AllocationServiceError } from "../../../../../backend/services/allocation.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const schema = z.object({
   allocationId: z.string().min(1),
@@ -10,7 +11,7 @@ const schema = z.object({
   notes: z.string().optional(),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("ipd.discharge-bed.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -24,4 +25,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof AllocationServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

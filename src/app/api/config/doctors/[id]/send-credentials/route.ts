@@ -1,15 +1,18 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import { hashPassword } from "../../../../../../../backend/utils/hash";
+const log_src_app_api_config_doctors__id__send_credentials_route = logger.child("src/app/api/config/doctors/[id]/send-credentials/route");
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { sendDoctorCredentials } from "../../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function POST(req: NextRequest, { params }: Params) {
+export const POST = withApiRoute("config.doctors.id.send-credentials.post", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -99,11 +102,11 @@ export async function POST(req: NextRequest, { params }: Params) {
       });
       emailSent = true;
     } catch (emailError: any) {
-      console.error("❌ Email sending failed:", emailError.message);
-      console.log("📧 DOCTOR CREDENTIALS (email failed to send):");
-      console.log(`   Email: ${doctor.email}`);
-      console.log(`   Password: ${rawPassword}`);
-      console.log(`   Login: ${loginUrl}`);
+      log_src_app_api_config_doctors__id__send_credentials_route.error("❌ Email sending failed:", emailError.message);
+      log_src_app_api_config_doctors__id__send_credentials_route.info({}, "📧 DOCTOR CREDENTIALS (email failed to send):");
+      log_src_app_api_config_doctors__id__send_credentials_route.info({}, "   Email: ${doctor.email}");
+      log_src_app_api_config_doctors__id__send_credentials_route.info({}, "   Password: ${rawPassword}");
+      log_src_app_api_config_doctors__id__send_credentials_route.info({}, "   Login: ${loginUrl}");
     }
 
     return successResponse(
@@ -115,4 +118,4 @@ export async function POST(req: NextRequest, { params }: Params) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to send credentials", 500);
   }
-}
+});

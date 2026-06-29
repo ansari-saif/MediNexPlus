@@ -4,6 +4,7 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getSettings, upsertSettings, getSetupProgress } from "../../../../../backend/services/config.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const settingsSchema = z.object({
   hospitalName: z.string().min(2),
@@ -22,7 +23,7 @@ const settingsSchema = z.object({
   letterheadSize: z.enum(["A4", "A5", "Letter"]).optional(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.settings.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   const hospitalId = user!.hospitalId;
@@ -38,9 +39,9 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.settings.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -68,8 +69,8 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("config.settings.put", async (req: NextRequest) => {
   return POST(req); // Upsert handles both create & update
-}
+});

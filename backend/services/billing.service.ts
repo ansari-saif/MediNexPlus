@@ -1,4 +1,7 @@
 import prisma from "../config/db";
+import { logger } from "../utils/logger";
+import { billsCreatedTotal } from "../../src/lib/observability/metrics";
+const log_backend_services_billing_service = logger.child("backend/services/billing.service");
 
 // ── Add workflow charges to bill ───────────────────────────────────────────
 export async function addWorkflowChargesToBill(
@@ -172,7 +175,6 @@ export async function addWorkflowChargesToBill(
 
   await recalculateBill(billId, hospitalId);
 }
-
 
 export class BillingServiceError extends Error {
   status: number;
@@ -531,6 +533,9 @@ export async function createBill(
   // Sync with workflow charges (consultation fee + procedures)
   await addWorkflowChargesToBill(bill.id, hospitalId).catch(() => {});
 
+  billsCreatedTotal.inc({ status: bill.status || "PENDING" });
+  log_backend_services_billing_service.info({ status: bill.status }, "bill created");
+
   return bill;
 }
 
@@ -596,6 +601,10 @@ export async function recordPayment(
   }).catch(() => ({ _sum: { amount: 0 } }));
   const sourceType = (pharmAgg._sum.amount || 0) > 0 ? "PHARMACY" : "OTHER";
   logRevenue(hospitalId, sourceType, paymentAmount, billId, "Bill", `Payment received — ${data.method}`);
+
+  if (newStatus === "PAID") {
+    billsCreatedTotal.inc({ status: "PAID" });
+  }
 
   return payment;
 }
@@ -1007,7 +1016,7 @@ export async function getBillingQueue(
     try {
       a.bill = await generateBillFromAppointment(a.id, hospitalId);
     } catch (err: any) {
-      console.error(`[getBillingQueue] Auto-generate bill failed for appt ${a.id}:`, err?.message);
+      log_backend_services_billing_service.error(`[getBillingQueue] Auto-generate bill failed for appt ${a.id}:`, err?.message);
     }
   }
 

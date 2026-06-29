@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { logger } from "../utils/logger";
+const log_backend_config_env = logger.child("backend/config/env");
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url(),
@@ -45,7 +47,7 @@ function getEnv(): Env {
   const _env = envSchema.safeParse(process.env);
 
   if (!_env.success) {
-    console.error("❌ Invalid environment variables:", _env.error.format());
+    log_backend_config_env.error("❌ Invalid environment variables:", _env.error.format());
     throw new Error("Invalid environment variables");
   }
 

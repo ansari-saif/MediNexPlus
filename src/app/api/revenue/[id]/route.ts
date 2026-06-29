@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED = ["HOSPITAL_ADMIN", "FINANCE_HEAD"];
 export const dynamic = "force-dynamic";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("revenue.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -26,9 +27,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("revenue.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -37,4 +38,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

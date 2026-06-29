@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { serviceService } from "../../../../../../backend/services/service.service";
 import { updateServiceSchema } from "../../../../../../backend/validations/service.validation";
 import { withAuth, checkPermission, createPermissionError, createUnauthorizedError } from "../../../../../../backend/middlewares/permission.middleware";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_config_services__id__route = logger.child("src/app/api/config/services/[id]/route");
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.services.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -17,15 +20,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       data: service,
     });
   } catch (error: any) {
-    console.error("Get service error:", error);
+    log_src_app_api_config_services__id__route.error("Get service error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch service" },
       { status: 404 }
     );
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("config.services.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -47,15 +50,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       data: service,
     });
   } catch (error: any) {
-    console.error("Update service error:", error);
+    log_src_app_api_config_services__id__route.error("Update service error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to update service" },
       { status: 400 }
     );
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("config.services.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -73,10 +76,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       message: "Service deleted successfully",
     });
   } catch (error: any) {
-    console.error("Delete service error:", error);
+    log_src_app_api_config_services__id__route.error("Delete service error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to delete service" },
       { status: 400 }
     );
   }
-}
+});

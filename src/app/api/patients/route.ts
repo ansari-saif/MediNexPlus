@@ -12,13 +12,14 @@ import { createPatient as createPatientRepo, generatePatientId } from "../../../
 import { createPatientSchema, queryPatientSchema } from "../../../../backend/validations/patient.validation";
 import prisma from "../../../../backend/config/db";
 import { notifyPatientRegistered } from "../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD", "DEPT_HEAD"];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/patients — List patients or quick search
 // ─────────────────────────────────────────────────────────────────────────────
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("patients.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -56,12 +57,12 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/patients — Register patient (dedup by phone)
 // ─────────────────────────────────────────────────────────────────────────────
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("patients.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -130,4 +131,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

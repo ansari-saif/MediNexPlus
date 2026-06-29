@@ -4,9 +4,10 @@ import { successResponse, errorResponse } from "../../../../../../backend/utils/
 import { getSubDeptProfile } from "../../../../../../backend/services/subdepartment.service";
 import { recalculateBill } from "../../../../../../backend/services/billing.service";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 // PUT /api/subdept/records/[id] - Update procedure record
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("subdept.records.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -70,10 +71,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   } catch (err: any) {
     return errorResponse(err.message || "Failed to update record", 500);
   }
-}
+});
 
 // DELETE /api/subdept/records/[id] - Delete procedure record
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("subdept.records.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -96,4 +97,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   } catch (err: any) {
     return errorResponse(err.message || "Failed to delete record", 500);
   }
-}
+});

@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../../../backend/middlewares/auth.middleware";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
+const log_src_app_api_superadmin_hospitals__id__subscription_route = logger.child("src/app/api/superadmin/hospitals/[id]/subscription/route");
 
 // PATCH: Update hospital subscription (revoke trial, onboard to plan, suspend, etc.)
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withApiRoute("superadmin.hospitals.id.subscription.patch", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
-    const authResult = await authMiddleware(req);
+    const authResult = await authMiddleware(req, "superadmin");
     if (authResult.error || authResult.user?.role !== "SUPER_ADMIN") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
     }
@@ -114,15 +117,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     return NextResponse.json({ success: false, message: "Invalid action" }, { status: 400 });
   } catch (error: any) {
-    console.error("Subscription update error:", error);
+    log_src_app_api_superadmin_hospitals__id__subscription_route.error("Subscription update error:", error);
     return NextResponse.json({ success: false, message: error.message || "Failed" }, { status: 500 });
   }
-}
+});
 
 // POST: Record a payment for a hospital
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("superadmin.hospitals.id.subscription.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
-    const authResult = await authMiddleware(req);
+    const authResult = await authMiddleware(req, "superadmin");
     if (authResult.error || authResult.user?.role !== "SUPER_ADMIN") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
     }
@@ -167,15 +170,15 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     return NextResponse.json({ success: true, data: payment, message: "Payment recorded and subscription activated" });
   } catch (error: any) {
-    console.error("Payment recording error:", error);
+    log_src_app_api_superadmin_hospitals__id__subscription_route.error("Payment recording error:", error);
     return NextResponse.json({ success: false, message: error.message || "Failed" }, { status: 500 });
   }
-}
+});
 
 // GET: Get payment history for a hospital
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("superadmin.hospitals.id.subscription.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
-    const authResult = await authMiddleware(req);
+    const authResult = await authMiddleware(req, "superadmin");
     if (authResult.error || authResult.user?.role !== "SUPER_ADMIN") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
     }
@@ -190,4 +193,4 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message || "Failed" }, { status: 500 });
   }
-}
+});

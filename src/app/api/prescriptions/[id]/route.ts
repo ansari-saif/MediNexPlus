@@ -7,13 +7,14 @@ import {
   PrescriptionServiceError,
 } from "../../../../../backend/services/prescription.service";
 import { updatePrescriptionSchema } from "../../../../../backend/validations/prescription.validation";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED = ["DOCTOR", "HOSPITAL_ADMIN", "STAFF", "RECEPTIONIST"];
 
 export const dynamic = "force-dynamic";
 
 // GET /api/prescriptions/[id]
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("prescriptions.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -23,10 +24,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof PrescriptionServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/prescriptions/[id]
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("prescriptions.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ["DOCTOR", "HOSPITAL_ADMIN"]);
   if (auth.error) return auth.error;
   try {
@@ -40,10 +41,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof PrescriptionServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/prescriptions/[id]
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("prescriptions.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ["DOCTOR", "HOSPITAL_ADMIN"]);
   if (auth.error) return auth.error;
   try {
@@ -62,4 +63,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

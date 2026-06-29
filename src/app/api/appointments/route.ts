@@ -13,13 +13,14 @@ import {
 } from "../../../../backend/validations/appointment.validation";
 import prisma from "../../../../backend/config/db";
 import { notifyAppointmentBooked } from "../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD", "DEPT_HEAD"];
 
 export const dynamic = "force-dynamic";
 
 // GET /api/appointments
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("appointments.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -58,10 +59,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/appointments
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("appointments.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -96,4 +97,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

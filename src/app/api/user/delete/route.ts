@@ -5,12 +5,13 @@ import { Role } from "@prisma/client";
 import { deleteUserService } from "../../../../../backend/services/user.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const deleteUserSchema = z.object({
   id: z.string().uuid(),
 });
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("user.delete.delete", async (req: NextRequest) => {
   try {
     const { user, error: authError } = await authMiddleware(req);
     if (authError) return authError;
@@ -37,4 +38,4 @@ export async function DELETE(req: NextRequest) {
     }
     return errorResponse(error.message, 500);
   }
-}
+});

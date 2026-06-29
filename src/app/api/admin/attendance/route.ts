@@ -1,9 +1,12 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_admin_attendance_route = logger.child("src/app/api/admin/attendance/route");
 
 // GET /api/admin/attendance - Hospital admin view of all doctors' attendance
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("admin.attendance.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -79,7 +82,7 @@ export async function GET(req: NextRequest) {
       total: records.length,
     }, "Attendance fetched");
   } catch (e: any) {
-    console.error("Admin attendance error:", e);
+    log_src_app_api_admin_attendance_route.error("Admin attendance error:", e);
     return errorResponse(e.message || "Failed to fetch attendance", 500);
   }
-}
+});

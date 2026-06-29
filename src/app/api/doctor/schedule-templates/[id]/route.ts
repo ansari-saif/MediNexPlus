@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -10,7 +11,7 @@ async function getDoctor(userId: string) {
 }
 
 // PUT /api/doctor/schedule-templates/[id]
-export async function PUT(req: NextRequest, { params }: Params) {
+export const PUT = withApiRoute("doctor.schedule-templates.id.put", async (req: NextRequest, { params }: Params) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -47,10 +48,10 @@ export async function PUT(req: NextRequest, { params }: Params) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to update template", 500);
   }
-}
+});
 
 // DELETE /api/doctor/schedule-templates/[id]
-export async function DELETE(req: NextRequest, { params }: Params) {
+export const DELETE = withApiRoute("doctor.schedule-templates.id.delete", async (req: NextRequest, { params }: Params) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -78,4 +79,4 @@ export async function DELETE(req: NextRequest, { params }: Params) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to delete template", 500);
   }
-}
+});

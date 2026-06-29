@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { treatmentService } from "../../../../../backend/services/treatment.service";
 import { updateTreatmentPlanSchema } from "../../../../../backend/validations/treatment.validation";
 import { withAuth, checkPermission, createPermissionError, createUnauthorizedError } from "../../../../../backend/middlewares/permission.middleware";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("treatment-plans.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) return createUnauthorizedError();
@@ -16,9 +17,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       { status: 404 }
     );
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("treatment-plans.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) return createUnauthorizedError();
@@ -36,9 +37,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       { status: 400 }
     );
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("treatment-plans.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) return createUnauthorizedError();
@@ -53,4 +54,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       { status: 400 }
     );
   }
-}
+});

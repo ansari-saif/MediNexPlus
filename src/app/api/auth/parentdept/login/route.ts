@@ -4,19 +4,27 @@ import { setSessionCookie } from "../../../../../../backend/utils/session-cookie
 import prisma from "../../../../../../backend/config/db";
 import { comparePassword } from "../../../../../../backend/utils/hash";
 import { generateToken } from "../../../../../../backend/utils/jwt";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+import { recordAuthLogin } from "../../../../../../backend/utils/auth-metrics";
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.parentdept.login.post", async (req: NextRequest) => {
   try {
     const { email, password } = await req.json();
     if (!email || !password) return errorResponse("Email and password are required", 400);
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user || String(user.role) !== "DEPT_HEAD") return errorResponse("Invalid credentials", 401);
+    if (!user || String(user.role) !== "DEPT_HEAD") {
+      recordAuthLogin("fail", "DEPT_HEAD");
+      return errorResponse("Invalid credentials", 401);
+    }
     if (!user.isActive) return errorResponse("Account is inactive. Contact hospital admin.", 403);
 
     const valid = await comparePassword(password, user.password);
-    if (!valid) return errorResponse("Invalid credentials", 401);
+    if (!valid) {
+      recordAuthLogin("fail", "DEPT_HEAD");
+      return errorResponse("Invalid credentials", 401);
+    }
 
     // Verify department is linked
     const dept = await (prisma as any).department.findFirst({
@@ -46,6 +54,7 @@ export async function POST(req: NextRequest) {
     });
 
     setSessionCookie(response, req, token);
+    recordAuthLogin("success", "DEPT_HEAD");
 
     return response;
   } catch (error: any) {
@@ -62,4 +71,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(msg || "Login failed", 500);
   }
-}
+});

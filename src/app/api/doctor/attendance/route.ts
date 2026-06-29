@@ -1,9 +1,12 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_doctor_attendance_route = logger.child("src/app/api/doctor/attendance/route");
 
 // GET /api/doctor/attendance - Get attendance history
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("doctor.attendance.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -43,10 +46,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch attendance", 500);
   }
-}
+});
 
 // POST /api/doctor/attendance - Mark attendance (auto-called on login)
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("doctor.attendance.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -126,14 +129,16 @@ export async function POST(req: NextRequest) {
 
       return successResponse(attendance, "Attendance marked successfully");
     }
+
+    return successResponse({ status: "SKIPPED" }, "Attendance tracking not yet available");
   } catch (e: any) {
-    console.error("Attendance marking error:", e);
+    log_src_app_api_doctor_attendance_route.error("Attendance marking error:", e);
     return errorResponse(e.message || "Failed to mark attendance", 500);
   }
-}
+});
 
 // PATCH /api/doctor/attendance - Mark check-out time
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("doctor.attendance.patch", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -218,7 +223,7 @@ export async function PATCH(req: NextRequest) {
       throw err;
     }
   } catch (e: any) {
-    console.error("Check-out error:", e);
+    log_src_app_api_doctor_attendance_route.error("Check-out error:", e);
     return errorResponse(e.message || "Failed to record check-out", 500);
   }
-}
+});

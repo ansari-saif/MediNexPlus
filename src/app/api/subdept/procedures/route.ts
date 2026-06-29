@@ -3,11 +3,12 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getSubDeptProfile, SubDeptServiceError } from "../../../../../backend/services/subdepartment.service";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/subdept/procedures — list this sub-dept's procedures
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.procedures.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -26,10 +27,10 @@ export async function GET(req: NextRequest) {
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});
 
 // POST /api/subdept/procedures — create a new procedure
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.procedures.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -63,4 +64,4 @@ export async function POST(req: NextRequest) {
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});

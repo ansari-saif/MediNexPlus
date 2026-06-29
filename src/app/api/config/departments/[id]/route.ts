@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { requireHospitalAdmin } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import {
@@ -10,6 +11,8 @@ import {
   DepartmentServiceError,
 } from "../../../../../../backend/services/department.service";
 import { updateDepartmentSchema, toggleStatusSchema } from "../../../../../../backend/validations/department.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_config_departments__id__route = logger.child("src/app/api/config/departments/[id]/route");
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -19,7 +22,7 @@ interface RouteParams {
  * GET /api/config/departments/[id]
  * Fetch a single department by ID with full relations
  */
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export const GET = withApiRoute("config.departments.id.get", async (req: NextRequest, { params }: RouteParams) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -33,13 +36,13 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /**
  * PUT /api/config/departments/[id]
  * Update a department by ID
  */
-export async function PUT(req: NextRequest, { params }: RouteParams) {
+export const PUT = withApiRoute("config.departments.id.put", async (req: NextRequest, { params }: RouteParams) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -64,7 +67,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       try {
         await handleDeptCredentialsOnSave(id, auth.hospitalId, loginEmail, loginPassword, department.name);
       } catch (credErr: any) {
-        console.error("[DeptCredentials] Auto-save failed:", credErr.message, credErr.code);
+        log_src_app_api_config_departments__id__route.error("[DeptCredentials] Auto-save failed:", credErr.message, credErr.code);
         credentialWarning = `Department saved but login setup failed: ${credErr.message}`;
       }
     }
@@ -82,13 +85,13 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /**
  * PATCH /api/config/departments/[id]
  * Toggle department status (isActive)
  */
-export async function PATCH(req: NextRequest, { params }: RouteParams) {
+export const PATCH = withApiRoute("config.departments.id.patch", async (req: NextRequest, { params }: RouteParams) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -111,7 +114,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /**
  * DELETE /api/config/departments/[id]
@@ -120,7 +123,7 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
  *   ?force=true - force delete department only, keep related items
  *   ?cascade=true - cascade delete department and all related items
  */
-export async function DELETE(req: NextRequest, { params }: RouteParams) {
+export const DELETE = withApiRoute("config.departments.id.delete", async (req: NextRequest, { params }: RouteParams) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -138,4 +141,4 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

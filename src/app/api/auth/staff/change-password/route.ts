@@ -3,8 +3,9 @@ import { authMiddleware } from "../../../../../../backend/middlewares/auth.middl
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import { changeStaffPassword, StaffServiceError } from "../../../../../../backend/services/staff.service";
 import { changePasswordSchema } from "../../../../../../backend/validations/staff.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.staff.change-password.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -26,4 +27,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(error.message || "Failed to change password", 500);
   }
-}
+});

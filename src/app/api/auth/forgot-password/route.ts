@@ -3,12 +3,13 @@ import { findUserByEmail } from "../../../../../backend/repositories/user.repo";
 import { requestOTP } from "../../../../../backend/services/otp.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const schema = z.object({
   email: z.string().email("Invalid email format"),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.forgot-password.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const result = schema.safeParse(body);
@@ -32,4 +33,4 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 500);
   }
-}
+});

@@ -2,12 +2,13 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
 import { getBills, createBill, BillingServiceError } from "../../../../backend/services/billing.service";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 const ALLOWED = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "RECEPTIONIST", "SUB_DEPT_HEAD", "DEPT_HEAD"];
 export const dynamic = "force-dynamic";
 
 // GET /api/billing
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("billing.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -31,10 +32,10 @@ export async function GET(req: NextRequest) {
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/billing — manually create a bill
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("billing.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -48,4 +49,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

@@ -2,12 +2,13 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
 import prisma from "../../../../backend/config/db";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 const ALLOWED = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "SUB_DEPT_HEAD"];
 export const dynamic = "force-dynamic";
 
 // GET /api/expense
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("expense.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -64,10 +65,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/expense
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("expense.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -94,4 +95,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

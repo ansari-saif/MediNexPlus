@@ -2,9 +2,10 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import * as service from "../../../../../../backend/services/inventory.service";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 // GET /api/subdept/inventory/alerts - Get inventory alerts (low stock, expiring)
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.inventory.alerts.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
 
@@ -14,4 +15,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

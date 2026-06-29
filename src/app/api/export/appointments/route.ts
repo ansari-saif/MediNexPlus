@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 function esc(v: any): string {
   const s = v == null ? "" : String(v);
@@ -12,7 +13,7 @@ function toCSV(rows: string[][]): string {
   return rows.map(r => r.map(esc).join(",")).join("\r\n");
 }
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("export.appointments.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR"]);
   if (auth.error) return auth.error;
 
@@ -70,4 +71,4 @@ export async function GET(req: NextRequest) {
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
-}
+});

@@ -4,8 +4,9 @@ import { roleMiddleware } from "../../../../../backend/middlewares/role.middlewa
 import { Role } from "@prisma/client";
 import { listUsersService } from "../../../../../backend/services/user.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("user.list.get", async (req: NextRequest) => {
   try {
     const { user, error: authError } = await authMiddleware(req);
     if (authError) return authError;
@@ -30,4 +31,4 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 500);
   }
-}
+});

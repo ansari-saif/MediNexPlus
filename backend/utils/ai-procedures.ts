@@ -1,3 +1,6 @@
+import { logger } from "./logger";
+const log_backend_utils_ai_procedures = logger.child("backend/utils/ai-procedures");
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const getGeminiKey = () => process.env.GEMINI_API_KEY || "";
@@ -139,18 +142,18 @@ export async function tryGemini(prompt: string): Promise<string | null> {
       }),
     });
     if (!res.ok) {
-      console.error("AI Auto-Add: Gemini error", res.status);
+      log_backend_utils_ai_procedures.error("AI Auto-Add: Gemini error", res.status);
       return null;
     }
     const data = await res.json();
     const text: string =
       data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
     if (text) {
-      console.log("AI Auto-Add: Gemini 2.0 Flash used");
+      log_backend_utils_ai_procedures.info({}, "AI Auto-Add: Gemini 2.0 Flash used");
       return text;
     }
   } catch (err: any) {
-    console.error("AI Auto-Add: Gemini threw:", err.message);
+    log_backend_utils_ai_procedures.error("AI Auto-Add: Gemini threw:", err.message);
   }
   return null;
 }
@@ -179,17 +182,17 @@ export async function tryOpenRouter(prompt: string): Promise<string | null> {
         }),
       });
       if (!res.ok) {
-        console.error(`AI Auto-Add: OpenRouter ${model} ${res.status}`);
+        log_backend_utils_ai_procedures.error({}, "AI Auto-Add: OpenRouter ${model} ${res.status}");
         continue;
       }
       const data = await res.json();
       const text: string = data?.choices?.[0]?.message?.content || "";
       if (text) {
-        console.log(`AI Auto-Add: OpenRouter model used — ${model}`);
+        log_backend_utils_ai_procedures.info({}, "AI Auto-Add: OpenRouter model used — ${model}");
         return text;
       }
     } catch (err: any) {
-      console.error(`AI Auto-Add: OpenRouter ${model} threw:`, err.message);
+      log_backend_utils_ai_procedures.error(`AI Auto-Add: OpenRouter ${model} threw:`, err.message);
     }
   }
   return null;

@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -11,7 +12,7 @@ const px = prisma as any;
  * Add stock batch to an existing inventory item — SUB_DEPT_HEAD or HOSPITAL_ADMIN
  * Body: { itemId, quantity, price, batchNumber?, expiryDate?, supplierId? }
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.stock.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -59,4 +60,4 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to add stock", 500);
   }
-}
+});

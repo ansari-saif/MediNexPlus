@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { requireHospitalAdmin } from "../../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ interface RouteParams {
  * Returns department details + sub-departments with stats.
  * Accessible by HOSPITAL_ADMIN only.
  */
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export const GET = withApiRoute("config.departments.id.dashboard.get", async (req: NextRequest, { params }: RouteParams) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -132,4 +133,4 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch department dashboard", 500);
   }
-}
+});

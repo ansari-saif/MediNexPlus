@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("pathology.orders.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -28,9 +29,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("pathology.orders.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN", "STAFF"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -78,9 +79,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("pathology.orders.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -91,4 +92,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});

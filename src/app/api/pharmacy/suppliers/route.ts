@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -10,7 +11,7 @@ const px = prisma as any;
  * GET /api/pharmacy/suppliers
  * List suppliers — accessible by SUB_DEPT_HEAD, DEPT_HEAD, HOSPITAL_ADMIN, STAFF
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.suppliers.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -48,13 +49,13 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch suppliers", 500);
   }
-}
+});
 
 /**
  * POST /api/pharmacy/suppliers
  * Create a supplier — SUB_DEPT_HEAD or HOSPITAL_ADMIN
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.suppliers.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -84,13 +85,13 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to create supplier", 500);
   }
-}
+});
 
 /**
  * PUT /api/pharmacy/suppliers
  * Update supplier — body: { id, ...fields }
  */
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("pharmacy.suppliers.put", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -113,13 +114,13 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to update supplier", 500);
   }
-}
+});
 
 /**
  * DELETE /api/pharmacy/suppliers?id=
  * Soft-delete a supplier — SUB_DEPT_HEAD or HOSPITAL_ADMIN
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("pharmacy.suppliers.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -137,4 +138,4 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to delete supplier", 500);
   }
-}
+});

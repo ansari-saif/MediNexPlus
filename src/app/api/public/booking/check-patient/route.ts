@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import prisma from "../../../../../../backend/config/db";
 import { verifyToken } from "../../../../../../backend/utils/jwt";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,7 @@ async function resolveHospitalId(hid: string | null, slug: string | null, req: N
 }
 
 /* GET /api/public/booking/check-patient?phone=X&email=Y&hid=Z */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("public.booking.check-patient.get", async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const phone = searchParams.get("phone")?.trim() || "";
   const email = searchParams.get("email")?.trim() || "";
@@ -57,4 +58,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

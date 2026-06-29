@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import {
@@ -6,6 +7,7 @@ import {
   SubDeptServiceError,
 } from "../../../../../../backend/services/subdepartment.service";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 import {
   buildProcedurePrompt,
   stripFences,
@@ -15,13 +17,11 @@ import {
   tryOpenRouter,
 } from "../../../../../../backend/utils/ai-procedures";
 
+const log_src_app_api_subdept_procedures_ai_suggest_route = logger.child("src/app/api/subdept/procedures/ai-suggest/route");
+
 export const dynamic = "force-dynamic";
 
-
-
 // ─── Route handler ────────────────────────────────────────────────────────────
-
-
 
 /**
 
@@ -39,7 +39,7 @@ export const dynamic = "force-dynamic";
 
  */
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.procedures.ai-suggest.post", async (req: NextRequest) => {
 
   // 1. Auth guard
 
@@ -48,8 +48,6 @@ export async function POST(req: NextRequest) {
   if (error) return error;
 
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
-
-
 
   try {
 
@@ -60,8 +58,6 @@ export async function POST(req: NextRequest) {
     const subDept = profile as any;
 
     const { id: subDepartmentId, name: deptName, type: deptType, hospitalId } = subDept;
-
-
 
     // 3. Fetch existing procedure names for deduplication
 
@@ -75,19 +71,13 @@ export async function POST(req: NextRequest) {
 
     const existingNames: string[] = existing.map((p: { name: string }) => p.name);
 
-
-
     // 4. Build prompt and call AI (Gemini first, OpenRouter fallback)
 
     const prompt = buildProcedurePrompt(deptType, deptName, existingNames);
 
-
-
     const rawText =
 
       (await tryGemini(prompt)) ?? (await tryOpenRouter(prompt));
-
-
 
     if (!rawText) {
 
@@ -100,8 +90,6 @@ export async function POST(req: NextRequest) {
       );
 
     }
-
-
 
     // 5. Parse AI response (with truncation recovery)
 
@@ -125,13 +113,13 @@ export async function POST(req: NextRequest) {
 
       if (recovered && recovered.length > 0) {
 
-        console.warn("AI Auto-Add: Recovered truncated array with", recovered.length, "items");
+        log_src_app_api_subdept_procedures_ai_suggest_route.warn("AI Auto-Add: Recovered truncated array with", recovered.length, "items");
 
         parsed = recovered;
 
       } else {
 
-        console.error("AI Auto-Add: Failed to parse AI response:", rawText);
+        log_src_app_api_subdept_procedures_ai_suggest_route.error("AI Auto-Add: Failed to parse AI response:", rawText);
 
         return errorResponse(
 
@@ -145,15 +133,11 @@ export async function POST(req: NextRequest) {
 
     }
 
-
-
     // 6. Deduplicate and normalise
 
     const newProcedures = filterDuplicates(parsed, existingNames);
 
     const skipped = parsed.length - newProcedures.length;
-
-
 
     // 7. Nothing new to add
 
@@ -170,8 +154,6 @@ export async function POST(req: NextRequest) {
       );
 
     }
-
-
 
     // 8. Bulk insert
 
@@ -205,13 +187,11 @@ export async function POST(req: NextRequest) {
 
     } catch (dbErr: any) {
 
-      console.error("AI Auto-Add: DB insertion failed:", dbErr);
+      log_src_app_api_subdept_procedures_ai_suggest_route.error("AI Auto-Add: DB insertion failed:", dbErr);
 
       return errorResponse("Failed to save procedures", 500);
 
     }
-
-
 
     return successResponse(
 
@@ -227,11 +207,11 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
 
-    console.error("AI Auto-Add: Unexpected error:", err);
+    log_src_app_api_subdept_procedures_ai_suggest_route.error("AI Auto-Add: Unexpected error:", err);
 
     return errorResponse(err.message || "Internal server error", 500);
 
   }
 
-}
+});
 

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import { getAvailableSlots, AppointmentServiceError } from "../../../../../../backend/services/appointment.service";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ async function resolveHid(hid: string | null, slug: string | null): Promise<stri
 }
 
 /* ── GET /api/public/booking/slots?hid=HOSPITAL_ID&doctorId=...&date=YYYY-MM-DD ── */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("public.booking.slots.get", async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   let hid = await resolveHid(searchParams.get("hid"), searchParams.get("slug"));
   const doctorId = searchParams.get("doctorId");
@@ -34,4 +35,4 @@ export async function GET(req: NextRequest) {
     if (e instanceof AppointmentServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

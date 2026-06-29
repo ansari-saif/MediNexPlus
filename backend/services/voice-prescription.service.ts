@@ -1,4 +1,6 @@
 import prisma from "../config/db";
+import { logger } from "../utils/logger";
+const log_backend_services_voice_prescription_service = logger.child("backend/services/voice-prescription.service");
 
 const px = prisma as any;
 
@@ -55,11 +57,11 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
   const geminiKey = getGeminiKey();
 
   if (!key && !geminiKey) {
-    console.error("[Voice AI] CRITICAL: No AI provider keys found. Please set OPENROUTER_API_KEY or GEMINI_API_KEY.");
+    log_backend_services_voice_prescription_service.error({}, "[Voice AI] CRITICAL: No AI provider keys found. Please set OPENROUTER_API_KEY or GEMINI_API_KEY.");
     throw new Error("AI provider API key is missing. Voice features are disabled.");
   }
 
-  console.log(`[Voice AI] Keys found — OpenRouter: ${!!key}, Gemini: ${!!geminiKey}`);
+  log_backend_services_voice_prescription_service.info({}, "[Voice AI] Keys found — OpenRouter: ${!!key}, Gemini: ${!!geminiKey}");
 
   const errors: string[] = [];
 
@@ -68,7 +70,7 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
     const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
     for (const gModel of GEMINI_MODELS) {
       try {
-        console.log(`[Voice AI] Trying Gemini ${gModel}...`);
+        log_backend_services_voice_prescription_service.info({}, "[Voice AI] Trying Gemini ${gModel}...");
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${gModel}:generateContent?key=${geminiKey}`;
         const res = await fetchWithTimeout(
           geminiUrl,
@@ -85,13 +87,13 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
         if (!res.ok) {
           const errBody = await res.text();
           errors.push(`Gemini ${gModel} HTTP ${res.status}`);
-          console.error(`[Voice AI] Gemini ${gModel} error: ${errBody.slice(0, 200)}`);
+          log_backend_services_voice_prescription_service.error({}, "[Voice AI] Gemini ${gModel} error: ${errBody.slice(0, 200)}");
           continue; // skip to next model immediately — no retries for quota/access errors
         }
         const data = await res.json();
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
         if (text) {
-          console.log(`[Voice AI] Success with Gemini ${gModel}.`);
+          log_backend_services_voice_prescription_service.info({}, "[Voice AI] Success with Gemini ${gModel}.");
           return text;
         }
         errors.push(`Gemini ${gModel} empty response`);
@@ -99,9 +101,9 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
         errors.push(`Gemini ${gModel}: ${err.message?.slice(0, 80)}`);
       }
     }
-    console.error("[Voice AI] All Gemini models failed:", errors.join("; "));
+    log_backend_services_voice_prescription_service.error("[Voice AI] All Gemini models failed:", errors.join("; "));
   } else {
-    console.warn("[Voice AI] No Gemini API key configured, skipping Gemini.");
+    log_backend_services_voice_prescription_service.warn({}, "[Voice AI] No Gemini API key configured, skipping Gemini.");
   }
 
   // --- OpenRouter: FALLBACK provider ---
@@ -132,7 +134,7 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
             25000
           );
           if (res.status === 429 && attempt === 0) {
-            console.log(`[Voice AI] ${model} rate-limited, retrying in 1s...`);
+            log_backend_services_voice_prescription_service.info({}, "[Voice AI] ${model} rate-limited, retrying in 1s...");
             await sleep(1000);
             continue;
           }
@@ -143,13 +145,13 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
           if (!res.ok) {
             const body = await res.text();
             errors.push(`${model} HTTP ${res.status}`);
-            console.error(`[Voice AI] ${model} error: ${body.slice(0, 200)}`);
+            log_backend_services_voice_prescription_service.error({}, "[Voice AI] ${model} error: ${body.slice(0, 200)}");
             break;
           }
           const data = await res.json();
           const text = data?.choices?.[0]?.message?.content || "";
           if (!text) { errors.push(`${model} empty response`); break; }
-          console.log(`[Voice AI] Success with model: ${model}`);
+          log_backend_services_voice_prescription_service.info({}, "[Voice AI] Success with model: ${model}");
           return text;
         } catch (err: any) {
           errors.push(`${model}: ${err.message?.slice(0, 80)}`);
@@ -157,7 +159,7 @@ async function callOpenRouterForVoice(systemPrompt: string, userPrompt: string):
         }
       }
     }
-    console.error("[Voice AI] All OpenRouter models also failed:", errors.join("; "));
+    log_backend_services_voice_prescription_service.error("[Voice AI] All OpenRouter models also failed:", errors.join("; "));
   }
 
   throw new Error("All AI providers failed for voice prescription. Please check API keys and provider status.");
@@ -318,7 +320,7 @@ IMPORTANT:
       parsed = JSON.parse(text);
     } catch {
       // Last resort: extract individual fields with regex
-      console.warn("[Voice AI] JSON.parse failed, falling back to regex extraction");
+      log_backend_services_voice_prescription_service.warn({}, "[Voice AI] JSON.parse failed, falling back to regex extraction");
       const extractString = (key: string) => text.match(new RegExp(`"${key}"\\s*:\\s*"([^"\\\\]*(\\\\.[^"\\\\]*)*)"`  ))?.[1] || "";
       const extractArray = (key: string): any[] => {
         try {
@@ -364,7 +366,7 @@ IMPORTANT:
       },
     };
   } catch (error: any) {
-    console.error("Voice transcription error:", error);
+    log_backend_services_voice_prescription_service.error("Voice transcription error:", error);
     throw new Error(`AI transcription failed: ${error.message}`);
   }
 }
@@ -493,7 +495,7 @@ Be accurate and use medical terminology where appropriate.`;
       isComplete: false,
     };
   } catch (error: any) {
-    console.error("Stream transcription error:", error);
+    log_backend_services_voice_prescription_service.error("Stream transcription error:", error);
     return {
       transcript: "",
       isComplete: false,

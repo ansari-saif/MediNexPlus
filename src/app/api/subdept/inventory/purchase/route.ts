@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../../backend/middlewares/role.middlewa
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import * as service from "../../../../../../backend/services/inventory.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const purchaseSchema = z.object({
   supplierId: z.string().uuid(),
@@ -25,7 +26,7 @@ const purchaseUpdateSchema = z.object({
 });
 
 // GET /api/subdept/inventory/purchase - List or get single purchase
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.inventory.purchase.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
 
@@ -42,10 +43,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/subdept/inventory/purchase - Create new purchase order
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.inventory.purchase.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -60,10 +61,10 @@ export async function POST(req: NextRequest) {
     if (e.code === "P2002") return errorResponse("Purchase number already exists", 409);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/subdept/inventory/purchase - Update purchase
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("subdept.inventory.purchase.put", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -81,10 +82,10 @@ export async function PUT(req: NextRequest) {
     if (e.code === "P2002") return errorResponse("Purchase number already exists", 409);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/subdept/inventory/purchase - Cancel purchase
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("subdept.inventory.purchase.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -97,4 +98,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

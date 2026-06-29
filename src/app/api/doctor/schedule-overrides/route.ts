@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 async function getDoctor(userId: string) {
   const prisma = (await import("../../../../../backend/config/db")).default;
@@ -8,7 +9,7 @@ async function getDoctor(userId: string) {
 }
 
 // GET /api/doctor/schedule-overrides?month=2026-01
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("doctor.schedule-overrides.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -50,10 +51,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch overrides", 500);
   }
-}
+});
 
 // POST /api/doctor/schedule-overrides — upsert single or bulk
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("doctor.schedule-overrides.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -134,10 +135,10 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to save override", 500);
   }
-}
+});
 
 // DELETE /api/doctor/schedule-overrides?date=2026-01-15 or ?month=2026-01
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("doctor.schedule-overrides.delete", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -179,4 +180,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to delete override", 500);
   }
-}
+});

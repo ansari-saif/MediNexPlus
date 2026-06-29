@@ -4,6 +4,7 @@ import prisma from "../../../../../backend/config/db";
 import { bookAppointment, AppointmentServiceError } from "../../../../../backend/services/appointment.service";
 import { notify } from "../../../../../backend/services/notification.service";
 import { findPatientByPhone, generatePatientId, createPatient } from "../../../../../backend/repositories/patient.repo";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ async function resolveHospitalId(hid: string | null, slug: string | null): Promi
 }
 
 /* ── GET /api/public/booking?hid=HOSPITAL_ID or ?slug=SLUG ── */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("public.booking.get", async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   try {
     const hid = await resolveHospitalId(searchParams.get("hid"), searchParams.get("slug"));
@@ -56,10 +57,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /* ── POST /api/public/booking ── */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("public.booking.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const { name, phone, email, doctorId, departmentId, appointmentDate, timeSlot, type, consultationFee, notes, existingPatientId, forceNew } = body;
@@ -153,4 +154,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

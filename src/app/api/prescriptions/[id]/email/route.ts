@@ -7,13 +7,14 @@ import {
 } from "../../../../../../backend/services/prescription.service";
 import { sendPrescriptionEmail } from "../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
 export const dynamic = "force-dynamic";
 
 // POST /api/prescriptions/[id]/email — email prescription to patient
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("prescriptions.id.email.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ["DOCTOR", "HOSPITAL_ADMIN", "STAFF", "RECEPTIONIST"]);
   if (auth.error) return auth.error;
   try {
@@ -50,4 +51,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (e instanceof PrescriptionServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

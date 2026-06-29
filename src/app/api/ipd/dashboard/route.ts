@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 import { requireHospitalAdmin } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getBedStatusOverviewService, getAllAllocationsService } from "../../../../../backend/services/allocation.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("ipd.dashboard.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -24,4 +25,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

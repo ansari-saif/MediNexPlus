@@ -5,6 +5,7 @@ import {
   getWardById, updateWardService, deleteWardService, WardServiceError,
 } from "../../../../../../backend/services/ward.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const updateSchema = z.object({
   name: z.string().min(2).optional(),
@@ -14,7 +15,7 @@ const updateSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.wards.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -24,9 +25,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof WardServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("config.wards.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -39,9 +40,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof WardServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("config.wards.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -51,4 +52,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (e instanceof WardServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message, 500);
   }
-}
+});

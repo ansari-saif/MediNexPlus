@@ -56,8 +56,12 @@ export default function LoginPage() {
         setSuccess(true);
         const role = data.data?.user?.role;
         setTimeout(() => {
-          if (role === "SUPER_ADMIN") router.push("/superadmin/dashboard");
-          else if (role === "DOCTOR") router.push("/doctor/dashboard");
+          if (role === "SUPER_ADMIN") {
+            setApiError("Super Admin must sign in at /superadmin/login with the security key.");
+            setSuccess(false);
+            return;
+          }
+          if (role === "DOCTOR") router.push("/doctor/dashboard");
           else if (role === "RECEPTIONIST" || role === "STAFF") router.push("/staff/dashboard");
           else if (role === "SUB_DEPT_HEAD") router.push("/subdept/dashboard");
           else if (role === "FINANCE_HEAD") router.push("/finance/dashboard");

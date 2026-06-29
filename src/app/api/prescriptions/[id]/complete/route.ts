@@ -6,11 +6,12 @@ import {
   PrescriptionServiceError,
 } from "../../../../../../backend/services/prescription.service";
 import { updatePrescriptionSchema } from "../../../../../../backend/validations/prescription.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // POST /api/prescriptions/[id]/complete — finalize prescription & create workflow
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("prescriptions.id.complete.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ["DOCTOR", "HOSPITAL_ADMIN"]);
   if (auth.error) return auth.error;
   try {
@@ -24,4 +25,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (e instanceof PrescriptionServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

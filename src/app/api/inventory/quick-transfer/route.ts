@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import * as service from "../../../../../backend/services/central-inventory.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 // POST /api/inventory/quick-transfer
 // Body: { subDepartmentId, subDeptName, items: [{ itemId, quantity }], notes? }
 // Auto-resolves Central→Dept locations + auto-approves transfer
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("inventory.quick-transfer.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -40,4 +41,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

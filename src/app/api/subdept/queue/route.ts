@@ -1,11 +1,14 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import nodemailer from "nodemailer";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getSubDeptProfile, SubDeptServiceError } from "../../../../../backend/services/subdepartment.service";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_subdept_queue_route = logger.child("src/app/api/subdept/queue/route");
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.queue.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -307,9 +310,9 @@ export async function GET(req: NextRequest) {
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
     return errorResponse(err.message || "Failed to fetch queue", 500);
   }
-}
+});
 
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("subdept.queue.patch", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -362,7 +365,7 @@ export async function PATCH(req: NextRequest) {
           const emailUsername = (process.env.EMAIL_USERNAME || "").trim();
           const emailPassword = (process.env.EMAIL_PASSWORD || "").replace(/\s/g, "");
 
-          console.log("[SubDept Queue Mailer] SMTP config", {
+          log_src_app_api_subdept_queue_route.info("[SubDept Queue Mailer] SMTP config", {
             host: process.env.EMAIL_HOST,
             port: process.env.EMAIL_PORT,
             user: emailUsername ? `${emailUsername.slice(0, 4)}***${emailUsername.slice(-10)}` : "NOT SET",
@@ -422,7 +425,7 @@ export async function PATCH(req: NextRequest) {
             html,
           });
         } catch (emailErr) {
-          console.error("[SubDept Queue] Failed to send reschedule email:", emailErr);
+          log_src_app_api_subdept_queue_route.error("[SubDept Queue] Failed to send reschedule email:", emailErr);
         }
       }
     }
@@ -431,4 +434,4 @@ export async function PATCH(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to update", 500);
   }
-}
+});

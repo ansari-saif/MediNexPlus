@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_pharmacy_counter_sale_route = logger.child("src/app/api/pharmacy/counter-sale/route");
 
 const px = prisma as any;
 export const dynamic = "force-dynamic";
@@ -12,7 +15,7 @@ export const dynamic = "force-dynamic";
  * Returns counter sale history with KPI stats.
  * Query params: period (today|week|month|all), search, limit, page
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.counter-sale.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF, Role.RECEPTIONIST]);
   if (auth.error) return auth.error;
 
@@ -100,13 +103,13 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to fetch counter sales", 500);
   }
-}
+});
 
 /**
  * DELETE /api/pharmacy/counter-sale?id=...
  * Deletes a counter sale bill record.
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("pharmacy.counter-sale.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -130,7 +133,7 @@ export async function DELETE(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to delete counter sale", 500);
   }
-}
+});
 
 /**
  * POST /api/pharmacy/counter-sale
@@ -141,7 +144,7 @@ export async function DELETE(req: NextRequest) {
  *
  * IMPORTANT: Deducts stock from inventory batches (FIFO) and records movements.
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.counter-sale.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF, Role.RECEPTIONIST]);
   if (auth.error) return auth.error;
 
@@ -333,7 +336,7 @@ export async function POST(req: NextRequest) {
       "Pharmacy counter sale completed successfully"
     );
   } catch (err: any) {
-    console.error("Pharmacy counter-sale error:", err);
+    log_src_app_api_pharmacy_counter_sale_route.error("Pharmacy counter-sale error:", err);
     return errorResponse(err.message || "Failed to process counter sale", 500);
   }
-}
+});

@@ -4,11 +4,12 @@ import { successResponse, errorResponse } from "../../../../../../backend/utils/
 import prisma from "../../../../../../backend/config/db";
 import bcrypt from "bcryptjs";
 import { sendFinanceCredentials } from "../../../../../../backend/utils/mailer";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // POST /api/config/finance/send-credentials
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.finance.send-credentials.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN"]);
   if (auth.error) return auth.error;
   try {
@@ -77,4 +78,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

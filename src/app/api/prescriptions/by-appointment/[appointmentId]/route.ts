@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import { getPrescriptionByAppointment } from "../../../../../../backend/services/prescription.service";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/prescriptions/by-appointment/[appointmentId]
-export async function GET(req: NextRequest, { params }: { params: { appointmentId: string } }) {
+export const GET = withApiRoute("prescriptions.by-appointment.appointmentId.get", async (req: NextRequest, { params }: { params: { appointmentId: string } }) => {
   const auth = await requireRole(req, ["DOCTOR", "HOSPITAL_ADMIN", "STAFF", "RECEPTIONIST", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
   try {
@@ -16,4 +17,4 @@ export async function GET(req: NextRequest, { params }: { params: { appointmentI
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

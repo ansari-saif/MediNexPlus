@@ -1,5 +1,7 @@
 import prisma from "../config/db";
+import { logger } from "../utils/logger";
 import { Prisma } from "@prisma/client";
+const log_backend_repositories_inventory_repo = logger.child("backend/repositories/inventory.repo");
 
 // --- Items ---
 export const createInventoryItem = async (data: Prisma.InventoryItemUncheckedCreateInput) => {
@@ -77,7 +79,7 @@ export const findAllInventoryItems = async (params: {
 // --- Suppliers ---
 export const createSupplier = async (data: Prisma.SupplierUncheckedCreateInput) => {
   if (!prisma.supplier) {
-    console.error("Prisma supplier model is undefined. Available models:", Object.keys(prisma).filter(k => !k.startsWith('_')));
+    log_backend_repositories_inventory_repo.error("Prisma supplier model is undefined. Available models:", Object.keys(prisma).filter(k => !k.startsWith('_')));
     throw new Error("Internal Server Error: Supplier model not initialized in database client.");
   }
   return prisma.supplier.create({ data });

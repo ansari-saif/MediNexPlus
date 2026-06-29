@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_appointments__id__delete_complete_route = logger.child("src/app/api/appointments/[id]/delete-complete/route");
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN"];
 
@@ -19,7 +22,7 @@ export const dynamic = "force-dynamic";
  * - All patient's follow-ups
  * - The patient record itself
  */
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const DELETE = withApiRoute("appointments.id.delete-complete.delete", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -84,7 +87,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       "Appointment and complete patient history deleted successfully"
     );
   } catch (e: any) {
-    console.error("Delete complete error:", e);
+    log_src_app_api_appointments__id__delete_complete_route.error("Delete complete error:", e);
     return errorResponse(e.message || "Failed to delete patient history", 500);
   }
-}
+});

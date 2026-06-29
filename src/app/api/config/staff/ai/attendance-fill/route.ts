@@ -1,11 +1,14 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../../backend/middlewares/role.middleware";
+const log_src_app_api_config_staff_ai_attendance_fill_route = logger.child("src/app/api/config/staff/ai/attendance-fill/route");
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.staff.ai.attendance-fill.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -93,7 +96,7 @@ export async function POST(req: NextRequest) {
       `Auto-filled ${filled} days. ${existingDates.size} existing entries ${mode === "overwrite" ? "overwritten" : "preserved"}.`
     );
   } catch (e: any) {
-    console.error("Attendance fill error:", e);
+    log_src_app_api_config_staff_ai_attendance_fill_route.error("Attendance fill error:", e);
     return errorResponse(e.message || "Failed to auto-fill attendance", 500);
   }
-}
+});

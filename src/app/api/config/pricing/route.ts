@@ -3,6 +3,7 @@ import { requireHospitalAdmin, requireRole } from "../../../../../backend/middle
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { createPricing, findAllPricing, updatePricing, deletePricing } from "../../../../../backend/repositories/pricing.repo";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const pricingSchema = z.object({
   name: z.string().min(2),
@@ -13,7 +14,7 @@ const pricingSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.pricing.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "FINANCE_HEAD", "RECEPTIONIST", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
   try {
@@ -21,9 +22,9 @@ export async function GET(req: NextRequest) {
     const data = await findAllPricing(auth.hospitalId, searchParams.get("type") || undefined);
     return successResponse(data, "Pricing fetched");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.pricing.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -33,9 +34,9 @@ export async function POST(req: NextRequest) {
     const data = await createPricing({ hospitalId: auth.hospitalId, ...result.data });
     return successResponse(data, "Pricing created", 201);
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("config.pricing.put", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -45,9 +46,9 @@ export async function PUT(req: NextRequest) {
     await updatePricing(id, auth.hospitalId, updateData);
     return successResponse(null, "Pricing updated");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("config.pricing.delete", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -57,4 +58,4 @@ export async function DELETE(req: NextRequest) {
     await deletePricing(id, auth.hospitalId);
     return successResponse(null, "Pricing deleted");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});

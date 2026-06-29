@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server";
 import { errorResponse } from "../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(_req: NextRequest) {
+export const GET = withApiRoute("ipd.clinical-notes.get", async (_req: NextRequest) => {
   return errorResponse("Not implemented", 501);
-}
+});
 
-export async function POST(_req: NextRequest) {
+export const POST = withApiRoute("ipd.clinical-notes.post", async (_req: NextRequest) => {
   return errorResponse("Not implemented", 501);
-}
+});

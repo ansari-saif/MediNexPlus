@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../../backend/middlewares/role.middlewa
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import * as service from "../../../../../../backend/services/inventory.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const supplierSchema = z.object({
   name: z.string().min(2),
@@ -38,7 +39,7 @@ const supplierSchema = z.object({
 });
 
 // GET /api/subdept/inventory/supplier - List or get single supplier
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.inventory.supplier.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
 
@@ -55,10 +56,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/subdept/inventory/supplier - Create new supplier
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.inventory.supplier.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -72,10 +73,10 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/subdept/inventory/supplier - Update supplier
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("subdept.inventory.supplier.put", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -92,10 +93,10 @@ export async function PUT(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/subdept/inventory/supplier - Delete supplier (soft delete)
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("subdept.inventory.supplier.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -108,4 +109,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

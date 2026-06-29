@@ -3,12 +3,13 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getBillById, updateBill, recordPayment, deleteBill, revertBillToPending, BillingServiceError } from "../../../../../backend/services/billing.service";
 import { notifyPaymentReceived } from "../../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "RECEPTIONIST", "SUB_DEPT_HEAD"];
 export const dynamic = "force-dynamic";
 
 // GET /api/billing/[id]
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("billing.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -18,10 +19,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/billing/[id] — update discount/tax/notes/status OR revert to pending
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("billing.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -36,10 +37,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PATCH /api/billing/[id] — record a payment
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withApiRoute("billing.id.patch", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -58,10 +59,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/billing/[id] — delete a bill
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("billing.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -71,4 +72,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

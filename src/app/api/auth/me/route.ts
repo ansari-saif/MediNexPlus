@@ -3,9 +3,11 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { findUserById } from "../../../../../backend/repositories/user.repo";
 import { env } from "../../../../../backend/config/env";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
-  const { user, error } = await authMiddleware(req);
+export const GET = withApiRoute("auth.me.get", async (req: NextRequest) => {
+  const portal = req.nextUrl.searchParams.get("portal") === "superadmin" ? "superadmin" : "default";
+  const { user, error } = await authMiddleware(req, portal);
   if (error) return error;
 
   // Super Admin is not a database user — return data from JWT + env
@@ -35,4 +37,4 @@ export async function GET(req: NextRequest) {
     hospital: dbUser.hospital,
     profilePhoto: dbUser.profilePhoto ?? null,
   }, "Current user");
-}
+});

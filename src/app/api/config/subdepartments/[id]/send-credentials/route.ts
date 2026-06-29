@@ -8,8 +8,9 @@ import {
 } from "../../../../../../../backend/services/subdepartment.service";
 import { sendSubDeptCredentials } from "../../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("config.subdepartments.id.send-credentials.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -52,4 +53,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to send credentials", 500);
   }
-}
+});

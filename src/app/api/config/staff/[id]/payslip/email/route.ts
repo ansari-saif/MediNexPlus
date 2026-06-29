@@ -5,8 +5,9 @@ const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../../backend/config/db";
 import { sendPayslipEmail } from "../../../../../../../../backend/utils/mailer";
+import { withApiRoute } from "../../../../../../../../backend/utils/api-route";
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("config.staff.id.payslip.email.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -49,4 +50,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   } catch (e: any) {
     return errorResponse(e.message || "Failed to email payslip", 500);
   }
-}
+});

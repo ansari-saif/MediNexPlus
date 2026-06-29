@@ -8,6 +8,7 @@ import {
   getDoctorStats,
   DoctorServiceError,
 } from "../../../../../backend/services/doctor.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 import {
   createDoctorSchema,
   queryDoctorSchema,
@@ -19,7 +20,7 @@ const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/config/doctors - List doctors with pagination and filters
 // ─────────────────────────────────────────────────────────────────────────────
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.doctors.get", async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
 
@@ -69,12 +70,12 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Internal server error", 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/config/doctors - Create new doctor
 // ─────────────────────────────────────────────────────────────────────────────
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.doctors.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -98,4 +99,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

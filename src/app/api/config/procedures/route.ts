@@ -7,8 +7,9 @@ import {
   SubDeptServiceError,
 } from "../../../../../backend/services/subdepartment.service";
 import { createProcedureSchema } from "../../../../../backend/validations/subdepartment.validation";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.procedures.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -24,9 +25,9 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch procedures", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.procedures.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -39,4 +40,4 @@ export async function POST(req: NextRequest) {
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to create procedure", 500);
   }
-}
+});

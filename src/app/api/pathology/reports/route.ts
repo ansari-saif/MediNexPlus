@@ -1,11 +1,14 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getSubDeptProfile } from "../../../../../backend/services/subdepartment.service";
 import prisma from "../../../../../backend/config/db";
 import { sendLabReport } from "../../../../../backend/utils/mailer";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_pathology_reports_route = logger.child("src/app/api/pathology/reports/route");
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pathology.reports.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN", "STAFF"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -55,9 +58,9 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});
 
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("pathology.reports.patch", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN", "STAFF"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -101,9 +104,9 @@ export async function PATCH(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to update report", 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("pathology.reports.delete", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN", "STAFF"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -127,9 +130,9 @@ export async function DELETE(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to delete report", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pathology.reports.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN", "STAFF"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -193,7 +196,7 @@ export async function POST(req: NextRequest) {
             });
           }
         } catch (emailErr: any) {
-          console.error("[LabReport] Email failed (non-fatal):", emailErr.message);
+          log_src_app_api_pathology_reports_route.error("[LabReport] Email failed (non-fatal):", emailErr.message);
         }
       }
     } else {
@@ -219,4 +222,4 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});

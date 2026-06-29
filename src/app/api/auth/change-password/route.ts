@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from "../../../../../backend/utils/res
 import { comparePassword, hashPassword } from "../../../../../backend/utils/hash";
 import prisma from "../../../../../backend/config/db";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const changePasswordSchema = z.object({
   oldPassword: z.string().min(1, "Current password is required"),
@@ -17,7 +18,7 @@ const changePasswordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.change-password.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -70,4 +71,4 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to change password", 500);
   }
-}
+});

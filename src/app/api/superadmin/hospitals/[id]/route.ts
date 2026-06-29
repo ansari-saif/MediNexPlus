@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_superadmin_hospitals__id__route = logger.child("src/app/api/superadmin/hospitals/[id]/route");
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("superadmin.hospitals.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
-    const authResult = await authMiddleware(req);
+    const authResult = await authMiddleware(req, "superadmin");
     if (authResult.error || authResult.user?.role !== "SUPER_ADMIN") {
       return NextResponse.json(
         { success: false, message: "Unauthorized. Super Admin access required." },
@@ -46,17 +49,17 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
     });
   } catch (error: any) {
-    console.error("Get hospital error:", error);
+    log_src_app_api_superadmin_hospitals__id__route.error("Get hospital error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch hospital" },
       { status: 500 }
     );
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("superadmin.hospitals.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   try {
-    const authResult = await authMiddleware(req);
+    const authResult = await authMiddleware(req, "superadmin");
     if (authResult.error || authResult.user?.role !== "SUPER_ADMIN") {
       return NextResponse.json(
         { success: false, message: "Unauthorized. Super Admin access required." },
@@ -84,10 +87,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       message: `Hospital "${hospital.name}" deleted successfully`,
     });
   } catch (error: any) {
-    console.error("Delete hospital error:", error);
+    log_src_app_api_superadmin_hospitals__id__route.error("Delete hospital error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to delete hospital" },
       { status: 500 }
     );
   }
-}
+});

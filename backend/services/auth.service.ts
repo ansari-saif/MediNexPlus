@@ -4,6 +4,78 @@ import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken } from "../utils/jwt";
 import { Role } from "@prisma/client";
 import { verifyOTP } from "./otp.service";
+import prisma from "../config/db";
+import { recordAuthLogin } from "../utils/auth-metrics";
+
+export const onboardHospitalBySuperAdmin = async (data: {
+  hospitalName: string;
+  adminName: string;
+  email: string;
+  mobile: string;
+  password: string;
+}) => {
+  const { hospitalName, adminName, email, mobile, password } = data;
+
+  const existingUser = await findUserByEmail(email);
+  if (existingUser) {
+    throw new Error("Email already registered");
+  }
+
+  const existingHospital = await prisma.hospital.findUnique({ where: { email } });
+  if (existingHospital) {
+    throw new Error("Hospital email already registered");
+  }
+
+  const hashedPassword = await hashPassword(password);
+  const now = new Date();
+  const trialEnd = new Date(now);
+  trialEnd.setDate(trialEnd.getDate() + 14);
+
+  const result = await prisma.$transaction(async (tx) => {
+    const hospital = await tx.hospital.create({
+      data: {
+        name: hospitalName,
+        mobile,
+        email,
+        isVerified: true,
+        trialStartDate: now,
+        trialEndDate: trialEnd,
+        subscriptionStatus: "TRIAL",
+      },
+    });
+
+    const user = await tx.user.create({
+      data: {
+        name: adminName,
+        email,
+        password: hashedPassword,
+        role: Role.HOSPITAL_ADMIN,
+        hospitalId: hospital.id,
+      },
+    });
+
+    await tx.hospitalSettings.create({
+      data: {
+        hospitalId: hospital.id,
+        hospitalName,
+        email,
+        phone: mobile,
+      },
+    });
+
+    return { hospital, user };
+  });
+
+  return {
+    hospital: result.hospital,
+    user: {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      role: result.user.role,
+    },
+  };
+};
 
 export const signupHospitalService = async (data: any) => {
   const { hospitalName, mobile, email, password, adminName, otp } = data;
@@ -93,6 +165,8 @@ export const loginUserService = async (email: string, password: string) => {
   };
 
   const token = generateToken(tokenParams);
+
+  recordAuthLogin("success", user.role);
 
   return { token, user: { id: user.id, name: user.name, email: user.email, role: user.role, hospitalId: user.hospitalId } };
 };

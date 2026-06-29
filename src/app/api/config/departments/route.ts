@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireHospitalAdmin, requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import {
@@ -22,6 +23,8 @@ import {
 } from "../../../../../backend/validations/department.validation";
 import { z } from "zod";
 import { DepartmentType } from "@prisma/client";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_config_departments_route = logger.child("src/app/api/config/departments/route");
 
 const DROPDOWN_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD"];
 
@@ -39,7 +42,7 @@ const subDeptSchema = z.object({
  * Query params: search, type, isActive, page, limit, sortBy, sortOrder
  * Special: ?sub=true for sub-departments, ?simple=true for dropdown list
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.departments.get", async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const simple = searchParams.get("simple");
 
@@ -95,7 +98,7 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /**
  * POST /api/config/departments
@@ -104,7 +107,7 @@ export async function GET(req: NextRequest) {
  * Special: ?action=seed to seed default departments
  * Special: ?action=generate-code&name=X to generate unique code
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.departments.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -168,7 +171,7 @@ export async function POST(req: NextRequest) {
           data.name
         );
       } catch (credErr: any) {
-        console.error("[DeptCredentials] Auto-create failed:", credErr.message, credErr.code);
+        log_src_app_api_config_departments_route.error("[DeptCredentials] Auto-create failed:", credErr.message, credErr.code);
         credentialWarning = `Department created but login setup failed: ${credErr.message}`;
       }
     }
@@ -187,14 +190,14 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /**
  * PUT /api/config/departments
  * Update sub-department (for backwards compatibility)
  * Note: For departments, use PUT /api/config/departments/[id]
  */
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("config.departments.put", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -217,14 +220,14 @@ export async function PUT(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 /**
  * DELETE /api/config/departments
  * Delete sub-department by ID query param
  * Note: For departments, use DELETE /api/config/departments/[id]
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("config.departments.delete", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -248,4 +251,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

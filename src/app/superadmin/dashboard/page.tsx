@@ -265,11 +265,32 @@ export default function SuperAdminDashboard() {
   const [payHistoryLoading, setPayHistoryLoading] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" }).then(r => r.json()).then(d => {
-      if (!d.success || d.data?.role !== "SUPER_ADMIN") router.push("/superadmin/login");
-      else setLoading(false);
-    }).catch(() => router.push("/superadmin/login"));
+    const verifySuperAdmin = () =>
+      fetch("/api/auth/me?portal=superadmin", { credentials: "include" })
+        .then(r => r.json())
+        .then(d => {
+          if (!d.success || d.data?.role !== "SUPER_ADMIN") router.push("/superadmin/login");
+          else setLoading(false);
+        })
+        .catch(() => router.push("/superadmin/login"));
+
+    verifySuperAdmin();
   }, [router]);
+
+  // Re-check superadmin session when user returns to this tab (guards stale UI after other logins)
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== "visible" || loading) return;
+      fetch("/api/auth/me?portal=superadmin", { credentials: "include" })
+        .then(r => r.json())
+        .then(d => {
+          if (!d.success || d.data?.role !== "SUPER_ADMIN") router.push("/superadmin/login");
+        })
+        .catch(() => router.push("/superadmin/login"));
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [router, loading]);
 
   useEffect(() => {
     if (loading) return;
@@ -347,16 +368,33 @@ export default function SuperAdminDashboard() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault(); setCreating(true); setCreateMsg("");
+    if (newHospital.password !== newHospital.confirmPassword) {
+      setCreateMsg("Passwords do not match.");
+      setCreating(false);
+      return;
+    }
     try {
+      const meRes = await fetch("/api/auth/me?portal=superadmin", { credentials: "include" });
+      const me = await meRes.json();
+      if (!me.success || me.data?.role !== "SUPER_ADMIN") {
+        setCreateMsg("Your session is not Super Admin. Log out, then sign in at /superadmin/login with the security key.");
+        setCreating(false);
+        return;
+      }
       const res = await fetch("/api/hospital/create", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify(newHospital) });
       const d = await res.json();
       if (d.success) { setCreateMsg("✓ Hospital created successfully!"); setTimeout(() => { setShowCreate(false); window.location.reload(); }, 1500); }
-      else setCreateMsg(d.message || "Failed to create hospital.");
+      else {
+        const detail = Array.isArray(d.errors)
+          ? d.errors.map((i: { message?: string }) => i.message).filter(Boolean).join(". ")
+          : "";
+        setCreateMsg(detail || d.message || "Failed to create hospital.");
+      }
     } catch { setCreateMsg("Network error. Please try again."); }
     finally { setCreating(false); }
   };
 
-  const logout = async () => { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); router.push("/superadmin/login"); };
+  const logout = async () => { await fetch("/api/auth/logout?portal=superadmin", { method: "POST", credentials: "include" }); router.push("/superadmin/login"); };
 
   const getSubBadge = (h: Hospital) => {
     const s = h.subscriptionStatus;

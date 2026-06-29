@@ -5,6 +5,7 @@ import * as service from "../../../../../backend/services/inventory.service";
 import { getLocationStockForDept } from "../../../../../backend/repositories/central-inventory.repo";
 import prisma from "../../../../../backend/config/db";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -66,7 +67,7 @@ const itemSchema = z.object({
 });
 
 // GET /api/subdept/inventory - List or get single inventory item
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.inventory.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
 
@@ -207,10 +208,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/subdept/inventory - Create new medicine/item
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.inventory.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -225,10 +226,10 @@ export async function POST(req: NextRequest) {
     if (e.code === "P2002") return errorResponse("Item with same name & category already exists", 409);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/subdept/inventory - Update medicine/item
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("subdept.inventory.put", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -245,10 +246,10 @@ export async function PUT(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/subdept/inventory - Delete medicine/item
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("subdept.inventory.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -262,4 +263,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

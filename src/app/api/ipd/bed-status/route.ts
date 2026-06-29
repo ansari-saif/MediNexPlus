@@ -5,13 +5,14 @@ import {
   getBedStatusOverviewService, getAllAllocationsService, updateBedStatusService, AllocationServiceError,
 } from "../../../../../backend/services/allocation.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const statusSchema = z.object({
   bedId: z.string().min(1),
   status: z.enum(["AVAILABLE","MAINTENANCE","RESERVED"]),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("ipd.bed-status.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -62,9 +63,9 @@ export async function GET(req: NextRequest) {
 
     return successResponse({ wards: Array.from(wardMap.values()), summary }, "Bed status overview fetched");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("ipd.bed-status.patch", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -77,4 +78,4 @@ export async function PATCH(req: NextRequest) {
     if (e instanceof AllocationServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message, 500);
   }
-}
+});

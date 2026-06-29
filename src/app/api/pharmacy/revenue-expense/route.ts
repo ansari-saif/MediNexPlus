@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
  * GET /api/pharmacy/revenue-expense
  * Returns pharmacy-specific revenue (bills) and expenses (purchases) for the current sub-dept
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.revenue-expense.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -93,13 +94,13 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to fetch revenue/expense data", 500);
   }
-}
+});
 
 /**
  * POST /api/pharmacy/revenue-expense
  * Manually add an expense (purchase/operational cost) for this pharmacy
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.revenue-expense.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -125,4 +126,4 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed to add expense", 500);
   }
-}
+});

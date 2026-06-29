@@ -3,8 +3,9 @@ import { authMiddleware } from "../../../../../backend/middlewares/auth.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { getSubDeptProfile } from "../../../../../backend/services/subdepartment.service";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pathology.tests.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN", "STAFF"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -43,9 +44,9 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pathology.tests.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (!["SUB_DEPT_HEAD", "HOSPITAL_ADMIN"].includes(user!.role)) return errorResponse("Forbidden", 403);
@@ -86,4 +87,4 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});

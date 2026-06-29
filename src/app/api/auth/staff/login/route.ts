@@ -3,8 +3,10 @@ import { successResponse, errorResponse } from "../../../../../../backend/utils/
 import { setSessionCookie } from "../../../../../../backend/utils/session-cookie";
 import { staffLogin, StaffServiceError } from "../../../../../../backend/services/staff.service";
 import { staffLoginSchema } from "../../../../../../backend/validations/staff.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+import { recordAuthLogin } from "../../../../../../backend/utils/auth-metrics";
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.staff.login.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const validated = staffLoginSchema.safeParse(body);
@@ -18,10 +20,12 @@ export async function POST(req: NextRequest) {
 
     const response = successResponse(result, "Login successful");
     setSessionCookie(response, req, result.token);
+    recordAuthLogin("success", result.staff?.role || "STAFF");
 
     return response;
   } catch (error: any) {
     if (error instanceof StaffServiceError) {
+      recordAuthLogin("fail", "STAFF");
       return errorResponse(error.message, error.status);
     }
     const msg = String(error?.message || "");
@@ -35,6 +39,7 @@ export async function POST(req: NextRequest) {
     if (isDbDown) {
       return errorResponse("Unable to connect. Please check your internet connection and try again.", 503);
     }
+    recordAuthLogin("fail", "STAFF");
     return errorResponse(error.message || "Login failed", 500);
   }
-}
+});

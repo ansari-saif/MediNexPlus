@@ -3,12 +3,13 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
 import { findDepartmentByUserId } from "../../../../../backend/repositories/department.repo";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 /**
  * GET /api/parentdept/subdepartments
  * List all sub-departments under the logged-in dept head's department
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("parentdept.subdepartments.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -28,14 +29,14 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch sub-departments", 500);
   }
-}
+});
 
 /**
  * PUT /api/parentdept/subdepartments
  * Update a sub-department under the parent dept
  * Body: { id, ...updateData }
  */
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("parentdept.subdepartments.put", async (req: NextRequest) => {
   const auth = await requireRole(req, ["DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -62,13 +63,13 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to update sub-department", 500);
   }
-}
+});
 
 /**
  * DELETE /api/parentdept/subdepartments?id=xxx
  * Delete a sub-department under the parent dept
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("parentdept.subdepartments.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, ["DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -91,4 +92,4 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to delete sub-department", 500);
   }
-}
+});

@@ -4,8 +4,9 @@ import { roleMiddleware } from "../../../../../backend/middlewares/role.middlewa
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import { getHospitalDetailsService } from "../../../../../backend/services/hospital.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("hospital.details.get", async (req: NextRequest) => {
   try {
     const { user, error: authError } = await authMiddleware(req);
     if (authError) return authError;
@@ -27,4 +28,4 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     return errorResponse(err.message, 500);
   }
-}
+});

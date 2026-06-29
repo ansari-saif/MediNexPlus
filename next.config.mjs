@@ -8,8 +8,16 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: skipDockerTypecheck },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
+    instrumentationHook: true,
     outputFileTracingIncludes: {
-      "/**": ["./node_modules/sharp/**/*", "./node_modules/@img/**/*"],
+      "/**": [
+        "./node_modules/sharp/**/*",
+        "./node_modules/@img/**/*",
+        "./node_modules/@opentelemetry/**/*",
+        "./node_modules/@pyroscope/**/*",
+        "./node_modules/pino/**/*",
+        "./node_modules/prom-client/**/*",
+      ],
     },
   },
   images: {

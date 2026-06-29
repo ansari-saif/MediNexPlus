@@ -6,11 +6,12 @@ import {
   PrescriptionServiceError,
 } from "../../../../../../backend/services/prescription.service";
 import { workflowUpdateSchema } from "../../../../../../backend/validations/prescription.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // PATCH /api/prescriptions/[id]/workflow — update a workflow step
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withApiRoute("prescriptions.id.workflow.patch", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ["DOCTOR", "HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
   try {
@@ -33,4 +34,4 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (e instanceof PrescriptionServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

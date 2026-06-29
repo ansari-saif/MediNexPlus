@@ -8,6 +8,7 @@ import {
   IPDServiceError,
 } from "../../../../../../backend/services/ipd.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const updateSchema = z.object({
   admissionType: z.enum(["EMERGENCY", "PLANNED", "TRANSFER"]).optional(),
@@ -19,7 +20,7 @@ const updateSchema = z.object({
   status: z.enum(["ADMITTED", "DISCHARGED", "TRANSFERRED"]).optional(),
 });
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("ipd.admissions.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -29,9 +30,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof IPDServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withApiRoute("ipd.admissions.id.patch", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -44,9 +45,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (e instanceof IPDServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("ipd.admissions.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -57,4 +58,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (e instanceof IPDServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

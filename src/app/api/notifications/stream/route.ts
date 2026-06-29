@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { getUnreadCount } from "../../../../../backend/repositories/notification.repo";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("notifications.stream.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -90,4 +91,4 @@ export async function GET(req: NextRequest) {
       "X-Accel-Buffering": "no",
     },
   });
-}
+});

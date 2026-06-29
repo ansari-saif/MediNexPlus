@@ -3,9 +3,10 @@ import { requireHospitalAdmin } from "../../../../backend/middlewares/role.middl
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
 import { createBlogSchema } from "../../../../backend/validations/blog.validation";
 import * as blogService from "../../../../backend/services/blog.service";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 // GET /api/blogs — list blogs (admin: all statuses; public: published only)
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("blogs.get", async (req: NextRequest) => {
   try {
     const { searchParams } = new URL(req.url);
     const isPublic = searchParams.get("public") === "true";
@@ -72,10 +73,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch blogs", 500);
   }
-}
+});
 
 // POST /api/blogs — create a new blog
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("blogs.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -94,4 +95,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to create blog", 500);
   }
-}
+});

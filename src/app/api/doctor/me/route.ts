@@ -2,8 +2,9 @@ import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("doctor.me.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -39,9 +40,9 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch profile", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("doctor.me.put", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -70,4 +71,4 @@ export async function PUT(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to update profile", 500);
   }
-}
+});

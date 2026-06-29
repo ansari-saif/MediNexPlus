@@ -1,10 +1,12 @@
 import { NextRequest } from "next/server";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
-import { setSessionCookie } from "../../../../../backend/utils/session-cookie";
+import { setSuperAdminSessionCookie } from "../../../../../backend/utils/session-cookie";
 import { generateToken } from "../../../../../backend/utils/jwt";
 import { Role } from "@prisma/client";
 import { env } from "../../../../../backend/config/env";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+import { recordAuthLogin } from "../../../../../backend/utils/auth-metrics";
 
 const superAdminLoginSchema = z.object({
   email: z.string().email(),
@@ -12,7 +14,7 @@ const superAdminLoginSchema = z.object({
   securityKey: z.string(),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.superadmin.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const result = superAdminLoginSchema.safeParse(body);
@@ -38,13 +40,15 @@ export async function POST(req: NextRequest) {
         "Super Admin Login Successful"
       );
 
-      setSessionCookie(response, req, token, "lax");
+      setSuperAdminSessionCookie(response, req, token, "lax");
+      recordAuthLogin("success", Role.SUPER_ADMIN);
 
       return response;
     }
 
+    recordAuthLogin("fail", Role.SUPER_ADMIN);
     return errorResponse("Invalid Super Admin Credentials", 401);
   } catch (error: any) {
     return errorResponse(error.message, 401);
   }
-}
+});

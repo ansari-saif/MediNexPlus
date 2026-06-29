@@ -3,13 +3,15 @@ import { loginUserService } from "../../../../../backend/services/auth.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { setSessionCookie } from "../../../../../backend/utils/session-cookie";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+import { recordAuthLogin } from "../../../../../backend/utils/auth-metrics";
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.login.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const result = loginSchema.safeParse(body);
@@ -19,6 +21,8 @@ export async function POST(req: NextRequest) {
     }
 
     const { token, user } = await loginUserService(result.data.email, result.data.password);
+
+    recordAuthLogin("success", user.role || "unknown");
 
     const response = successResponse({ user }, "Login Successful");
     setSessionCookie(response, req, token, "lax");
@@ -39,6 +43,7 @@ export async function POST(req: NextRequest) {
     const isAuthError =
       msg.toLowerCase().includes("invalid credentials") ||
       msg.toLowerCase().includes("inactive user");
+    recordAuthLogin("fail", "unknown");
     return errorResponse(msg || "Login failed", isAuthError ? 401 : 500);
   }
-}
+});

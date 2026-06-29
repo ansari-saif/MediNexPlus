@@ -5,13 +5,14 @@ import { getSubDeptProfile, SubDeptServiceError } from "../../../../../backend/s
 import prisma from "../../../../../backend/config/db";
 import { addProcedureChargeToBill } from "../../../../../backend/services/billing.service";
 import { notifyProcedureCompleted } from "../../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // GET /api/subdept/records — list procedure records
 // SUB_DEPT_HEAD: scoped to their sub-dept
 // HOSPITAL_ADMIN / RECEPTIONIST: can filter by patientId across hospital
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.records.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
 
@@ -122,10 +123,10 @@ export async function GET(req: NextRequest) {
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});
 
 // POST /api/subdept/records — record a procedure performed on a patient
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.records.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "SUB_DEPT_HEAD") return errorResponse("Forbidden", 403);
@@ -196,4 +197,4 @@ export async function POST(req: NextRequest) {
     if (err instanceof SubDeptServiceError) return errorResponse(err.message, err.status);
     return errorResponse(err.message || "Failed", 500);
   }
-}
+});

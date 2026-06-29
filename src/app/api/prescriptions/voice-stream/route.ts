@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { streamTranscription } from "@/../../backend/services/voice-prescription.service";
 import { authMiddleware } from "@/../../backend/middlewares/auth.middleware";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_prescriptions_voice_stream_route = logger.child("src/app/api/prescriptions/voice-stream/route");
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("prescriptions.voice-stream.post", async (req: NextRequest) => {
   try {
     const authResult = await authMiddleware(req);
     if (authResult.error || !authResult.user) {
@@ -36,10 +39,10 @@ export async function POST(req: NextRequest) {
       data: result,
     });
   } catch (error: any) {
-    console.error("Voice stream API error:", error);
+    log_src_app_api_prescriptions_voice_stream_route.error("Voice stream API error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to process audio stream" },
       { status: 500 }
     );
   }
-}
+});

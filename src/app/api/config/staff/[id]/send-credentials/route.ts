@@ -10,11 +10,10 @@ import {
 } from "../../../../../../../backend/services/staff.service";
 import { sendStaffCredentials } from "../../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const POST = withApiRoute("config.staff.id.send-credentials.post", async (req: NextRequest,
+  { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -57,4 +56,4 @@ export async function POST(
     }
     return errorResponse(error.message || "Failed to send credentials", 500);
   }
-}
+});

@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_subdept_inventory_purchase_request_route = logger.child("src/app/api/subdept/inventory/purchase-request/route");
 
 const px = prisma as any;
 
@@ -11,7 +14,7 @@ const px = prisma as any;
  * Creates a purchase order request from the counter sale flow
  * when an item is out of stock or not in inventory.
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.inventory.purchase-request.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -94,7 +97,7 @@ export async function POST(req: NextRequest) {
       `Purchase request created for ${itemName}`
     );
   } catch (err: any) {
-    console.error("Purchase request error:", err);
+    log_src_app_api_subdept_inventory_purchase_request_route.error("Purchase request error:", err);
     return errorResponse(err.message || "Failed to create purchase request", 500);
   }
-}
+});

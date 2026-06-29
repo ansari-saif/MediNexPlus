@@ -3,11 +3,12 @@ import { requireHospitalAdmin, requireRole } from "../../../../../backend/middle
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { notify } from "../../../../../backend/services/notification.service";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const INV_READ_ROLES = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "SUB_DEPT_HEAD"];
 
 // GET /api/inventory/low-stock — list items at or below minStock/reorderLevel
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("inventory.low-stock.get", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -31,10 +32,10 @@ export async function GET(req: NextRequest) {
     { items: lowStock, count: lowStock.length },
     `${lowStock.length} item(s) at or below reorder level`
   );
-}
+});
 
 // POST /api/inventory/low-stock — send notifications for low-stock items
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("inventory.low-stock.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -84,4 +85,4 @@ export async function POST(req: NextRequest) {
     { fired, total: lowStock.length },
     `Sent ${fired} low-stock notification(s)`
   );
-}
+});

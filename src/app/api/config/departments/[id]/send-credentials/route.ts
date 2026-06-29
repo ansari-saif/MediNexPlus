@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../../backend/utils/logger";
 import { requireHospitalAdmin } from "../../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import {
@@ -8,8 +9,10 @@ import {
 } from "../../../../../../../backend/services/department.service";
 import { sendDeptCredentials } from "../../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
+const log_src_app_api_config_departments__id__send_credentials_route = logger.child("src/app/api/config/departments/[id]/send-credentials/route");
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("config.departments.id.send-credentials.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -39,7 +42,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const hospitalName = hospital?.name || "Hospital";
     const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/login`;
 
-    console.log(`[DeptCredentials] ${isResend ? "Resent" : "Created"} credentials for dept "${dept.name}": email=${credentials.email}, password=${credentials.password}`);
+    log_src_app_api_config_departments__id__send_credentials_route.info(`[DeptCredentials] ${isResend ? "Resent" : "Created"} credentials for dept "${dept.name}": email=${credentials.email}, password=${credentials.password}`);
 
     // Send email (non-blocking — don't fail if mailer is down)
     sendDeptCredentials({
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       deptType: dept.type,
       hospitalName,
       loginUrl,
-    }).catch((err: any) => console.error("[DeptCredentials] Email send failed:", err.message));
+    }).catch((err: any) => log_src_app_api_config_departments__id__send_credentials_route.error("[DeptCredentials] Email send failed:", err.message));
 
     return successResponse(
       { email: credentials.email, password: credentials.password },
@@ -61,4 +64,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (error instanceof DepartmentServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to send credentials", 500);
   }
-}
+});

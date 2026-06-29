@@ -3,9 +3,10 @@ import { requireHospitalAdmin } from "../../../../../backend/middlewares/role.mi
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { updateBlogSchema } from "../../../../../backend/validations/blog.validation";
 import * as blogService from "../../../../../backend/services/blog.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 // GET /api/blogs/[id]
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const GET = withApiRoute("blogs.id.get", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
   try {
@@ -27,10 +28,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch blog", 500);
   }
-}
+});
 
 // PUT /api/blogs/[id]
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const PUT = withApiRoute("blogs.id.put", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
@@ -48,10 +49,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   } catch (e: any) {
     return errorResponse(e.message || "Failed to update blog", 500);
   }
-}
+});
 
 // DELETE /api/blogs/[id]
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const DELETE = withApiRoute("blogs.id.delete", async (req: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
@@ -63,4 +64,4 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   } catch (e: any) {
     return errorResponse(e.message || "Failed to delete blog", 500);
   }
-}
+});

@@ -12,11 +12,12 @@ import {
   queryFollowUpSchema,
 } from "../../../../backend/validations/followup.validation";
 import { notifyFollowUpScheduled } from "../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR"];
 
 // GET /api/followups
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("followups.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -52,10 +53,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/followups
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("followups.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -78,4 +79,4 @@ export async function POST(req: NextRequest) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

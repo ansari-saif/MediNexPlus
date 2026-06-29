@@ -1,11 +1,14 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { requireHospitalAdmin } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_config_schedule_templates__id__route = logger.child("src/app/api/config/schedule-templates/[id]/route");
 
 type Params = { params: Promise<{ id: string }> };
 
 // PUT /api/config/schedule-templates/[id] - Full update (name, description, scheduleData)
-export async function PUT(req: NextRequest, { params }: Params) {
+export const PUT = withApiRoute("config.schedule-templates.id.put", async (req: NextRequest, { params }: Params) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -31,13 +34,13 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     return successResponse(updated, "Template updated successfully");
   } catch (e: any) {
-    console.error("Template update error:", e);
+    log_src_app_api_config_schedule_templates__id__route.error("Template update error:", e);
     return errorResponse(e.message || "Failed to update template", 500);
   }
-}
+});
 
 // PATCH /api/config/schedule-templates/[id] - Rename template
-export async function PATCH(req: NextRequest, { params }: Params) {
+export const PATCH = withApiRoute("config.schedule-templates.id.patch", async (req: NextRequest, { params }: Params) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -61,13 +64,13 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
     return successResponse(updated, "Template renamed successfully");
   } catch (e: any) {
-    console.error("Template rename error:", e);
+    log_src_app_api_config_schedule_templates__id__route.error("Template rename error:", e);
     return errorResponse(e.message || "Failed to rename template", 500);
   }
-}
+});
 
 // DELETE /api/config/schedule-templates/[id] - Delete template
-export async function DELETE(req: NextRequest, { params }: Params) {
+export const DELETE = withApiRoute("config.schedule-templates.id.delete", async (req: NextRequest, { params }: Params) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -84,7 +87,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
 
     return successResponse({ id }, "Template deleted successfully");
   } catch (e: any) {
-    console.error("Template deletion error:", e);
+    log_src_app_api_config_schedule_templates__id__route.error("Template deletion error:", e);
     return errorResponse(e.message || "Failed to delete template", 500);
   }
-}
+});

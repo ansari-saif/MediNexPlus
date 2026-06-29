@@ -6,12 +6,13 @@ import { sendDoctorCredentials } from "../../../../../../backend/utils/mailer";
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // POST /api/config/doctors/send-credentials-bulk
 // Sends credentials to all doctors where credentialsSent=false
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.doctors.send-credentials-bulk.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -97,4 +98,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

@@ -14,6 +14,7 @@ import {
   DayOfWeekEnum,
 } from "../../../../../backend/validations/doctor.validation";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 async function getDoctor(userId: string) {
   const prisma = (await import("../../../../../backend/config/db")).default;
@@ -21,7 +22,7 @@ async function getDoctor(userId: string) {
 }
 
 // GET /api/doctor/availability — weekly schedule for logged-in doctor
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("doctor.availability.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -36,10 +37,10 @@ export async function GET(req: NextRequest) {
     if (e instanceof AvailabilityServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Failed to fetch schedule", 500);
   }
-}
+});
 
 // POST /api/doctor/availability — set/update a day's schedule
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("doctor.availability.post", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -81,10 +82,10 @@ export async function POST(req: NextRequest) {
     if (e instanceof AvailabilityServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Failed to save schedule", 500);
   }
-}
+});
 
 // PATCH /api/doctor/availability — toggle a day active/inactive
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("doctor.availability.patch", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -104,10 +105,10 @@ export async function PATCH(req: NextRequest) {
     if (e instanceof AvailabilityServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Failed to toggle", 500);
   }
-}
+});
 
 // DELETE /api/doctor/availability?day=MONDAY or ?all=true
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("doctor.availability.delete", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error) return error;
   if (user!.role !== "DOCTOR") return errorResponse("Forbidden", 403);
@@ -133,4 +134,4 @@ export async function DELETE(req: NextRequest) {
     if (e instanceof AvailabilityServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message || "Failed to delete", 500);
   }
-}
+});

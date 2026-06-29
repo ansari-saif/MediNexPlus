@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { permissionService } from "../../../../../../backend/services/permission.service";
 import { withAuth, createUnauthorizedError } from "../../../../../../backend/middlewares/permission.middleware";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_permissions_user__userId__route = logger.child("src/app/api/permissions/user/[userId]/route");
 
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+export const GET = withApiRoute("permissions.user.userId.get", async (req: NextRequest, { params }: { params: { userId: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -24,10 +27,10 @@ export async function GET(req: NextRequest, { params }: { params: { userId: stri
       data: permissions,
     });
   } catch (error: any) {
-    console.error("Get user permissions error:", error);
+    log_src_app_api_permissions_user__userId__route.error("Get user permissions error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch user permissions" },
       { status: 500 }
     );
   }
-}
+});

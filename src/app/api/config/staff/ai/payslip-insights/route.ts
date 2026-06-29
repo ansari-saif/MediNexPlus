@@ -1,12 +1,15 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../../backend/middlewares/role.middleware";
+const log_src_app_api_config_staff_ai_payslip_insights_route = logger.child("src/app/api/config/staff/ai/payslip-insights/route");
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 const getGeminiKey = () => process.env.GEMINI_API_KEY || "";
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.staff.ai.payslip-insights.post", async (req: NextRequest) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -57,7 +60,7 @@ Keep each field to 1-2 sentences max. Be professional and factual.`;
 
     return successResponse(insights, "Payslip insights generated");
   } catch (e: any) {
-    console.error("AI payslip insights error:", e);
+    log_src_app_api_config_staff_ai_payslip_insights_route.error("AI payslip insights error:", e);
     return errorResponse(e.message || "AI insights failed", 500);
   }
-}
+});

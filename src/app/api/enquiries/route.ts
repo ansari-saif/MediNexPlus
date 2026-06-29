@@ -1,9 +1,12 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../backend/utils/logger";
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
 import { requireRole } from "../../../../backend/middlewares/role.middleware";
 import prisma from "../../../../backend/config/db";
 import { randomUUID } from "crypto";
 import { sendEnquiryConfirmation, sendEnquiryNotificationToHospital } from "../../../../backend/utils/mailer";
+import { withApiRoute } from "../../../../backend/utils/api-route";
+const log_src_app_api_enquiries_route = logger.child("src/app/api/enquiries/route");
 
 const HOSPITAL_NAME = process.env.HOSPITAL_NAME || "MediNex+";
 const HOSPITAL_EMAIL = process.env.HOSPITAL_EMAIL || "medinexplus666@gmail.com";
@@ -18,13 +21,13 @@ const HOSPITAL_PHONE = process.env.HOSPITAL_PHONE || "+91 90590 53938";
 async function pushToGoogleSheet(data: Record<string, string>) {
   const url = process.env.GOOGLE_SHEET_WEBHOOK_URL;
   if (!url) {
-    console.log("[GSheet] URL not set");
+    log_src_app_api_enquiries_route.info({}, "[GSheet] URL not set");
     return;
   }
 
   try {
     const payload = JSON.stringify(data);
-    console.log("[GSheet] Sending data...");
+    log_src_app_api_enquiries_route.info({}, "[GSheet] Sending data...");
 
     let currentUrl = url;
     for (let i = 0; i < 5; i++) {
@@ -41,19 +44,19 @@ async function pushToGoogleSheet(data: Record<string, string>) {
       }
 
       const text = await res.text();
-      console.log("[GSheet] Response:", res.status, text);
+      log_src_app_api_enquiries_route.info("[GSheet] Response:", res.status, text);
       return;
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("[GSheet] Error:", msg);
+    log_src_app_api_enquiries_route.error("[GSheet] Error:", msg);
   }
 }
 
 /**
  * POST /api/enquiries — Public: submit enquiry from contact form
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("enquiries.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const {
@@ -139,10 +142,10 @@ export async function POST(req: NextRequest) {
     const hospitalPhoneNumber = hospital.settings?.phone || hospital.mobile || HOSPITAL_PHONE;
     const hospitalLogoUrl = hospital.settings?.logo || null;
 
-    console.log("[Email] User email:", userEmailAddress);
-    console.log("[Email] Hospital email:", hospitalEmailAddress);
-    console.log("[Email] Hospital.settings?.email:", hospital.settings?.email);
-    console.log("[Email] HOSPITAL_EMAIL env:", HOSPITAL_EMAIL);
+    log_src_app_api_enquiries_route.info("[Email] User email:", userEmailAddress);
+    log_src_app_api_enquiries_route.info("[Email] Hospital email:", hospitalEmailAddress);
+    log_src_app_api_enquiries_route.info("[Email] Hospital.settings?.email:", hospital.settings?.email);
+    log_src_app_api_enquiries_route.info("[Email] HOSPITAL_EMAIL env:", HOSPITAL_EMAIL);
 
     // Email to user (only if they provided an email)
     if (userEmailAddress) {
@@ -153,7 +156,7 @@ export async function POST(req: NextRequest) {
         hospitalEmail: hospitalEmailAddress,
         hospitalPhone: hospitalPhoneNumber,
         hospitalLogo: hospitalLogoUrl,
-      }).catch(err => console.error("[Email] User confirmation error:", err.message));
+      }).catch(err => log_src_app_api_enquiries_route.error("[Email] User confirmation error:", err.message));
     }
 
     // Email to hospital admin
@@ -163,15 +166,15 @@ export async function POST(req: NextRequest) {
       hospitalName: hospitalDisplayName,
       hospitalLogo: hospitalLogoUrl,
       enquiryId: id,
-    }).catch(err => console.error("[Email] Hospital notification error:", err.message));
+    }).catch(err => log_src_app_api_enquiries_route.error("[Email] Hospital notification error:", err.message));
 
     return successResponse({ id }, "Enquiry submitted successfully", 201);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error("POST /api/enquiries error:", msg);
+    log_src_app_api_enquiries_route.error("POST /api/enquiries error:", msg);
     return errorResponse(msg || "Failed", 500);
   }
-}
+});
 
 /**
  * GET /api/enquiries — Dashboard: list with filters + stats
@@ -179,7 +182,7 @@ export async function POST(req: NextRequest) {
  */
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF"];
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("enquiries.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -246,15 +249,15 @@ export async function GET(req: NextRequest) {
     });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error("GET /api/enquiries error:", msg);
+    log_src_app_api_enquiries_route.error("GET /api/enquiries error:", msg);
     return errorResponse(msg || "Failed", 500);
   }
-}
+});
 
 /**
  * DELETE /api/enquiries — Bulk delete enquiries
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("enquiries.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -274,7 +277,7 @@ export async function DELETE(req: NextRequest) {
     return successResponse(null, `${ids.length} enquiries deleted`);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error("DELETE /api/enquiries error:", msg);
+    log_src_app_api_enquiries_route.error("DELETE /api/enquiries error:", msg);
     return errorResponse(msg || "Failed", 500);
   }
-}
+});

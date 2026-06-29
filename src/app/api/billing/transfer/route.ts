@@ -3,12 +3,13 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { transferToBilling, BillingServiceError } from "../../../../../backend/services/billing.service";
 import { notifyBillingTransfer } from "../../../../../backend/services/notification.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD"];
 export const dynamic = "force-dynamic";
 
 // POST /api/billing/transfer — transfer appointment to billing queue
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("billing.transfer.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ALLOWED);
   if (auth.error) return auth.error;
   try {
@@ -24,4 +25,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof BillingServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

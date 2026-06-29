@@ -1,9 +1,13 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
 import { addWorkflowChargesToBill, recalculateBill } from "../../../../../backend/services/billing.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+import { pharmacyQueueProcessedTotal } from "@/lib/observability/metrics";
+const log_src_app_api_pharmacy_queue_route = logger.child("src/app/api/pharmacy/queue/route");
 
 const px = prisma as any;
 
@@ -13,7 +17,7 @@ const px = prisma as any;
  * - Prescriptions with status IN_WORKFLOW where current dept = this pharmacy sub-dept
  * - OR prescriptions with PHARMACY workflow steps that are PENDING/IN_PROGRESS
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.queue.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF, Role.RECEPTIONIST]);
   if (auth.error) return auth.error;
 
@@ -239,10 +243,10 @@ export async function GET(req: NextRequest) {
       stats: { pending, dispensed, total },
     }, "Pharmacy queue fetched");
   } catch (error: any) {
-    console.error("[pharmacy/queue] Error:", error);
+    log_src_app_api_pharmacy_queue_route.error("[pharmacy/queue] Error:", error);
     return errorResponse(error.message || "Failed to fetch pharmacy queue", 500);
   }
-}
+});
 
 /**
  * POST /api/pharmacy/queue
@@ -255,7 +259,7 @@ export async function GET(req: NextRequest) {
  *  - Payment collection at pharmacy OR send-to-billing
  *  - Revenue logging when paid at pharmacy
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.queue.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF, Role.RECEPTIONIST]);
   if (auth.error) return auth.error;
 
@@ -422,17 +426,17 @@ export async function POST(req: NextRequest) {
       201
     );
   } catch (error: any) {
-    console.error("[pharmacy/queue POST] Error:", error);
+    log_src_app_api_pharmacy_queue_route.error("[pharmacy/queue POST] Error:", error);
     return errorResponse(error.message || "Failed to add prescription to queue", 500);
   }
-}
+});
 
 /**
  * PATCH /api/pharmacy/queue
  * Dispense medication — marks a prescription workflow step as completed
  * Also supports action: "skip" | "hold" | "resume" for queue management
  */
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("pharmacy.queue.patch", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -611,6 +615,7 @@ export async function PATCH(req: NextRequest) {
           totalCharge: totalCharge || 0,
         },
       });
+      pharmacyQueueProcessedTotal.inc();
     } else {
       // Create retroactive workflow step to ensure charges are synced to bill
       const pharmacyDept = await px.subDepartment.findFirst({
@@ -703,7 +708,7 @@ export async function PATCH(req: NextRequest) {
               remainingToDeduct -= deductQty;
             }
           } catch (stockErr: any) {
-            console.warn(`[pharmacy/dispense] Stock deduction failed for item ${item.inventoryItemId}:`, stockErr.message);
+            log_src_app_api_pharmacy_queue_route.warn(`[pharmacy/dispense] Stock deduction failed for item ${item.inventoryItemId}:`, stockErr.message);
           }
         }
       }
@@ -880,7 +885,7 @@ export async function PATCH(req: NextRequest) {
         }
 
       } catch (payErr: any) {
-        console.warn("[pharmacy/dispense] Payment recording failed:", payErr.message);
+        log_src_app_api_pharmacy_queue_route.warn("[pharmacy/dispense] Payment recording failed:", payErr.message);
         // Non-blocking — dispensing already succeeded
       }
 
@@ -913,7 +918,7 @@ export async function PATCH(req: NextRequest) {
           data: { status: "BILLING_PENDING", currentDeptId: null },
         });
       } catch (trErr: any) {
-        console.warn("[pharmacy/dispense] Billing transfer failed:", trErr.message);
+        log_src_app_api_pharmacy_queue_route.warn("[pharmacy/dispense] Billing transfer failed:", trErr.message);
       }
 
     } else if (paymentAction === "transfer_dept" && transferDeptId) {
@@ -937,7 +942,7 @@ export async function PATCH(req: NextRequest) {
           data: { status: "IN_WORKFLOW", currentDeptId: transferDeptId },
         });
       } catch (trErr: any) {
-        console.warn("[pharmacy/dispense] Dept transfer failed:", trErr.message);
+        log_src_app_api_pharmacy_queue_route.warn("[pharmacy/dispense] Dept transfer failed:", trErr.message);
       }
     }
 
@@ -1027,10 +1032,10 @@ export async function PATCH(req: NextRequest) {
 
     return successResponse({ dispensed: true, bill: finalBill, pharmacyCollected }, "Medication dispensed successfully");
   } catch (error: any) {
-    console.error("[pharmacy/queue PATCH] Error:", error);
+    log_src_app_api_pharmacy_queue_route.error("[pharmacy/queue PATCH] Error:", error);
     return errorResponse(error.message || "Failed to dispense medication", 500);
   }
-}
+});
 
 /**
  * DELETE /api/pharmacy/queue?id=<prescriptionId>&workflowId=<workflowId>&remark=<remark>
@@ -1039,7 +1044,7 @@ export async function PATCH(req: NextRequest) {
  * - If the prescription was manually created (no appointmentId), deletes the prescription too
  * - For doctor-issued prescriptions: removes from pharmacy queue but allows doctor to prescribe again
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("pharmacy.queue.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -1108,10 +1113,10 @@ export async function DELETE(req: NextRequest) {
 
     return successResponse({ deleted: true }, "Prescription removed from pharmacy queue");
   } catch (error: any) {
-    console.error("[pharmacy/queue DELETE] Error:", error);
+    log_src_app_api_pharmacy_queue_route.error("[pharmacy/queue DELETE] Error:", error);
     return errorResponse(error.message || "Failed to remove prescription", 500);
   }
-}
+});
 
 function safeJsonParse(str: string) {
   try { return JSON.parse(str); } catch { return []; }

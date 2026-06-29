@@ -4,12 +4,13 @@ import { successResponse, errorResponse } from "../../../../../backend/utils/res
 import prisma from "../../../../../backend/config/db";
 import { sendAppointmentReminder } from "../../../../../backend/utils/mailer";
 import { getSettings } from "../../../../../backend/services/config.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // POST /api/appointments/remind
 // Body: { appointmentId } — sends reminder email to the patient
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("appointments.remind.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -54,4 +55,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

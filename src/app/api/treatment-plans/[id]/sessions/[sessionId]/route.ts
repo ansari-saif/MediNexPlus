@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { treatmentService } from "../../../../../../../backend/services/treatment.service";
 import { updateTreatmentSessionSchema } from "../../../../../../../backend/validations/treatment.validation";
 import { withAuth, checkPermission, createPermissionError, createUnauthorizedError } from "../../../../../../../backend/middlewares/permission.middleware";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string; sessionId: string } }
-) {
+export const PUT = withApiRoute("treatment-plans.id.sessions.sessionId.put", async (req: NextRequest,
+  { params }: { params: { id: string; sessionId: string } }) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) return createUnauthorizedError();
@@ -28,4 +27,4 @@ export async function PUT(
       { status: 400 }
     );
   }
-}
+});

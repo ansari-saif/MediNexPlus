@@ -1,8 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { randomUUID } from "crypto";
+import { SUPERADMIN_SESSION_COOKIE, SESSION_COOKIE } from "../backend/utils/session-cookie";
 
-// Secret must match backend/utils/jwt.ts
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key");
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+  return new TextEncoder().encode(secret);
+}
+
+function withRequestId(req: NextRequest): NextResponse {
+  const requestId = req.headers.get("x-request-id") ?? randomUUID();
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-request-id", requestId);
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+  response.headers.set("x-request-id", requestId);
+  return response;
+}
 
 // Route → allowed roles mapping
 const PROTECTED_ROUTES: Record<string, string[]> = {
@@ -65,6 +83,10 @@ const PUBLIC_PREFIXES = [
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  if (pathname.startsWith("/api/")) {
+    return withRequestId(req);
+  }
+
   // Skip public paths
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
@@ -84,8 +106,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Extract JWT from cookie
-  const token = req.cookies.get("hms_session")?.value;
+  // Extract JWT from the portal-specific session cookie
+  const isSuperAdminRoute = matchedBase === "/superadmin";
+  const token = isSuperAdminRoute
+    ? req.cookies.get(SUPERADMIN_SESSION_COOKIE)?.value
+    : req.cookies.get(SESSION_COOKIE)?.value;
 
   if (!token) {
     // Not logged in → redirect to appropriate login page
@@ -94,7 +119,7 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     const role = payload.role as string;
 
     const allowedRoles = PROTECTED_ROUTES[matchedBase];
@@ -110,14 +135,14 @@ export async function middleware(req: NextRequest) {
     // Invalid/expired token → redirect to login
     const loginUrl = LOGIN_FOR_ROUTE[matchedBase] || "/login";
     const response = NextResponse.redirect(new URL(loginUrl, req.url));
-    // Clear the bad cookie
-    response.cookies.delete("hms_session");
+    response.cookies.delete(isSuperAdminRoute ? SUPERADMIN_SESSION_COOKIE : SESSION_COOKIE);
     return response;
   }
 }
 
 export const config = {
   matcher: [
+    "/api/:path*",
     "/hospitaladmin/:path*",
     "/doctor/:path*",
     "/staff/:path*",

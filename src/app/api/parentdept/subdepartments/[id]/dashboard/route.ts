@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../../../backend/middlewares/role.middl
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../backend/config/db";
 import { findDepartmentByUserId } from "../../../../../../../backend/repositories/department.repo";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
@@ -11,10 +12,8 @@ export const dynamic = "force-dynamic";
  * Returns comprehensive dashboard data for a specific sub-department.
  * Accessible by DEPT_HEAD only — verifies the sub-dept belongs to their department.
  */
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const GET = withApiRoute("parentdept.subdepartments.id.dashboard.get", async (req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(req, ["DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -230,4 +229,4 @@ export async function GET(
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch sub-department dashboard", 500);
   }
-}
+});

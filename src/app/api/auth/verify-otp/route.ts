@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { signupHospitalService } from "../../../../../backend/services/auth.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const verifySignupSchema = z.object({
   hospitalName: z.string().min(2),
@@ -12,7 +13,7 @@ const verifySignupSchema = z.object({
   otp: z.string().length(6),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.verify-otp.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const result = verifySignupSchema.safeParse(body);
@@ -26,4 +27,4 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 400);
   }
-}
+});

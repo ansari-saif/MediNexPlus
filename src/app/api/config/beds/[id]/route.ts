@@ -5,6 +5,7 @@ import {
   getBedById, updateBedService, deleteBedService, BedServiceError,
 } from "../../../../../../backend/services/bed.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const updateSchema = z.object({
   bedNumber: z.string().min(1).optional(),
@@ -14,7 +15,7 @@ const updateSchema = z.object({
   roomId: z.string().optional(),
 });
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.beds.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -24,9 +25,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof BedServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("config.beds.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -39,9 +40,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof BedServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("config.beds.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -51,4 +52,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (e instanceof BedServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message, 500);
   }
-}
+});

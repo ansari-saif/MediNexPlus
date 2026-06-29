@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { permissionService } from "../../../../../backend/services/permission.service";
 import { withAuth, createUnauthorizedError } from "../../../../../backend/middlewares/permission.middleware";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_permissions_seed_route = logger.child("src/app/api/permissions/seed/route");
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("permissions.seed.post", async (req: NextRequest) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -32,10 +35,10 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Seed permissions error:", error);
+    log_src_app_api_permissions_seed_route.error("Seed permissions error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to seed permissions" },
       { status: 500 }
     );
   }
-}
+});

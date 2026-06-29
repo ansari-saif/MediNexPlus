@@ -2,10 +2,11 @@ import { NextRequest } from "next/server";
 import { requireHospitalAdmin } from "../../../../../backend/middlewares/role.middleware";
 import { errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("export.ipd.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -68,4 +69,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

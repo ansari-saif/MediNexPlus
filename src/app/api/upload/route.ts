@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { requireRole } from "../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../backend/utils/response";
+import { withApiRoute } from "../../../../backend/utils/api-route";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,7 +10,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("upload.post", async (req: NextRequest) => {
   if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
     return errorResponse("File upload is not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables.", 503);
   }
@@ -69,4 +70,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Upload failed", 500);
   }
-}
+});

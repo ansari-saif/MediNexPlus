@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { serviceService } from "../../../../../backend/services/service.service";
 import { createServiceSchema, queryServiceSchema } from "../../../../../backend/validations/service.validation";
 import { withAuth, checkPermission, createPermissionError, createUnauthorizedError } from "../../../../../backend/middlewares/permission.middleware";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_config_services_route = logger.child("src/app/api/config/services/route");
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.services.get", async (req: NextRequest) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -33,15 +36,15 @@ export async function GET(req: NextRequest) {
       data: result,
     });
   } catch (error: any) {
-    console.error("Get services error:", error);
+    log_src_app_api_config_services_route.error("Get services error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to fetch services" },
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.services.post", async (req: NextRequest) => {
   try {
     const authReq = withAuth(req);
     if (!authReq.user) {
@@ -63,10 +66,10 @@ export async function POST(req: NextRequest) {
       data: service,
     });
   } catch (error: any) {
-    console.error("Create service error:", error);
+    log_src_app_api_config_services_route.error("Create service error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to create service" },
       { status: 400 }
     );
   }
-}
+});

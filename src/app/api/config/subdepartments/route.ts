@@ -8,8 +8,9 @@ import {
   SubDeptServiceError,
 } from "../../../../../backend/services/subdepartment.service";
 import { createSubDepartmentSchema, querySubDepartmentSchema } from "../../../../../backend/validations/subdepartment.validation";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.subdepartments.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.HOSPITAL_ADMIN, Role.DOCTOR, Role.RECEPTIONIST, Role.STAFF, Role.SUB_DEPT_HEAD]);
   if (auth.error) return auth.error;
 
@@ -33,9 +34,9 @@ export async function GET(req: NextRequest) {
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to fetch sub-departments", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.subdepartments.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -50,4 +51,4 @@ export async function POST(req: NextRequest) {
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to create sub-department", 500);
   }
-}
+});

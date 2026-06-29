@@ -8,11 +8,12 @@ import {
   PatientServiceError,
 } from "../../../../../backend/services/patient.service";
 import { updatePatientSchema } from "../../../../../backend/validations/patient.validation";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "RECEPTIONIST", "STAFF", "DOCTOR", "SUB_DEPT_HEAD", "DEPT_HEAD"];
 
 // GET /api/patients/[id]
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("patients.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -23,10 +24,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof PatientServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // PUT /api/patients/[id]
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("patients.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -41,10 +42,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (e instanceof PatientServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // DELETE /api/patients/[id]
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("patients.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -55,4 +56,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (e instanceof PatientServiceError) return errorResponse(e.message, e.status);
     return errorResponse(e.message, 500);
   }
-}
+});

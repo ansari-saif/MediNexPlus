@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import { sendBillInvoice } from "../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_billing__id__send_email_route = logger.child("src/app/api/billing/[id]/send-email/route");
 
 // Keep background promises alive so they aren't GC'd
 const bgTasks = new Set<Promise<void>>();
@@ -11,17 +14,17 @@ async function sendWithRetry(opts: Parameters<typeof sendBillInvoice>[0], retrie
   for (let i = 0; i < retries; i++) {
     try {
       await sendBillInvoice(opts);
-      console.log(`[send-email] ✓ Delivered to ${opts.to} (attempt ${i + 1})`);
+      log_src_app_api_billing__id__send_email_route.info({}, "[send-email] ✓ Delivered to ${opts.to} (attempt ${i + 1})");
       return;
     } catch (err: any) {
-      console.warn(`[send-email] Attempt ${i + 1}/${retries} failed for ${opts.to}:`, err.message);
+      log_src_app_api_billing__id__send_email_route.warn(`[send-email] Attempt ${i + 1}/${retries} failed for ${opts.to}:`, err.message);
       if (i < retries - 1) await new Promise(r => setTimeout(r, delay));
     }
   }
-  console.error(`[send-email] ✗ All ${retries} attempts failed for ${opts.to}`);
+  log_src_app_api_billing__id__send_email_route.error({}, "[send-email] ✗ All ${retries} attempts failed for ${opts.to}");
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("billing.id.send-email.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const { user, error: authError } = await authMiddleware(req);
   if (authError) return authError;
 
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     const pdfBuffer = Buffer.from(pdfBase64, "base64");
 
-    console.log("[send-email] Queued:", bill.patient.email, "Bill:", bill.billNo);
+    log_src_app_api_billing__id__send_email_route.info("[send-email] Queued:", bill.patient.email, "Bill:", bill.billNo);
 
     // Fire-and-forget with retry — respond immediately, email sends in background
     const task = sendWithRetry({
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     return successResponse({ sent: true, email: bill.patient.email }, "Invoice email queued");
   } catch (e: any) {
-    console.error("[send-email] Error:", e);
+    log_src_app_api_billing__id__send_email_route.error("[send-email] Error:", e);
     return errorResponse(e.message || "Failed to send email", 500);
   }
-}
+});

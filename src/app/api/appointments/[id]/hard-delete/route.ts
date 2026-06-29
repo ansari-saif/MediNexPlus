@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { requireRole } from "../../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_appointments__id__hard_delete_route = logger.child("src/app/api/appointments/[id]/hard-delete/route");
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +20,8 @@ const ALLOWED_ROLES = ["HOSPITAL_ADMIN", "DEPT_HEAD", "SUB_DEPT_HEAD"];
  *  - treatmentSessions (for this appointment)
  * Bills linked via prescriptionId are NOT deleted (only unlinked) to preserve financial records.
  */
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withApiRoute("appointments.id.hard-delete.delete", async (req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(req, ALLOWED_ROLES);
   if (auth.error) return auth.error;
 
@@ -76,7 +77,7 @@ export async function DELETE(
       "Appointment permanently deleted"
     );
   } catch (e: any) {
-    console.error("Hard-delete appointment error:", e);
+    log_src_app_api_appointments__id__hard_delete_route.error("Hard-delete appointment error:", e);
     return errorResponse(e.message || "Failed to delete appointment", 500);
   }
-}
+});

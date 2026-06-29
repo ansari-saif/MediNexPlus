@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { processVoiceRecording } from "@/../../backend/services/voice-prescription.service";
 import { authMiddleware } from "@/../../backend/middlewares/auth.middleware";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_prescriptions_voice_transcribe_route = logger.child("src/app/api/prescriptions/voice-transcribe/route");
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("prescriptions.voice-transcribe.post", async (req: NextRequest) => {
   try {
     const authResult = await authMiddleware(req);
     if (authResult.error || !authResult.user) {
@@ -46,10 +49,10 @@ export async function POST(req: NextRequest) {
       message: "Voice prescription processed successfully",
     });
   } catch (error: any) {
-    console.error("Voice transcription API error:", error);
+    log_src_app_api_prescriptions_voice_transcribe_route.error("Voice transcription API error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to process voice recording" },
       { status: 500 }
     );
   }
-}
+});

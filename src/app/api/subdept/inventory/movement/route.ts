@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../../backend/middlewares/role.middlewa
 import { successResponse, errorResponse } from "../../../../../../backend/utils/response";
 import * as service from "../../../../../../backend/services/inventory.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 const adjustmentSchema = z.object({
   itemId: z.string().uuid(),
@@ -13,7 +14,7 @@ const adjustmentSchema = z.object({
 });
 
 // GET /api/subdept/inventory/movement - Get stock movements
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("subdept.inventory.movement.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD", "STAFF"]);
   if (auth.error) return auth.error;
 
@@ -25,10 +26,10 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // POST /api/subdept/inventory/movement - Manual stock adjustment
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("subdept.inventory.movement.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -58,4 +59,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

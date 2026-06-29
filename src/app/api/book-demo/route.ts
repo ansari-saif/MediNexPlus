@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "../../../../backend/utils/logger";
 import nodemailer from "nodemailer";
+import { withApiRoute } from "../../../../backend/utils/api-route";
+const log_src_app_api_book_demo_route = logger.child("src/app/api/book-demo/route");
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("book-demo.post", async (req: NextRequest) => {
   try {
     const { name, hospitalName, phone, email, address, date, time } = await req.json();
 
@@ -13,7 +16,7 @@ export async function POST(req: NextRequest) {
     const emailUsername = (process.env.EMAIL_USERNAME || "").trim();
     const emailPassword = (process.env.EMAIL_PASSWORD || "").replace(/\s/g, "");
 
-    console.log("[Book Demo Mailer] SMTP config", {
+    log_src_app_api_book_demo_route.info("[Book Demo Mailer] SMTP config", {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       user: emailUsername ? `${emailUsername.slice(0, 4)}***${emailUsername.slice(-10)}` : "NOT SET",
@@ -153,7 +156,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, message: "Emails sent successfully" }, { status: 200 });
 
   } catch (error: any) {
-    console.error("Error sending demo emails:", error);
+    log_src_app_api_book_demo_route.error("Error sending demo emails:", error);
     return NextResponse.json({ error: "Failed to send emails", details: error.message }, { status: 500 });
   }
-}
+});

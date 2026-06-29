@@ -2,11 +2,12 @@ import { NextRequest } from "next/server";
 import { requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 // GET /api/inventory/stock-notifications
 // Returns completed transfers sent TO the logged-in sub-dept location since `since` param.
 // Used for real-time stock-received popup notifications on sub-dept dashboards.
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("inventory.stock-notifications.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["SUB_DEPT_HEAD", "HOSPITAL_ADMIN"]);
   if (auth.error) return auth.error;
 
@@ -57,4 +58,4 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

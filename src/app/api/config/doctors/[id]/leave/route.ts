@@ -18,6 +18,7 @@ import {
   queryLeaveSchema,
 } from "../../../../../../../backend/validations/doctor.validation";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 
@@ -26,7 +27,7 @@ type Params = { params: Promise<{ id: string }> };
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/config/doctors/[id]/leave - Get doctor's leaves
 // ─────────────────────────────────────────────────────────────────────────────
-export async function GET(req: NextRequest, { params }: Params) {
+export const GET = withApiRoute("config.doctors.id.leave.get", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -84,12 +85,12 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/config/doctors/[id]/leave - Create leave
 // ─────────────────────────────────────────────────────────────────────────────
-export async function POST(req: NextRequest, { params }: Params) {
+export const POST = withApiRoute("config.doctors.id.leave.post", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -110,12 +111,12 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PUT /api/config/doctors/[id]/leave - Update leave
 // ─────────────────────────────────────────────────────────────────────────────
-export async function PUT(req: NextRequest, { params }: Params) {
+export const PUT = withApiRoute("config.doctors.id.leave.put", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -141,12 +142,12 @@ export async function PUT(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PATCH /api/config/doctors/[id]/leave - Approve/reject leave
 // ─────────────────────────────────────────────────────────────────────────────
-export async function PATCH(req: NextRequest, { params }: Params) {
+export const PATCH = withApiRoute("config.doctors.id.leave.patch", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -176,12 +177,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/config/doctors/[id]/leave - Cancel leave
 // ─────────────────────────────────────────────────────────────────────────────
-export async function DELETE(req: NextRequest, { params }: Params) {
+export const DELETE = withApiRoute("config.doctors.id.leave.delete", async (req: NextRequest, { params }: Params) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -201,4 +202,4 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
     return errorResponse(e.message, 500);
   }
-}
+});

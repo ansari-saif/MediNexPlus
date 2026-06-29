@@ -3,6 +3,7 @@ import { requireRole } from "../../../../../backend/middlewares/role.middleware"
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -12,7 +13,7 @@ const px = prisma as any;
  * SUB_DEPT_HEAD: filtered to their own sub-department only
  * HOSPITAL_ADMIN / STAFF: all hospital purchases
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.purchases.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -55,14 +56,14 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch purchases", 500);
   }
-}
+});
 
 /**
  * POST /api/pharmacy/purchases
  * Create a new purchase order (SUB_DEPT_HEAD or HOSPITAL_ADMIN)
  * SUB_DEPT_HEAD: automatically tags purchase with their subDepartmentId
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.purchases.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -147,13 +148,13 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to create purchase", 500);
   }
-}
+});
 
 /**
  * PATCH /api/pharmacy/purchases
  * Receive / update purchase status → auto-updates stock
  */
-export async function PATCH(req: NextRequest) {
+export const PATCH = withApiRoute("pharmacy.purchases.patch", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -237,4 +238,4 @@ export async function PATCH(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to update purchase", 500);
   }
-}
+});

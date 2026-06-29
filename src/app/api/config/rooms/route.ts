@@ -5,6 +5,7 @@ import {
   getAllRooms, createRoomService, RoomServiceError,
 } from "../../../../../backend/services/room.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const createSchema = z.object({
   wardId: z.string().min(1, "Ward is required"),
@@ -14,7 +15,7 @@ const createSchema = z.object({
   description: z.string().nullish(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.rooms.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -22,9 +23,9 @@ export async function GET(req: NextRequest) {
     const data = await getAllRooms(auth.hospitalId, wardId);
     return successResponse(data, "Rooms fetched");
   } catch (e: any) { return errorResponse(e.message, 500); }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.rooms.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -37,4 +38,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof RoomServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

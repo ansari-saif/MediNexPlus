@@ -4,6 +4,7 @@ import { verifyOTP } from "../../../../../backend/services/otp.service";
 import { hashPassword } from "../../../../../backend/utils/hash";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const schema = z.object({
   email: z.string().email("Invalid email format"),
@@ -11,7 +12,7 @@ const schema = z.object({
   newPassword: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("auth.reset-password.post", async (req: NextRequest) => {
   try {
     const body = await req.json();
     const result = schema.safeParse(body);
@@ -39,4 +40,4 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 400);
   }
-}
+});

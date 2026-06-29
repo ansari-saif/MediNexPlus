@@ -1,9 +1,12 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../backend/utils/logger";
 import { requireHospitalAdmin, requireRole } from "../../../../../backend/middlewares/role.middleware";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import * as service from "../../../../../backend/services/inventory.service";
 import prisma from "../../../../../backend/config/db";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
+const log_src_app_api_inventory_purchase_route = logger.child("src/app/api/inventory/purchase/route");
 
 const purchaseSchema = z.object({
   supplierId: z.string().uuid().optional().nullable(),
@@ -42,7 +45,7 @@ const purchaseUpdateSchema = z.object({
   reminderSent: z.boolean().optional(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("inventory.purchase.get", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "FINANCE_HEAD", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -89,12 +92,12 @@ export async function GET(req: NextRequest) {
     const data = await service.getPurchases(auth.hospitalId, paymentStatus || undefined);
     return successResponse(data, "Purchases fetched");
   } catch (e: any) {
-    console.error("[GET /api/inventory/purchase] Error:", e);
+    log_src_app_api_inventory_purchase_route.error("[GET /api/inventory/purchase] Error:", e);
     return errorResponse(e.message || "Unknown error", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("inventory.purchase.post", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -139,7 +142,7 @@ export async function POST(req: NextRequest) {
           ].filter(Boolean).join(" | "),
           addedBy: (auth.user as any)?.id || null,
         },
-      }).catch((err: any) => console.error("[Expense auto-log POST] Failed:", err.message));
+      }).catch((err: any) => log_src_app_api_inventory_purchase_route.error("[Expense auto-log POST] Failed:", err.message));
     }
 
     return successResponse(data, "Purchase created", 201);
@@ -147,9 +150,9 @@ export async function POST(req: NextRequest) {
     if (e.code === "P2002") return errorResponse("Purchase number already exists", 409);
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("inventory.purchase.put", async (req: NextRequest) => {
   const auth = await requireRole(req, ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"]);
   if (auth.error) return auth.error;
 
@@ -201,7 +204,7 @@ export async function PUT(req: NextRequest) {
           ].filter(Boolean).join(" | "),
           addedBy: (auth.user as any)?.id || null,
         },
-      }).catch((err: any) => console.error("[Expense auto-log] Failed:", err.message));
+      }).catch((err: any) => log_src_app_api_inventory_purchase_route.error("[Expense auto-log] Failed:", err.message));
     }
 
     return successResponse(data, "Purchase updated");
@@ -209,9 +212,9 @@ export async function PUT(req: NextRequest) {
     if (e.code === "P2002") return errorResponse("Purchase number already exists", 409);
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("inventory.purchase.delete", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -224,4 +227,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

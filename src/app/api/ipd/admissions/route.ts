@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from "../../../../../backend/utils/res
 import { admitPatientIPD, getIPDAdmissions, IPDServiceError } from "../../../../../backend/services/ipd.service";
 import { allocateBed, getAllAllocationsService, AllocationServiceError } from "../../../../../backend/services/allocation.service";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const admitSchema = z.object({
   // Bed allocation fields (creates allocation + IPD admission in one step)
@@ -31,7 +32,7 @@ const admitSchema = z.object({
   admissionNotes: z.string().optional(),
 });
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("ipd.admissions.get", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -52,9 +53,9 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("ipd.admissions.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -85,4 +86,4 @@ export async function POST(req: NextRequest) {
     if (e instanceof IPDServiceError) return errorResponse(e.message, e.status, { code: e.code });
     return errorResponse(e.message || "Server error", 500);
   }
-}
+});

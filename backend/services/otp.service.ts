@@ -1,13 +1,15 @@
 import { createOTP, findLatestOTP, verifyOTPMark } from "../repositories/otp.repo";
+import { logger } from "../utils/logger";
 import { generateOTP } from "../utils/otp";
 import nodemailer from "nodemailer";
 import { env } from "../config/env";
 import { sendOTPviaSMS } from "../utils/sms";
+const log_backend_services_otp_service = logger.child("backend/services/otp.service");
 
 const emailUsername = env.EMAIL_USERNAME.trim();
 const emailPassword = env.EMAIL_PASSWORD.replace(/\s/g, "");
 
-console.log("[OTP Mailer] SMTP config", {
+log_backend_services_otp_service.info("[OTP Mailer] SMTP config", {
   host: env.EMAIL_HOST,
   port: env.EMAIL_PORT,
   user: emailUsername ? `${emailUsername.slice(0, 4)}***${emailUsername.slice(-10)}` : "NOT SET",
@@ -100,7 +102,7 @@ export const requestOTP = async (email: string, mobile?: string) => {
       html,
     });
   } catch (error) {
-    console.error("Failed to send email", error);
+    log_backend_services_otp_service.error("Failed to send email", error);
   }
 
   // Send OTP via SMS if mobile number is provided

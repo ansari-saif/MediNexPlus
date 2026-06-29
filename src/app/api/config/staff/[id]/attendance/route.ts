@@ -4,8 +4,9 @@ import { requireRole } from "../../../../../../../backend/middlewares/role.middl
 const HR_ROLES = ["HOSPITAL_ADMIN", "SUB_DEPT_HEAD"];
 import { successResponse, errorResponse } from "../../../../../../../backend/utils/response";
 import prisma from "../../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.staff.id.attendance.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -38,9 +39,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   } catch (e: any) {
     return errorResponse(e.message || "Failed to fetch attendance", 500);
   }
-}
+});
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export const POST = withApiRoute("config.staff.id.attendance.post", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
   try {
@@ -71,4 +72,4 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   } catch (e: any) {
     return errorResponse(e.message || "Failed to save attendance", 500);
   }
-}
+});

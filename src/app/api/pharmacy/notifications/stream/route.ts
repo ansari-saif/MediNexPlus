@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
+import { logger } from "../../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
+const log_src_app_api_pharmacy_notifications_stream_route = logger.child("src/app/api/pharmacy/notifications/stream/route");
 
 const px = prisma as any;
 
@@ -12,7 +15,7 @@ export const runtime = "nodejs";
  * Server-Sent Events stream for real-time pharmacy prescription notifications
  * Detects new prescriptions added to pharmacy queue and sends popup notifications
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.notifications.stream.get", async (req: NextRequest) => {
   const { user, error } = await authMiddleware(req);
   if (error || !user) {
     return new Response("Unauthorized", { status: 401 });
@@ -187,7 +190,7 @@ export async function GET(req: NextRequest) {
           lastCheckTime = new Date();
         } catch (err) {
           // Silently ignore errors to keep stream alive
-          console.error("Pharmacy notification stream error:", err);
+          log_src_app_api_pharmacy_notifications_stream_route.error("Pharmacy notification stream error:", err);
         }
       }, 3000);
 
@@ -220,4 +223,4 @@ export async function GET(req: NextRequest) {
       "X-Accel-Buffering": "no",
     },
   });
-}
+});

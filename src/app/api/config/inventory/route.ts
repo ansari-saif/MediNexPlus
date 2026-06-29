@@ -5,6 +5,7 @@ import * as service from "../../../../../backend/services/inventory.service";
 import { getLocationStockForDept } from "../../../../../backend/repositories/central-inventory.repo";
 import prisma from "../../../../../backend/config/db";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -68,7 +69,7 @@ const itemSchema = z.object({
 
 const INV_READ_ROLES = ["HOSPITAL_ADMIN", "FINANCE_HEAD", "SUB_DEPT_HEAD"];
 
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("config.inventory.get", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -210,9 +211,9 @@ export async function GET(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.inventory.post", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -256,9 +257,9 @@ export async function POST(req: NextRequest) {
     if (e.code === "P2002") return errorResponse("Item with same name & category already exists", 409);
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("config.inventory.put", async (req: NextRequest) => {
   const auth = await requireRole(req, INV_READ_ROLES);
   if (auth.error) return auth.error;
 
@@ -275,9 +276,9 @@ export async function PUT(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("config.inventory.delete", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -291,4 +292,4 @@ export async function DELETE(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});

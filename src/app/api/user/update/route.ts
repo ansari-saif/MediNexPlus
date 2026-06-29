@@ -5,6 +5,7 @@ import { Role } from "@prisma/client";
 import { updateUserService } from "../../../../../backend/services/user.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const updateUserSchema = z.object({
   id: z.string().uuid(),
@@ -15,7 +16,7 @@ const updateUserSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("user.update.put", async (req: NextRequest) => {
   try {
     const { user, error: authError } = await authMiddleware(req);
     if (authError) return authError;
@@ -43,4 +44,4 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message, 500);
   }
-}
+});

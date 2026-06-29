@@ -3,9 +3,10 @@ import { requireHospitalAdmin } from "../../../../../backend/middlewares/role.mi
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { aiGenerateSchema } from "../../../../../backend/validations/blog.validation";
 import { generateBlogWithAI } from "../../../../../backend/services/blog.service";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 // POST /api/blogs/generate — AI-generate blog content
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("blogs.generate.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -26,4 +27,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message || "Failed to generate blog content", 500);
   }
-}
+});

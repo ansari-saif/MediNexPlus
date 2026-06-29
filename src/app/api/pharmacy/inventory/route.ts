@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from "../../../../../backend/utils/res
 import { Role } from "@prisma/client";
 import prisma from "../../../../../backend/config/db";
 import { getLocationStockForDept } from "../../../../../backend/repositories/central-inventory.repo";
+import { withApiRoute } from "../../../../../backend/utils/api-route";
 
 const px = prisma as any;
 
@@ -11,7 +12,7 @@ const px = prisma as any;
  * GET /api/pharmacy/inventory
  * List inventory items — SUB_DEPT_HEAD, HOSPITAL_ADMIN
  */
-export async function GET(req: NextRequest) {
+export const GET = withApiRoute("pharmacy.inventory.get", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN, Role.STAFF]);
   if (auth.error) return auth.error;
 
@@ -146,13 +147,13 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to fetch items", 500);
   }
-}
+});
 
 /**
  * POST /api/pharmacy/inventory
  * Create a new inventory item — SUB_DEPT_HEAD or HOSPITAL_ADMIN
  */
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("pharmacy.inventory.post", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -220,14 +221,14 @@ export async function POST(req: NextRequest) {
     if (error.code === "P2002") return errorResponse("Item with same name & category already exists", 409);
     return errorResponse(error.message || "Failed to create item", 500);
   }
-}
+});
 
 /**
  * PUT /api/pharmacy/inventory
  * Update an existing inventory item — SUB_DEPT_HEAD or HOSPITAL_ADMIN
  * Body: { id, ...fields }
  */
-export async function PUT(req: NextRequest) {
+export const PUT = withApiRoute("pharmacy.inventory.put", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -267,13 +268,13 @@ export async function PUT(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to update item", 500);
   }
-}
+});
 
 /**
  * DELETE /api/pharmacy/inventory?id=
  * Soft-delete an inventory item — SUB_DEPT_HEAD or HOSPITAL_ADMIN
  */
-export async function DELETE(req: NextRequest) {
+export const DELETE = withApiRoute("pharmacy.inventory.delete", async (req: NextRequest) => {
   const auth = await requireRole(req, [Role.SUB_DEPT_HEAD, Role.HOSPITAL_ADMIN]);
   if (auth.error) return auth.error;
 
@@ -291,4 +292,4 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     return errorResponse(error.message || "Failed to delete item", 500);
   }
-}
+});

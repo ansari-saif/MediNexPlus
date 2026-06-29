@@ -320,10 +320,14 @@ function SettingsPanel({hospitalId}:{hospitalId:string}){
 }
 
 /* ─── GENERIC CRUD PANEL ─── */
-function CrudPanel({endpoint,columns,formFields,entityName,searchable=true}:{
+function CrudPanel({endpoint,columns,formFields,entityName,searchable=true,mapPayload,extraBody,unwrapData,mapToForm}:{
   endpoint:string;columns:{key:string;label:string;render?:(v:any,row:any)=>React.ReactNode}[];
   formFields:{key:string;label:string;type?:string;options?:{v:string;l:string}[];required?:boolean}[];
   entityName:string;searchable?:boolean;
+  mapPayload?:(form:any,editItem:any|null)=>Record<string,unknown>;
+  mapToForm?:(item:any)=>Record<string,unknown>;
+  extraBody?:Record<string,unknown>;
+  unwrapData?:(responseData:any)=>any[];
 }){
   const [data,setData]=useState<any[]>([]);
   const [loading,setLoading]=useState(true);
@@ -337,21 +341,28 @@ function CrudPanel({endpoint,columns,formFields,entityName,searchable=true}:{
   const load=useCallback(async()=>{
     setLoading(true);
     const d=await api(`${endpoint}${search?`?search=${search}`:""}`);
-    if(d.success) setData(d.data||[]);
+    if(d.success) {
+      const raw = d.data || [];
+      setData(unwrapData ? unwrapData(raw) : Array.isArray(raw) ? raw : raw.data || []);
+    }
     setLoading(false);
-  },[endpoint,search]);
+  },[endpoint,search,unwrapData]);
 
   useEffect(()=>{load();},[load]);
 
   const openAdd=()=>{setEditItem(null);setForm({});setMsg("");setModal(true);};
-  const openEdit=(item:any)=>{setEditItem(item);setForm({...item});setMsg("");setModal(true);};
+  const openEdit=(item:any)=>{setEditItem(item);setForm(mapToForm?mapToForm(item):{...item});setMsg("");setModal(true);};
 
   const handleSubmit=async(e:React.FormEvent)=>{
     e.preventDefault();setSaving(true);setMsg("");
     const method=editItem?"PUT":"POST";
-    const body=editItem?{id:editItem.id,...form}:form;
+    const payload = mapPayload ? mapPayload(form, editItem) : form;
+    const body=editItem?{id:editItem.id,...extraBody,...payload}:{...extraBody,...payload};
     const d=await api(endpoint,method,body);
-    if(d.success){setModal(false);load();}else setMsg(d.message||"Error");
+    if(d.success){setModal(false);load();}else{
+      const detail = Array.isArray(d.errors) ? d.errors.map((i:{message?:string})=>i.message).filter(Boolean).join(". ") : "";
+      setMsg(detail || d.message || "Error");
+    }
     setSaving(false);
   };
 
@@ -479,8 +490,32 @@ function ConfigureContent(){
   const billingColumns=[{key:"name",label:"Charge Name"},{key:"type",label:"Type",render:(v:string)=><span className="cfg-badge blue">{v?.replace("_"," ")}</span>},{key:"amount",label:"Amount",render:(v:number)=>`₹${v}`},{key:"department",label:"Dept",render:(v:any)=>v?.name||"All"},{key:"isActive",label:"Status",render:(v:boolean)=><span className={`cfg-badge ${v?"green":"red"}`}>{v?"Active":"Inactive"}</span>}];
   const billingFields=[{key:"name",label:"Charge Name",required:true},{key:"type",label:"Type",options:[{v:"CONSULTATION",l:"Consultation"},{v:"PROCEDURE",l:"Procedure"},{v:"LAB_TEST",l:"Lab Test"},{v:"RADIOLOGY",l:"Radiology"},{v:"PHARMACY",l:"Pharmacy"},{v:"ROOM_CHARGE",l:"Room Charge"},{v:"SURGERY",l:"Surgery"},{v:"OTHER",l:"Other"}],required:true},{key:"amount",label:"Amount (₹)",type:"number",required:true},{key:"description",label:"Description"}];
 
-  const invColumns=[{key:"name",label:"Item Name"},{key:"category",label:"Category"},{key:"stock",label:"Stock",render:(v:number,row:any)=><span style={{color:v<=row.minStock?"#ef4444":"#10b981",fontWeight:700}}>{v}</span>},{key:"minStock",label:"Min Stock"},{key:"unit",label:"Unit"},{key:"pricePerUnit",label:"Price",render:(v:number)=>`₹${v}`},{key:"supplier",label:"Supplier",render:(v:string)=>v||"—"}];
-  const invFields=[{key:"name",label:"Item Name",required:true},{key:"category",label:"Category",required:true},{key:"stock",label:"Current Stock",type:"number"},{key:"minStock",label:"Min Stock Alert",type:"number"},{key:"unit",label:"Unit (pcs/ml/kg)"},{key:"pricePerUnit",label:"Price Per Unit",type:"number"},{key:"supplier",label:"Supplier"}];
+  const invColumns=[{key:"name",label:"Item Name"},{key:"category",label:"Category"},{key:"totalStock",label:"Stock",render:(v:number,row:any)=><span style={{color:(v??0)<=(row.minStock??0)?"#ef4444":"#10b981",fontWeight:700}}>{v??0}</span>},{key:"minStock",label:"Min Stock"},{key:"unit",label:"Unit"},{key:"sellingPrice",label:"Price",render:(v:number)=>`₹${v??0}`}];
+  const invFields=[{key:"name",label:"Item Name",required:true},{key:"category",label:"Category",required:true,options:[{v:"Medicine",l:"Medicine"},{v:"Consumables",l:"Consumables"},{v:"Surgical Items",l:"Surgical Items"},{v:"Equipment",l:"Equipment"},{v:"Lab Items",l:"Lab Items"}]},{key:"stock",label:"Opening Stock",type:"number"},{key:"minStock",label:"Min Stock Alert",type:"number"},{key:"unit",label:"Unit (pcs/ml/kg)"},{key:"pricePerUnit",label:"Price Per Unit",type:"number"}];
+  const mapInventoryToForm=(item:any)=> ({
+    name: item.name,
+    category: item.category,
+    stock: item.totalStock ?? 0,
+    minStock: item.minStock ?? 5,
+    unit: item.unit || "pcs",
+    pricePerUnit: item.sellingPrice ?? item.purchasePrice ?? 0,
+  });
+  const mapInventoryPayload=(form:any, editItem:any|null)=> ({
+    name: form.name,
+    category: form.category,
+    unit: form.unit || "pcs",
+    minStock: Number(form.minStock) || 5,
+    ...(editItem ? {} : { openingStock: Number(form.stock) || 0 }),
+    purchasePrice: Number(form.pricePerUnit) || 0,
+    sellingPrice: Number(form.pricePerUnit) || 0,
+    mrp: Number(form.pricePerUnit) || 0,
+  });
+  const unwrapInventoryData=(raw:any)=> Array.isArray(raw) ? raw : raw?.data || [];
+  const mapClinicalPayload=(form:any)=> ({
+    name: form.name,
+    type: form.type,
+    isActive: form.isActive ?? true,
+  });
 
   return(<>
     <style>{`
@@ -557,7 +592,7 @@ function ConfigureContent(){
           {tab==="services"&&<ServicePanel/>}
           {tab==="treatments"&&<TreatmentPlanPanel/>}
           {tab==="permissions"&&<PermissionPanel/>}
-          {tab==="clinical"&&<CrudPanel endpoint="/api/config/departments?sub=true" columns={clinicalColumns} formFields={clinicalFields} entityName="Clinical Unit"/>}
+          {tab==="clinical"&&<CrudPanel endpoint="/api/config/departments?sub=true" columns={clinicalColumns} formFields={clinicalFields} entityName="Clinical Unit" extraBody={{ sub: true }} mapPayload={mapClinicalPayload}/>}
           {tab==="doctors"&&<DoctorPanel onOpenLeave={openLeaveModal}/>}
           
           {/* Doctor Modals */}
@@ -595,7 +630,7 @@ function ConfigureContent(){
                 <Download size={13}/>Export CSV
               </a>
             </div>
-            <CrudPanel endpoint="/api/config/inventory" columns={invColumns} formFields={invFields} entityName="Inventory Item"/>
+            <CrudPanel endpoint="/api/config/inventory" columns={invColumns} formFields={invFields} entityName="Inventory Item" mapPayload={mapInventoryPayload} mapToForm={mapInventoryToForm} unwrapData={unwrapInventoryData}/>
           </>)}
         </div>
     </>

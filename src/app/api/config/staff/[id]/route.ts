@@ -11,11 +11,10 @@ import {
   StaffServiceError,
 } from "../../../../../../backend/services/staff.service";
 import { updateStaffSchema } from "../../../../../../backend/validations/staff.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const GET = withApiRoute("config.staff.id.get", async (req: NextRequest,
+  { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -28,12 +27,10 @@ export async function GET(
     }
     return errorResponse(error.message || "Failed to fetch staff member", 500);
   }
-}
+});
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const PUT = withApiRoute("config.staff.id.put", async (req: NextRequest,
+  { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -53,12 +50,10 @@ export async function PUT(
     }
     return errorResponse(error.message || "Failed to update staff member", 500);
   }
-}
+});
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const DELETE = withApiRoute("config.staff.id.delete", async (req: NextRequest,
+  { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -71,12 +66,10 @@ export async function DELETE(
     }
     return errorResponse(error.message || "Failed to delete staff member", 500);
   }
-}
+});
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export const PATCH = withApiRoute("config.staff.id.patch", async (req: NextRequest,
+  { params }: { params: { id: string } }) => {
   const auth = await requireRole(req, HR_ROLES);
   if (auth.error) return auth.error;
 
@@ -96,4 +89,4 @@ export async function PATCH(
     }
     return errorResponse(error.message || "Failed to update staff status", 500);
   }
-}
+});

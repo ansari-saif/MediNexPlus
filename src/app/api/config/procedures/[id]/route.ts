@@ -8,8 +8,9 @@ import {
   SubDeptServiceError,
 } from "../../../../../../backend/services/subdepartment.service";
 import { updateProcedureSchema } from "../../../../../../backend/validations/subdepartment.validation";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export const GET = withApiRoute("config.procedures.id.get", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -19,9 +20,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to fetch procedure", 500);
   }
-}
+});
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export const PUT = withApiRoute("config.procedures.id.put", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -34,9 +35,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to update procedure", 500);
   }
-}
+});
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withApiRoute("config.procedures.id.delete", async (req: NextRequest, { params }: { params: { id: string } }) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
   try {
@@ -46,4 +47,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     if (error instanceof SubDeptServiceError) return errorResponse(error.message, error.status);
     return errorResponse(error.message || "Failed to delete procedure", 500);
   }
-}
+});

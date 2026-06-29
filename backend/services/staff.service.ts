@@ -71,15 +71,7 @@ export const createStaff = async (hospitalId: string, input: CreateStaffInput) =
     password: null,
     mustChangePassword: true,
     credentialsSent: false,
-    workingDays: input.workingDays ?? 26,
-    dateOfBirth: input.dateOfBirth || null,
-    bankName: input.bankName || null,
-    bankAccountNo: input.bankAccountNo || null,
-    panNo: input.panNo || null,
-    pfAccountNo: input.pfAccountNo || null,
-    pfUan: input.pfUan || null,
-    address: input.address || null,
-  } as any);
+  });
 
   return staff;
 };
@@ -134,14 +126,6 @@ export const updateStaff = async (
   if (input.salary !== undefined) updateData.salary = input.salary;
   if (input.joinDate !== undefined) updateData.joinDate = input.joinDate;
   if (input.isActive !== undefined) updateData.isActive = input.isActive;
-  if (input.workingDays !== undefined) updateData.workingDays = input.workingDays;
-  if (input.dateOfBirth !== undefined) updateData.dateOfBirth = input.dateOfBirth;
-  if (input.bankName !== undefined) updateData.bankName = input.bankName;
-  if (input.bankAccountNo !== undefined) updateData.bankAccountNo = input.bankAccountNo;
-  if (input.panNo !== undefined) updateData.panNo = input.panNo;
-  if (input.pfAccountNo !== undefined) updateData.pfAccountNo = input.pfAccountNo;
-  if (input.pfUan !== undefined) updateData.pfUan = input.pfUan;
-  if (input.address !== undefined) updateData.address = input.address;
 
   return updateStaffRepo(id, hospitalId, updateData);
 };

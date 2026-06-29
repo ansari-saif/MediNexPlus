@@ -10,12 +10,15 @@ import {
   getAppointmentStats,
 } from "../repositories/appointment.repo";
 import { findPatientById } from "../repositories/patient.repo";
+import { logger } from "../utils/logger";
 import { findDoctorById } from "../repositories/doctor.repo";
 import { CreateAppointmentInput, UpdateAppointmentInput } from "../validations/appointment.validation";
 import { sendAppointmentConfirmation, sendAppointmentRescheduled } from "../utils/mailer";
 import { generateBillFromAppointment, addWorkflowChargesToBill } from "./billing.service";
 import { getSettings } from "./config.service";
 import prisma from "../config/db";
+import { appointmentsCreatedTotal } from "../../src/lib/observability/metrics";
+const log_backend_services_appointment_service = logger.child("backend/services/appointment.service");
 
 const px = prisma as any;
 
@@ -145,9 +148,11 @@ export const bookAppointment = async (
         hospitalLogo: settings?.logo || null,
       });
     } catch (emailErr: any) {
-      console.error("[Email] Failed to send appointment confirmation:", emailErr?.message);
+      log_backend_services_appointment_service.error("[Email] Failed to send appointment confirmation:", emailErr?.message);
     }
   }
+
+  appointmentsCreatedTotal.inc();
 
   return appointment;
 };
@@ -319,9 +324,9 @@ export const updateAppointment = async (
           hospitalName,
           hospitalLogo: settings?.logo || null,
         });
-        console.log("[Email] Reschedule email sent to", patientEmail);
+        log_backend_services_appointment_service.info("[Email] Reschedule email sent to", patientEmail);
       } catch (emailErr: any) {
-        console.error("[Email] Failed to send reschedule email:", emailErr?.message);
+        log_backend_services_appointment_service.error("[Email] Failed to send reschedule email:", emailErr?.message);
       }
     }
   }

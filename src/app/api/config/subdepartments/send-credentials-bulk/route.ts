@@ -4,12 +4,13 @@ import { successResponse, errorResponse } from "../../../../../../backend/utils/
 import { createSubDeptCredentials } from "../../../../../../backend/services/subdepartment.service";
 import { sendSubDeptCredentials } from "../../../../../../backend/utils/mailer";
 import prisma from "../../../../../../backend/config/db";
+import { withApiRoute } from "../../../../../../backend/utils/api-route";
 
 export const dynamic = "force-dynamic";
 
 // POST /api/config/subdepartments/send-credentials-bulk
 // Sends credentials to all sub-departments where credentialsSent=false
-export async function POST(req: NextRequest) {
+export const POST = withApiRoute("config.subdepartments.send-credentials-bulk.post", async (req: NextRequest) => {
   const auth = await requireHospitalAdmin(req);
   if (auth.error) return auth.error;
 
@@ -66,4 +67,4 @@ export async function POST(req: NextRequest) {
   } catch (e: any) {
     return errorResponse(e.message, 500);
   }
-}
+});
