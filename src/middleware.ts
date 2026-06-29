@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { randomUUID } from "crypto";
 import { SUPERADMIN_SESSION_COOKIE, SESSION_COOKIE } from "../backend/utils/session-cookie";
 
 function getJwtSecret(): Uint8Array {
@@ -12,7 +11,7 @@ function getJwtSecret(): Uint8Array {
 }
 
 function withRequestId(req: NextRequest): NextResponse {
-  const requestId = req.headers.get("x-request-id") ?? randomUUID();
+  const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-request-id", requestId);
   const response = NextResponse.next({
