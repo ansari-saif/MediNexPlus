@@ -14,49 +14,15 @@ datasources:
     access: proxy
     url: http://pyroscope:4040
 
-  - name: Tempo
-    type: tempo
-    access: proxy
-    url: http://tempo:3200
-    uid: tempo
-    jsonData:
-      tracesToLogsV2:
-        datasourceUid: loki
-        spanStartTimeShift: "-5m"
-        spanEndTimeShift: "5m"
-        filterByTraceID: false
-        filterBySpanID: false
-        customQuery: true
-        query: '{service="medinexplus-web"} | json | traceId="$${__span.traceId}"'
-      tracesToProfiles:
-        datasourceUid: pyroscope
-        profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
-        tags:
-          - key: service.name
-            value: service_name
-        spanStartTimeShift: "-60s"
-        spanEndTimeShift: "60s"
-      serviceMap:
-        datasourceUid: prometheus
-      nodeGraph:
-        enabled: true
-      search:
-        hide: false
-      traceQuery:
-        timeShiftEnabled: true
-        spanStartTimeShift: "-1h"
-        spanEndTimeShift: "1h"
-
   - name: Loki
     type: loki
     uid: loki
     access: proxy
     url: http://loki:3100
     isDefault: false
-    jsonData:
-      derivedFields:
-        - datasourceUid: tempo
-          matcherRegex: '"traceId":"(\w+)"'
-          name: Trace
-          url: "$${__value.raw}"
-          urlDisplayLabel: "View trace"
+
+  - name: Tempo
+    type: tempo
+    access: proxy
+    url: http://tempo:3200
+    uid: tempo
