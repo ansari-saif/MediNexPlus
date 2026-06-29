@@ -18,4 +18,8 @@ if [ -f ./node_modules/prisma/build/index.js ]; then
   fi
 fi
 
+if [ "$OTEL_ENABLED" = "1" ] && [ -f ./scripts/otel-preload.cjs ]; then
+  exec node --require ./scripts/otel-preload.cjs server.js
+fi
+
 exec node server.js

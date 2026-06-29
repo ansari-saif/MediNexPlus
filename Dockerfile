@@ -58,7 +58,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=prisma-runner --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=prisma-runner --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=prisma-runner --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --chown=nextjs:nodejs scripts/otel-preload.cjs ./scripts/otel-preload.cjs
 RUN chmod +x ./docker-entrypoint.sh
 
 USER nextjs
