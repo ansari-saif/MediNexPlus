@@ -60,6 +60,10 @@ prometheus.remote_write "default" {
 // Ship medinexplus container stdout (pino JSON logs) to Loki
 discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
+  filter {
+    name   = "name"
+    values = ["medinexplus"]
+  }
 }
 
 discovery.relabel "medinexplus_logs" {
@@ -69,12 +73,6 @@ discovery.relabel "medinexplus_logs" {
     source_labels = ["__meta_docker_container_name"]
     regex         = "/(.*)"
     target_label  = "container"
-  }
-
-  rule {
-    source_labels = ["__meta_docker_compose_service"]
-    regex         = "web"
-    action        = "keep"
   }
 
   rule {
