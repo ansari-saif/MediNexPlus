@@ -72,9 +72,14 @@ discovery.relabel "medinexplus_logs" {
   }
 
   rule {
-    source_labels = ["__meta_docker_container_name"]
-    regex         = "medinexplus$"
+    source_labels = ["__meta_docker_compose_service"]
+    regex         = "web"
     action        = "keep"
+  }
+
+  rule {
+    target_label = "service"
+    replacement  = "medinexplus-web"
   }
 }
 

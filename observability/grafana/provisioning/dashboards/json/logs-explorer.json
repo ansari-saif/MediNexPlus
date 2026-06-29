@@ -13,7 +13,7 @@
       "options": { "showTime": true, "sortOrder": "Descending" },
       "targets": [
         {
-          "expr": "{container=\"medinexplus\"} | json | level=~\"info|warn|error\"",
+          "expr": "{service=\"medinexplus-web\"} | json | level=~\"info|warn|error\"",
           "refId": "A"
         }
       ],
