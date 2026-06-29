@@ -23,34 +23,31 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SKIP_DOCKER_TYPECHECK=1
+ENV NEXT_UNOPTIMIZED_IMAGES=1
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN --mount=type=cache,target=/app/.next/cache \
     --mount=type=cache,target=/app/node_modules/.cache \
     npx next build
 
-FROM base AS runner
+FROM node:20-bookworm-slim AS runner
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-RUN apk add --no-cache vips openssl \
-  && addgroup --system --gid 1001 nodejs \
-  && adduser --system --uid 1001 nextjs
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system --gid 1001 nodejs \
+  && useradd --system --uid 1001 --gid nodejs nextjs
 
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-# Standalone trace omits sharp; install Linux binary in runner (npm ci uses --ignore-scripts).
-RUN npm install --no-save sharp \
-  && chown -R nextjs:nodejs ./node_modules/sharp ./node_modules/@img 2>/dev/null || true \
-  && chown -R nextjs:nodejs ./node_modules
-ENV NEXT_SHARP_PATH=/app/node_modules/sharp
 COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 

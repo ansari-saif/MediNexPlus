@@ -13,6 +13,8 @@ const nextConfig = {
     },
   },
   images: {
+    // Docker prod builds set NEXT_UNOPTIMIZED_IMAGES=1 — avoids sharp on Alpine.
+    unoptimized: process.env.NEXT_UNOPTIMIZED_IMAGES === "1",
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "**.cloudinary.com" },

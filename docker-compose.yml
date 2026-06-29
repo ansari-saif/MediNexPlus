@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mariadb:10.11
+    image: mysql:8.0
     container_name: medinexplus-mysql
     restart: unless-stopped
     environment:
@@ -8,9 +8,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-medinexplus}
       MYSQL_USER: ${MYSQL_USER:-medinex}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-medinexpassword}
-    # Do not expose MySQL to the public internet in production.
-    # Web/db-init reach mysql via the Docker network (hostname: mysql).
-    # For local admin: docker compose exec mysql mariadb -u medinex -p ...
+    # Internal Docker network only — not exposed to the internet.
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -22,7 +20,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 30s
+      start_period: 40s
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   db-init:
