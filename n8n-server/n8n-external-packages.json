@@ -1,0 +1,8 @@
+{
+  "node": [
+    "jsonwebtoken"
+  ],
+  "python": [
+    "pandas"
+  ]
+}

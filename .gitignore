@@ -44,4 +44,6 @@ next-env.d.ts
 # n8n server runtime data
 n8n-server/postgres/
 n8n-server/promtail-data/
+n8n-server/data/
 n8n-server/*.pid
+n8n-server/*.bak
