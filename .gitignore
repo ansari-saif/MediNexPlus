@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# n8n server runtime data
+n8n-server/postgres/
+n8n-server/promtail-data/
+n8n-server/*.pid
