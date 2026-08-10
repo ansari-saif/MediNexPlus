@@ -6,6 +6,8 @@ alwaysApply: false
 
 # UIAnchor
 
+**Full guidelines:** [docs/UIANCHOR_GUIDELINES.md](docs/UIANCHOR_GUIDELINES.md) — follow that doc for naming, when to anchor, Playwright usage, PR checklist, and deferred features. This rule is a short reminder; the guidelines file is the source of truth.
+
 Stable UI identity shared by app code and Playwright. Contract: `data-ui="<identity>"`. Helpers: `@/lib/uianchor` · `ui()` in `e2e/fixtures.ts`.
 
 ## When to anchor

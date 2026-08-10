@@ -1,0 +1,28 @@
+---
+description: Test-first workflow — write failing tests before application code
+alwaysApply: true
+---
+
+# Test first, then code
+
+For new features, bug fixes, and behavior changes: **write the test before the implementation**.
+
+## Order
+
+1. **Agree on behavior** — what should pass/fail (inputs, outcomes, edge cases).
+2. **Write the test** — Playwright E2E (`e2e/`, `ui()` + UIAnchor) and/or unit/integration tests as appropriate. Prefer UIAnchor IDs over CSS/text selectors; see `docs/UIANCHOR_GUIDELINES.md`.
+3. **Run and confirm it fails** for the right reason (missing feature / wrong behavior), not flakes or bad setup.
+4. **Write the minimum code** to make the test pass. Add or update `data-ui` / `Anchor.*` when E2E needs a control.
+5. **Re-run tests** · regenerate UIAnchor inventory if anchors changed (`npm run uianchor:generate`).
+6. **Refactor** only while tests stay green.
+
+## Do not
+
+- Ship app/UI changes that E2E (will) cover without a test written first
+- Invent test selectors or IDs that do not exist in application code
+- Skip the failing-test step and jump straight to implementation
+
+## Exceptions
+
+- Pure docs, Cursor rules, generated files, or config with no runtime behavior
+- Emergency hotfixes when the user explicitly says to skip tests — note that in the response and add a follow-up test ASAP
