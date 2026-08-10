@@ -1,6 +1,7 @@
 
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { Anchor } from "@/lib/uianchor";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, Users, UserRound, Settings, HelpCircle,
@@ -41,7 +42,7 @@ const api = async (url: string, method = "GET", body?: any) => {
 const initials = (name: string) => name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
 // ─── Patient Management Panel ───
-export function PatientsManagementPanel({ departmentId }: { departmentId?: string }) {
+export function PatientsManagementPanel({ departmentId, uiPrefix }: { departmentId?: string; uiPrefix?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlPatientId = searchParams.get("patientId");
@@ -847,19 +848,30 @@ export function PatientsManagementPanel({ departmentId }: { departmentId?: strin
               </div>
             )}
           </div>
-          <button
-            onClick={() => setShowAddPatient(true)}
-            style={{ padding: "8px 20px", background: "linear-gradient(135deg,#0E898F,#07595D)", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize:12, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
-          >
-            <Plus size={15} /> Register New
-          </button>
+          {uiPrefix ? (
+            <Anchor.Button
+              ui={`${uiPrefix}.patients.create`}
+              onClick={() => setShowAddPatient(true)}
+              style={{ padding: "8px 20px", background: "linear-gradient(135deg,#0E898F,#07595D)", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize:12, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+            >
+              <Plus size={15} /> Register New
+            </Anchor.Button>
+          ) : (
+            <button
+              onClick={() => setShowAddPatient(true)}
+              style={{ padding: "8px 20px", background: "linear-gradient(135deg,#0E898F,#07595D)", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize:12, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+            >
+              <Plus size={15} /> Register New
+            </button>
+          )}
         </div>
       </div>
 
       {/* Search bar */}
       <div style={{ background: "#fff", borderRadius: 12, padding: "14px 18px", marginBottom: 18, display: "flex", alignItems: "center", gap: 12, border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <Search size={16} color="#94a3b8" />
-        <input
+        <Anchor.Input
+          ui={`${uiPrefix || 'shared'}.patients.search`}
           type="text"
           placeholder="Search by name, phone number or patient ID..."
           value={searchTerm}

@@ -23,6 +23,7 @@ export interface DeptDashCfg {
   label: string;        // "Administrative" | "Support" | "Diagnostic"
   basePath: string;     // e.g. "/administrative/dashboard"
   icon?: React.ReactNode;
+  uiPrefix?: string;    // e.g. "diagnostic" | "administrative" | "support"
 }
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {

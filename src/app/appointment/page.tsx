@@ -8,6 +8,7 @@ import {
   Stethoscope, Sparkles, MapPin, Heart, Check,
 } from "lucide-react";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 import styles from "./appointment.module.css";
 
 /* ── Types ── */
@@ -322,7 +323,7 @@ function AppointmentForm() {
                   <label style={labelStyle}>Full Name *</label>
                   <div style={{ position: "relative" }}>
                     <User size={14} style={{ position: "absolute", left: 12, top: 12, color: "#94a3b8" }} />
-                    <input style={{ ...inputStyle, paddingLeft: 34 }} placeholder="e.g. John Doe"
+                    <Anchor.Input style={{ ...inputStyle, paddingLeft: 34 }} ui="public.booking.name" placeholder="e.g. John Doe"
                       value={form.name} onChange={e => set("name", e.target.value)} />
                   </div>
                   {errors.name && <span style={errStyle}>{errors.name}</span>}
@@ -332,7 +333,7 @@ function AppointmentForm() {
                   <label style={labelStyle}>Phone Number *</label>
                   <div style={{ position: "relative" }}>
                     <Phone size={14} style={{ position: "absolute", left: 12, top: 12, color: "#94a3b8" }} />
-                    <input style={{ ...inputStyle, paddingLeft: 34 }} type="tel" placeholder="e.g. 9876543210"
+                    <Anchor.Input style={{ ...inputStyle, paddingLeft: 34 }} ui="public.booking.phone" type="tel" placeholder="e.g. 9876543210"
                       value={form.phone} onChange={e => set("phone", e.target.value)} />
                   </div>
                   {errors.phone && <span style={errStyle}>{errors.phone}</span>}
@@ -342,7 +343,7 @@ function AppointmentForm() {
                   <label style={labelStyle}>Email Address *</label>
                   <div style={{ position: "relative" }}>
                     <Mail size={14} style={{ position: "absolute", left: 12, top: 12, color: "#94a3b8" }} />
-                    <input style={{ ...inputStyle, paddingLeft: 34 }} type="email" placeholder="e.g. john@example.com"
+                    <Anchor.Input style={{ ...inputStyle, paddingLeft: 34 }} ui="public.booking.email" type="email" placeholder="e.g. john@example.com"
                       value={form.email} onChange={e => set("email", e.target.value)} />
                   </div>
                   {errors.email && <span style={errStyle}>{errors.email}</span>}
@@ -385,18 +386,18 @@ function AppointmentForm() {
                 {/* Department */}
                 <div style={fieldStyle}>
                   <label style={labelStyle}>Department *</label>
-                  <select style={inputStyle} value={form.departmentId}
+                  <Anchor.Select ui="public.booking.department" style={inputStyle} value={form.departmentId}
                     onChange={e => { set("departmentId", e.target.value); set("doctorId", ""); set("timeSlot", ""); set("consultationFee", ""); }}>
                     <option value="">Select Department...</option>
                     {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                  </select>
+                  </Anchor.Select>
                 </div>
 
                 {/* Doctor — hidden for DIAGNOSTIC */}
                 {!isDiagnostic && (
                 <div style={fieldStyle}>
                   <label style={labelStyle}>Doctor *</label>
-                  <select required style={inputStyle} value={form.doctorId}
+                  <Anchor.Select required ui="public.booking.doctor" style={inputStyle} value={form.doctorId}
                     onChange={e => {
                       const doc = allDoctors.find(d => d.id === e.target.value);
                       set("doctorId", e.target.value);
@@ -408,7 +409,7 @@ function AppointmentForm() {
                     {filteredDoctors.map(d => (
                       <option key={d.id} value={d.id}>{d.name}{d.specialization ? ` — ${d.specialization}` : d.department?.name ? ` — ${d.department.name}` : ""}</option>
                     ))}
-                  </select>
+                  </Anchor.Select>
                   {errors.doctorId && <span style={errStyle}>{errors.doctorId}</span>}
                 </div>
                 )}
@@ -428,7 +429,7 @@ function AppointmentForm() {
                       </button>
                     </div>
                   </div>
-                  <input required type="date" min={todayStr} style={inputStyle}
+                  <Anchor.Input required ui="public.booking.date" type="date" min={todayStr} style={inputStyle}
                     value={form.appointmentDate} onChange={e => { set("appointmentDate", e.target.value); set("timeSlot", ""); }} />
                   {errors.appointmentDate && <span style={errStyle}>{errors.appointmentDate}</span>}
                 </div>
@@ -514,7 +515,7 @@ function AppointmentForm() {
                     style={{ padding: "10px 20px", borderRadius: 9, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                     ← Back
                   </button>
-                  <button type="submit" disabled={saving || (!isDiagnostic && !form.timeSlot)}
+                  <Anchor.Button type="submit" ui="public.booking.submit" disabled={saving || (!isDiagnostic && !form.timeSlot)}
                     style={{
                       padding: "10px 24px", borderRadius: 9, border: "none",
                       background: (!isDiagnostic && !form.timeSlot) ? "#e2e8f0" : "linear-gradient(135deg,#0E898F,#0d7a7f)",
@@ -525,7 +526,7 @@ function AppointmentForm() {
                       boxShadow: (!isDiagnostic && !form.timeSlot) ? "none" : "0 4px 12px rgba(14,137,143,.3)",
                     }}>
                     {saving ? <><Loader2 size={14} style={{ animation: "spin .7s linear infinite" }} /> Booking...</> : <><CheckCircle2 size={14} /> Book Appointment</>}
-                  </button>
+                  </Anchor.Button>
                 </div>
               </form>
             </div>

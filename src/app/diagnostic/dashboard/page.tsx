@@ -11,6 +11,7 @@ const cfg = {
   label:        "Diagnostic",
   basePath:     "/diagnostic/dashboard",
   icon:         <Microscope size={26} color="#fff" />,
+  uiPrefix:     "diagnostic",
 };
 
 export default function DiagnosticDashboardPage() {

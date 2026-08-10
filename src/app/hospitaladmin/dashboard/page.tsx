@@ -101,7 +101,7 @@ function MiniCalendar() {
   );
 }
 
-type NavTab = "overview" | "appointments" | "staff" | "doctors" | "patients" | "inventory" | "billing" | "ipd" | "departments" | "reports" | "finance" | "settings" | "profile";
+type NavTab = "overview" | "appointments" | "staff" | "doctors" | "patients" | "inventory" | "billing" | "ipd" | "departments" | "reports" | "enquiries" | "tourism" | "blogs" | "finance" | "settings" | "profile";
 
 // Dead InventoryPanel removed — replaced by AdminInventoryPanel component
 
@@ -278,10 +278,10 @@ function DashboardContent() {
 
       <div className="hd-body" style={(tab === "inventory" || tab === "billing" || tab === "ipd" || tab === "departments" || tab === "reports" || tab === "enquiries" || tab === "tourism" || tab === "blogs" || tab === "patients") ? { gridTemplateColumns: "1fr" } : undefined}>
     <div className="hd-center" style={tab === "billing" ? { padding: 0 } : {}}>
-      {tab === "overview" && (<>
+      {tab === "overview" && (<div data-ui="hospitaladmin.dashboard.tab.overview">
         <div className="hd-page-header">
           <div>
-            <div className="hd-pg-title" style={{ marginBottom: 2 }}>Dashboard</div>
+            <div className="hd-pg-title" style={{ marginBottom: 2 }} data-ui="hospitaladmin.dashboard">Dashboard</div>
             <div style={{ fontSize:10, color: "#94a3b8" }}>
               {dashboardData ? `Last updated ${new Date(dashboardData.generatedAt).toLocaleTimeString()}` : "Loading real-time data..."}
             </div>
@@ -545,10 +545,10 @@ function DashboardContent() {
             </div>
           </div>
         </div>
-      </>)}
+      </div>)}
 
       {tab === "appointments" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div data-ui="hospitaladmin.dashboard.tab.appointments" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div className="hd-banner">
             <div>
               <div style={{ fontSize:20, fontWeight: 800, marginBottom: 6, display: "flex", alignItems: "center", gap: 10 }}><CalendarCheck size={24} />Appointment Management</div>
@@ -576,7 +576,7 @@ function DashboardContent() {
       )}
 
       {tab === "staff" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div data-ui="hospitaladmin.dashboard.tab.staff" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="hd-banner">
             <div>
               <div style={{ fontSize:19, fontWeight: 800, marginBottom: 4, display: "flex", alignItems: "center", gap: 10 }}><Users size={22} />Staff & Doctors</div>
@@ -646,27 +646,27 @@ function DashboardContent() {
       )}
 
       {tab === "patients" && (
-        <PatientsManagementPanelLazy />
+        <div data-ui="hospitaladmin.dashboard.tab.patients"><PatientsManagementPanelLazy uiPrefix="hospitaladmin" /></div>
       )}
 
       {tab === "inventory" && (
-        <AdminInventoryPanel />
+        <div data-ui="hospitaladmin.dashboard.tab.inventory"><AdminInventoryPanel uiPrefix="hospitaladmin" /></div>
       )}
 
       {tab === "billing" && (
-        <BillingQueue deptName="Billing Counter" />
+        <div data-ui="hospitaladmin.dashboard.tab.billing"><BillingQueue deptName="Billing Counter" /></div>
       )}
 
       {tab === "ipd" && (
-        <IPDPanel />
+        <div data-ui="hospitaladmin.dashboard.tab.ipd"><IPDPanel uiPrefix="hospitaladmin" /></div>
       )}
 
       {tab === "departments" && (
-        <AdminDepartmentsPanel />
+        <div data-ui="hospitaladmin.dashboard.tab.departments"><AdminDepartmentsPanel /></div>
       )}
 
       {tab === "reports" && (
-        <div style={{ padding: "4px 0" }}><ReportsPanel /></div>
+        <div data-ui="hospitaladmin.dashboard.tab.reports" style={{ padding: "4px 0" }}><ReportsPanel /></div>
       )}
 
       {tab === "settings" && (

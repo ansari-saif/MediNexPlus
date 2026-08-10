@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { Anchor } from "@/lib/uianchor";
 import {
   Plus, Users, RefreshCw, Package, Trash2, Pencil, X,
   AlertTriangle, CheckCircle2, Search, IndianRupee,
@@ -79,7 +80,7 @@ const PAYMENT_METHODS = ["CASH", "UPI", "CARD", "BANK_TRANSFER", "CHEQUE", "ONLI
 type Tab = "overview" | "items" | "stock" | "suppliers" | "transfers" | "purchases";
 const CHART_COLORS = ["#0E898F", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6", "#06b6d4", "#ec4899", "#14b8a6"];
 
-export default function AdminInventoryPanel({ allowDeptTransfers = true }: { allowDeptTransfers?: boolean }) {
+export default function AdminInventoryPanel({ allowDeptTransfers = true, uiPrefix = "hospitaladmin" }: { allowDeptTransfers?: boolean; uiPrefix?: string }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -539,7 +540,13 @@ export default function AdminInventoryPanel({ allowDeptTransfers = true }: { all
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 9, padding: "8px 13px", flex: 1, minWidth: 200 }}>
               <Search size={13} color="#94a3b8" />
-              <input style={{ border: "none", background: "none", outline: "none", fontSize: 13, width: "100%", color: "#1e293b" }} placeholder="Search items, categories..." value={search} onChange={e => setSearch(e.target.value)} />
+              <Anchor.Input 
+                ui={`${uiPrefix}.inventory.search`}
+                style={{ border: "none", background: "none", outline: "none", fontSize: 13, width: "100%", color: "#1e293b" }} 
+                placeholder="Search items, categories..." 
+                value={search} 
+                onChange={e => setSearch(e.target.value)} 
+              />
             </div>
             <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap" }}>{sortedItems.length} items</div>
             {stockSel.size > 0 && (
@@ -549,7 +556,12 @@ export default function AdminInventoryPanel({ allowDeptTransfers = true }: { all
             )}
             <ExportMenu show={showStockExp} onToggle={() => setShowStockExp(p => !p)} onPDF={stockPDF} onExcel={stockExcel} onWord={stockWord} />
             <button onClick={() => setShowImport(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 9, border: "1.5px solid #8b5cf6", background: "#f5f3ff", color: "#7c3aed", fontSize: 12, fontWeight: 700, cursor: "pointer" }}><Upload size={13} /> Import</button>
-            <button onClick={() => setItemModal({ mode: "add", item: null })} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 9, border: "none", background: "#0E898F", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}><Plus size={13} /> Add Item</button>
+            <Anchor.Button 
+              ui={`${uiPrefix}.inventory.create`}
+              onClick={() => setItemModal({ mode: "add", item: null })} 
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 9, border: "none", background: "#0E898F", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+              <Plus size={13} /> Add Item
+            </Anchor.Button>
           </div>
 
           {/* Table */}

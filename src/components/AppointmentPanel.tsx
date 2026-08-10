@@ -877,7 +877,7 @@ function RescheduleModal({ appt, onClose, onConfirm }: { appt: Appointment; onCl
 // ─────────────────────────────────────────────────────────────────────────────
 // APPOINTMENT TABLE
 // ─────────────────────────────────────────────────────────────────────────────
-function AppointmentTable({ onRefresh, onViewPatient }: { onRefresh: number; onViewPatient: (id: string) => void }) {
+function AppointmentTable({ onRefresh, onViewPatient, uiPrefix }: { onRefresh: number; onViewPatient: (id: string) => void; uiPrefix?: string }) {
   const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });
@@ -1154,10 +1154,10 @@ function AppointmentTable({ onRefresh, onViewPatient }: { onRefresh: number; onV
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "8px 14px", flex: 1, minWidth: 200 }}>
           <Search size={13} color="#94a3b8" />
-          <input style={{ background: "none", border: "none", outline: "none", fontSize: 13, color: "#334155", width: "100%" }}
+          <input data-ui={uiPrefix ? `${uiPrefix}.appointments.search` : undefined} style={{ background: "none", border: "none", outline: "none", fontSize: 13, color: "#334155", width: "100%" }}
             placeholder="Search patient, doctor..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
         </div>
-        <input type="date"
+        <input type="date" data-ui={uiPrefix ? `${uiPrefix}.appointments.date-filter` : undefined}
           style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e2e8f0", background: showAll ? "#f1f5f9" : "#f8fafc", fontSize: 13, color: "#334155", outline: "none", opacity: showAll ? 0.5 : 1 }}
           value={dateFilter} onChange={e => { setDateFilter(e.target.value); setPage(1); }} disabled={showAll} />
         <label style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 10, border: "1.5px solid #e2e8f0", background: "#fff", fontSize: 12, fontWeight: 600, color: "#334155", cursor: "pointer", userSelect: "none" }}>
@@ -1165,7 +1165,7 @@ function AppointmentTable({ onRefresh, onViewPatient }: { onRefresh: number; onV
             style={{ width: 14, height: 14, cursor: "pointer", accentColor: "#0ea5e9" }} />
           Show All Appointments
         </label>
-        <select style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", fontSize: 13, color: "#334155", outline: "none" }}
+        <select data-ui={uiPrefix ? `${uiPrefix}.appointments.status-filter` : undefined} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", fontSize: 13, color: "#334155", outline: "none" }}
           value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}>
           <option value="">All Status</option>
           {Object.entries(STATUS_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
@@ -2286,7 +2286,7 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN PANEL
 // ─────────────────────────────────────────────────────────────────────────────
-export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTrigger }: { onViewPatient?: (id: string) => void; openTrigger?: number; onResetTrigger?: () => void }) {
+export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTrigger, uiPrefix }: { onViewPatient?: (id: string) => void; openTrigger?: number; onResetTrigger?: () => void; uiPrefix?: string }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [successMsg, setSuccessMsg] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -2320,7 +2320,7 @@ export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTr
       )}
 
       {/* Book Appointment Trigger Button */}
-      <button onClick={() => setShowModal(true)}
+      <button data-ui={uiPrefix ? `${uiPrefix}.appointments.create` : undefined} id={uiPrefix ? `${uiPrefix}-appointments-create` : undefined} onClick={() => setShowModal(true)}
         style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "16px 24px", borderRadius: 14, border: "1.5px dashed #0E898F", background: "#E6F4F4", cursor: "pointer", transition: "all .15s", marginBottom: 24 }}
         onMouseEnter={e => { e.currentTarget.style.background = "#D4EDED"; e.currentTarget.style.borderColor = "#0A6B70"; }}
         onMouseLeave={e => { e.currentTarget.style.background = "#E6F4F4"; e.currentTarget.style.borderColor = "#0E898F"; }}>
@@ -2341,7 +2341,7 @@ export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTr
         <div style={{ fontSize: 16, fontWeight: 800, color: "#1e293b", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
           <ClipboardList size={18} color="#0E898F" />Appointments
         </div>
-        <AppointmentTable onRefresh={refreshKey} onViewPatient={(id) => onViewPatient?.(id)} />
+        <AppointmentTable uiPrefix={uiPrefix} onRefresh={refreshKey} onViewPatient={(id) => onViewPatient?.(id)} />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, Building2 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 
 export default function ParentDeptLoginPage() {
   const router = useRouter();
@@ -56,7 +57,9 @@ export default function ParentDeptLoginPage() {
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize:10, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: "#64748b", display: "block", marginBottom: 6 }}>Email</label>
-              <input
+              <Anchor.Input
+                ui="auth.parentdept.login.email"
+                id="parentdept-email"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -70,7 +73,9 @@ export default function ParentDeptLoginPage() {
             <div style={{ marginBottom: 20 }}>
               <label style={{ fontSize:10, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: "#64748b", display: "block", marginBottom: 6 }}>Password</label>
               <div style={{ position: "relative" }}>
-                <input
+                <Anchor.Input
+                  ui="auth.parentdept.login.password"
+                  id="parentdept-pw"
                   type={showPw ? "text" : "password"}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -93,14 +98,15 @@ export default function ParentDeptLoginPage() {
               </div>
             )}
 
-            <button
+            <Anchor.Button
               type="submit"
+              ui="auth.parentdept.login.submit"
               disabled={loading}
               style={{ width: "100%", padding: "12px", background: "linear-gradient(135deg,#0E898F,#07595D)", border: "none", borderRadius: 10, color: "#fff", fontSize:13, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: loading ? 0.7 : 1, fontFamily: "'Inter',sans-serif" }}
             >
               {loading && <Loader2 size={16} className="pdl-spin" />}
               {loading ? "Signing in..." : "Sign In"}
-            </button>
+            </Anchor.Button>
           </form>
 
           <div style={{ textAlign: "center", marginTop: 20, fontSize:11, color: "#94a3b8" }}>

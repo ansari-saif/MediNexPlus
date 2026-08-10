@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 
 type FpStep = "email" | "otp" | "password" | "done";
 
@@ -291,7 +292,8 @@ export default function LoginPage() {
             <div className="mn-field">
               <label className="mn-label" htmlFor="login-email">Email Address</label>
               <div className="mn-input-wrap">
-                <input
+                <Anchor.Input
+                  ui="auth.login.email"
                   id="login-email"
                   type="email"
                   className={`mn-input${fieldErrors.email ? " err" : ""}`}
@@ -311,7 +313,8 @@ export default function LoginPage() {
                 <button type="button" className="mn-forgot-btn" onClick={openFp}>Forgot password?</button>
               </div>
               <div className="mn-input-wrap">
-                <input
+                <Anchor.Input
+                  ui="auth.login.password"
                   id="login-pw"
                   type={showPw ? "text" : "password"}
                   className={`mn-input${fieldErrors.password ? " err" : ""}`}
@@ -327,11 +330,16 @@ export default function LoginPage() {
               {fieldErrors.password && <span className="mn-ferr">{fieldErrors.password}</span>}
             </div>
 
-            <button type="submit" className="mn-auth-btn" disabled={loading || success}>
+            <Anchor.Button
+              ui="auth.login.submit"
+              type="submit"
+              className="mn-auth-btn"
+              disabled={loading || success}
+            >
               {loading ? <span className="mn-spinner" /> : success ? "Redirecting..." : (
                 <>Sign In <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
               )}
-            </button>
+            </Anchor.Button>
           </form>
 
           <div className="mn-auth-divider">
@@ -360,9 +368,9 @@ export default function LoginPage() {
                 </div>
                 <span className="mn-fp-title">Reset Password</span>
               </div>
-              <button className="mn-fp-close" onClick={closeFp}>
+              <Anchor.Button className="mn-fp-close" ui="auth.forgot.close" onClick={closeFp}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
+              </Anchor.Button>
             </div>
 
             {fpStep !== "done" && (
@@ -397,7 +405,9 @@ export default function LoginPage() {
                 <>
                   <p className="mn-fp-hint">Enter the email address linked to your account and we will send you a reset code.</p>
                   <label className="mn-label">Email Address</label>
-                  <input
+                  <Anchor.Input
+                    ui="auth.forgot.email"
+                    id="forgot-email"
                     type="email"
                     className={`mn-input${fpEmailError ? " err" : ""}`}
                     style={{marginTop:6}}
@@ -408,9 +418,9 @@ export default function LoginPage() {
                     onKeyDown={e => { if (e.key === "Enter") handleFpSendOtp(); }}
                   />
                   {fpEmailError && <span className="mn-ferr">{fpEmailError}</span>}
-                  <button className="mn-fp-btn" onClick={handleFpSendOtp} disabled={fpLoading}>
+                  <Anchor.Button className="mn-fp-btn" ui="auth.forgot.send-otp" onClick={handleFpSendOtp} disabled={fpLoading}>
                     {fpLoading ? <span className="mn-spinner" /> : <>Send OTP <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>}
-                  </button>
+                  </Anchor.Button>
                 </>
               )}
 
@@ -421,9 +431,10 @@ export default function LoginPage() {
                   <div className="mn-fp-otp-wrap" style={{marginTop:10}}>
                     <div className="mn-fp-otp-grid" onPaste={handleFpOtpPaste}>
                       {fpOtp.map((digit, i) => (
-                        <input
+                        <Anchor.Input
                           key={i}
                           id={`fp-otp-${i}`}
+                          ui={`auth.forgot.otp-${i + 1}`}
                           type="text"
                           inputMode="numeric"
                           maxLength={1}
@@ -439,12 +450,12 @@ export default function LoginPage() {
                   </div>
                   {fpOtpError && <span className="mn-ferr" style={{textAlign:"center",display:"block"}}>{fpOtpError}</span>}
                   <p className="mn-fp-otp-hint">Code is valid for 10 minutes</p>
-                  <button className="mn-fp-btn" onClick={handleFpVerifyOtp} disabled={fpLoading || fpOtp.join("").length !== 6}>
+                  <Anchor.Button className="mn-fp-btn" ui="auth.forgot.verify-otp" onClick={handleFpVerifyOtp} disabled={fpLoading || fpOtp.join("").length !== 6}>
                     {fpLoading ? <span className="mn-spinner" /> : <>Verify OTP <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>}
-                  </button>
+                  </Anchor.Button>
                   <p className="mn-fp-resend">
                     Didn&apos;t receive it?{" "}
-                    <button className="mn-fp-resend-btn" onClick={() => { setFpOtp(["","","","","",""]); handleFpSendOtp(); }} disabled={fpLoading}>Resend OTP</button>
+                    <Anchor.Button className="mn-fp-resend-btn" ui="auth.forgot.resend-otp" onClick={() => { setFpOtp(["","","","","",""]); handleFpSendOtp(); }} disabled={fpLoading}>Resend OTP</Anchor.Button>
                   </p>
                 </>
               )}
@@ -455,7 +466,9 @@ export default function LoginPage() {
                   <div style={{marginBottom:14}}>
                     <label className="mn-label">New Password</label>
                     <div className="mn-fp-pw-wrap" style={{marginTop:6}}>
-                      <input
+                      <Anchor.Input
+                        ui="auth.forgot.password"
+                        id="forgot-new-pw"
                         type={showFpPw ? "text" : "password"}
                         className={`mn-input${fpPwError ? " err" : ""}`}
                         style={{paddingRight:42}}
@@ -471,7 +484,9 @@ export default function LoginPage() {
                   <div>
                     <label className="mn-label">Confirm New Password</label>
                     <div className="mn-fp-pw-wrap" style={{marginTop:6}}>
-                      <input
+                      <Anchor.Input
+                        ui="auth.forgot.confirm"
+                        id="forgot-confirm-pw"
                         type={showFpConfirm ? "text" : "password"}
                         className={`mn-input${fpConfirmError ? " err" : ""}`}
                         style={{paddingRight:42}}
@@ -484,9 +499,9 @@ export default function LoginPage() {
                     </div>
                     {fpConfirmError && <span className="mn-ferr">{fpConfirmError}</span>}
                   </div>
-                  <button className="mn-fp-btn" onClick={handleFpResetPassword} disabled={fpLoading}>
+                  <Anchor.Button className="mn-fp-btn" ui="auth.forgot.submit" onClick={handleFpResetPassword} disabled={fpLoading}>
                     {fpLoading ? <span className="mn-spinner" /> : <>Reset Password <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>}
-                  </button>
+                  </Anchor.Button>
                 </>
               )}
 
@@ -495,10 +510,10 @@ export default function LoginPage() {
                   <div className="mn-fp-suc-icon">🎉</div>
                   <div className="mn-fp-suc-title">Password Reset!</div>
                   <p className="mn-fp-suc-sub">Your password has been updated successfully. You can now sign in with your new password.</p>
-                  <button className="mn-fp-suc-btn" onClick={closeFp}>
+                  <Anchor.Button className="mn-fp-suc-btn" ui="auth.forgot.go-to-signin" onClick={closeFp}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     Go to Sign In
-                  </button>
+                  </Anchor.Button>
                 </div>
               )}
             </div>

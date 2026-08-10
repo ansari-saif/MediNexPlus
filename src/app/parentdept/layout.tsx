@@ -7,6 +7,7 @@ import {
   BarChart2, Package, ShoppingCart, ChevronDown, TrendingUp, Receipt,
   Search, MessageSquare, Menu, X
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 import NotificationBell from "@/components/NotificationBell";
 import SupportModal from "@/components/SupportModal";
 
@@ -284,8 +285,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               <div key={sec.label}>
                 <div className="hd-nav-sec">{sec.label}</div>
                 {sec.items.map(n => (
-                  <button
+                  <Anchor.Button
                     key={n.id}
+                    ui={`parentdept.nav.${n.id}`}
                     className={`hd-nb${activeId === n.id ? " on" : ""}`}
                     onClick={() => navigate(n)}
                     style={{ position: "relative" }}
@@ -295,7 +297,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                       <n.Icon size={16} />
                     </span>
                     {n.label}
-                  </button>
+                  </Anchor.Button>
                 ))}
               </div>
             ))}
@@ -318,9 +320,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <div className="hd-urole">Dept. Head</div>
               </div>
             </div>
-            <button className="hd-logout" onClick={logout}>
+            <Anchor.Button className="hd-logout" ui="parentdept.logout" onClick={logout}>
               <LogOut size={13} /> Log Out
-            </button>
+            </Anchor.Button>
           </div>
         </aside>
 

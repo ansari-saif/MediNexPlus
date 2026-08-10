@@ -7,6 +7,7 @@ import {
   Bell, HelpCircle, UserRound, FileText,
   ChevronDown, Settings, User, Activity, ClipboardCheck, Clock, BarChart2, Menu, X, ListTodo
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 import { DoctorDashboardProvider, useDoctorDashboard } from "./DoctorDashboardContext";
 import NotificationBell from "@/components/NotificationBell";
 import SupportModal from "@/components/SupportModal";
@@ -126,26 +127,28 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {navItems.map(n => {
               const isActive = !isProfilePage && currentTab === n.id;
               return (
-                <button
+                <Anchor.Button
                   key={n.id}
+                  ui={`doctor.nav.${n.id}`}
                   className={`doc-nb${isActive ? " on" : ""}`}
                   onClick={() => { router.push(n.path); setSidebarOpen(false); }}
                 >
                   <div className="doc-nb-dot" />
                   <span style={{ color: isActive ? "#059669" : "#94a3b8", display: "flex" }}>{n.icon}</span>
                   {n.label}
-                </button>
+                </Anchor.Button>
               );
             })}
             <div className="doc-nav-sec">Settings</div>
-            <button
+            <Anchor.Button
+              ui="doctor.nav.profile"
               className={`doc-nb${isProfilePage ? " on" : ""}`}
               onClick={() => { router.push("/doctor/dashboard/profile"); setSidebarOpen(false); }}
             >
               <div className="doc-nb-dot" />
               <span style={{ color: isProfilePage ? "#059669" : "#94a3b8", display: "flex" }}><User size={16} /></span>
               My Profile
-            </button>
+            </Anchor.Button>
             <button className="doc-nb" onClick={() => setSupportOpen(true)}><span style={{ color: "#94a3b8", display: "flex" }}><HelpCircle size={16} /></span>Support</button>
           </nav>
           <div className="doc-sb-foot">
@@ -156,10 +159,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               }
               <div><div className="doc-uname">{doctorName}</div><div className="doc-urole" style={{ color: accent }}>Doctor · {deptName}</div></div>
             </div>
-            <button className="doc-logout" onClick={logout}>
+            <Anchor.Button className="doc-logout" ui="doctor.logout" onClick={logout}>
               <LogOut size={13} />
               Log Out
-            </button>
+            </Anchor.Button>
           </div>
         </aside>
 
@@ -184,6 +187,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
             <div className="doc-tb-right">
               <NotificationBell
+                uiPrefix="doctor"
                 accentColor={accent}
                 bgColor="#f0fdf4"
                 borderColor="#d1fae5"
@@ -283,7 +287,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
-      <SupportModal open={supportOpen} onClose={() => setSupportOpen(false)} />
+      <SupportModal uiPrefix="doctor" open={supportOpen} onClose={() => setSupportOpen(false)} />
     </>
   );
 }

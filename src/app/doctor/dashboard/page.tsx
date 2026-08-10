@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, Suspense, useRef } from "react";
+import { Anchor } from "@/lib/uianchor";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CalendarDays, ChevronRight, ChevronLeft, ChevronUp, ChevronDown,
@@ -1436,7 +1437,7 @@ function DoctorDashboardContent() {
       `}</style>
 
       <div style={{ display: "grid", gridTemplateColumns: tab === "schedule" ? "1fr 260px" : "1fr", gap: 0 }}>
-        <div>
+        <div data-ui="doctor.dashboard">
           {selectedPatientId ? (
             <PatientProfilePanel
               patientId={selectedPatientId}
@@ -1580,21 +1581,27 @@ function DoctorDashboardContent() {
                               <td>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                                   {canConsult && (
-                                    <button onClick={() => handleStartPrescription(a.id)}
+                                    <Anchor.Button
+                                      ui="doctor.schedule.consult"
+                                      onClick={() => handleStartPrescription(a.id)}
                                       style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: "linear-gradient(135deg,#0E898F,#0A6B70)", color: "#fff", fontSize:10, fontWeight: 700, cursor: "pointer", boxShadow: "0 3px 10px rgba(14,137,143,.3)" }}>
                                       <PlayCircle size={12} />{a.status === "IN_PROGRESS" ? "Continue" : "Consult"}
-                                    </button>
+                                    </Anchor.Button>
                                   )}
                                   {a.status === "COMPLETED" && (
                                     <>
-                                      <button onClick={() => handleViewPrescription(a.id)}
+                                      <Anchor.Button
+                                        ui="doctor.schedule.view-rx"
+                                        onClick={() => handleViewPrescription(a.id)}
                                         style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 10px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#fff", color: "#334155", fontSize:10, fontWeight: 700, cursor: "pointer" }}>
                                         <FileText size={12} />View Rx
-                                      </button>
-                                      <button onClick={() => handleEditPrescription(a.id)}
+                                      </Anchor.Button>
+                                      <Anchor.Button
+                                        ui="doctor.schedule.edit-rx"
+                                        onClick={() => handleEditPrescription(a.id)}
                                         style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 10px", borderRadius: 8, border: "1px solid #B3E0E0", background: "#E6F4F4", color: "#0A6B70", fontSize:10, fontWeight: 700, cursor: "pointer" }}>
                                         <Pencil size={12} />Edit Rx
-                                      </button>
+                                      </Anchor.Button>
                                     </>
                                   )}
                                   {!canConsult && a.status !== "COMPLETED" && <span style={{ fontSize:10, color: "#94a3b8" }}>—</span>}
@@ -1786,7 +1793,7 @@ function DoctorDashboardContent() {
               )}
 
               {tab === "patients" && (
-                <PatientsManagementPanelLazy />
+                <PatientsManagementPanelLazy uiPrefix="doctor" />
               )}
 
               {tab === "rx" && <RxManagementPanelLazy />}
@@ -2405,21 +2412,27 @@ function DoctorDashboardContent() {
                     </div>
                     <div style={{ fontSize:10, color: "#64748b" }}>{a.timeSlot} · Token #{a.tokenNumber || "—"}</div>
                     {["SCHEDULED", "CONFIRMED", "IN_PROGRESS"].includes(a.status) && (
-                      <button onClick={() => setConsultAppt(a)}
+                      <Anchor.Button
+                        ui="doctor.schedule.consult"
+                        onClick={() => setConsultAppt(a)}
                         style={{ marginTop: 7, width: "100%", padding: "5px 0", borderRadius: 7, border: "none", background: a.status === "IN_PROGRESS" ? "#0E898F" : accent, color: "#fff", fontSize:10, fontWeight: 700, cursor: "pointer" }}>
                         {a.status === "IN_PROGRESS" ? "Continue" : "Consult"}
-                      </button>
+                      </Anchor.Button>
                     )}
                     {a.status === "COMPLETED" && (
                       <div style={{ display: "flex", gap: 6, marginTop: 7 }}>
-                        <button onClick={() => handleViewPrescription(a.id)}
+                        <Anchor.Button
+                          ui="doctor.schedule.view-rx"
+                          onClick={() => handleViewPrescription(a.id)}
                           style={{ flex: 1, padding: "5px 0", borderRadius: 7, border: "1px solid #e2e8f0", background: "#fff", color: "#334155", fontSize:10, fontWeight: 700, cursor: "pointer" }}>
                           View Rx
-                        </button>
-                        <button onClick={() => handleEditPrescription(a.id)}
+                        </Anchor.Button>
+                        <Anchor.Button
+                          ui="doctor.schedule.edit-rx"
+                          onClick={() => handleEditPrescription(a.id)}
                           style={{ flex: 1, padding: "5px 0", borderRadius: 7, border: "1px solid #B3E0E0", background: "#E6F4F4", color: "#0A6B70", fontSize:10, fontWeight: 700, cursor: "pointer" }}>
                           Edit
-                        </button>
+                        </Anchor.Button>
                       </div>
                     )}
                   </div>

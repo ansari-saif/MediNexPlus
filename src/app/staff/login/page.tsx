@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 
 export default function StaffLoginPage() {
   const router = useRouter();
@@ -196,7 +197,8 @@ export default function StaffLoginPage() {
               <div className="sp-field">
                 <label className="sp-label" htmlFor="staff-email">Email Address</label>
                 <div className="sp-wrap">
-                  <input
+                  <Anchor.Input
+                    ui="auth.staff.login.email"
                     id="staff-email"
                     type="email"
                     className={`sp-input${fieldErrors.email ? " err" : ""}`}
@@ -218,7 +220,8 @@ export default function StaffLoginPage() {
                   <label className="sp-label" htmlFor="staff-pw">Password</label>
                 </div>
                 <div className="sp-wrap">
-                  <input
+                  <Anchor.Input
+                    ui="auth.staff.login.password"
                     id="staff-pw"
                     type={showPw ? "text" : "password"}
                     className={`sp-input${fieldErrors.password ? " err" : ""}`}
@@ -237,7 +240,7 @@ export default function StaffLoginPage() {
                 {fieldErrors.password && <span className="sp-ferr">{fieldErrors.password}</span>}
               </div>
 
-              <button type="submit" className="sp-btn" disabled={loading || success}>
+              <Anchor.Button type="submit" className="sp-btn" ui="auth.staff.login.submit" disabled={loading || success}>
                 <span className="sp-btn-shine"/>
                 {loading
                   ? <span className="sp-spinner"/>
@@ -245,7 +248,7 @@ export default function StaffLoginPage() {
                   ? "Redirecting..."
                   : <>Sign In <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
                 }
-              </button>
+              </Anchor.Button>
             </form>
 
             <div className="sp-notice">

@@ -58,7 +58,7 @@ export default function AppointmentsPage() {
         <PatientProfilePanel patientId={selectedPatientId} onBack={() => setSelectedPatientId(null)} />
       ) : (
         <>
-          {tab === "appointments" && <AppointmentPanel onViewPatient={setSelectedPatientId} openTrigger={bookTrigger} />}
+          {tab === "appointments" && <AppointmentPanel uiPrefix="hospitaladmin" onViewPatient={setSelectedPatientId} openTrigger={bookTrigger} />}
           {tab === "followups"    && <FollowUpDashboard onViewPatient={setSelectedPatientId} />}
         </>
       )}

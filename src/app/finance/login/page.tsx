@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IndianRupee, Eye, EyeOff, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 
 export default function FinanceLoginPage() {
   const router = useRouter();
@@ -52,7 +53,9 @@ export default function FinanceLoginPage() {
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 18 }}>
               <label style={{ fontSize:10, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: ".08em", display: "block", marginBottom: 6 }}>Email Address</label>
-              <input
+              <Anchor.Input
+                ui="auth.finance.login.email"
+                id="finance-email"
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -66,7 +69,9 @@ export default function FinanceLoginPage() {
             <div style={{ marginBottom: 22 }}>
               <label style={{ fontSize:10, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: ".08em", display: "block", marginBottom: 6 }}>Password</label>
               <div style={{ position: "relative" }}>
-                <input
+                <Anchor.Input
+                  ui="auth.finance.login.password"
+                  id="finance-pw"
                   type={showPw ? "text" : "password"}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -89,14 +94,15 @@ export default function FinanceLoginPage() {
               </div>
             )}
 
-            <button
+            <Anchor.Button
               type="submit"
+              ui="auth.finance.login.submit"
               disabled={loading}
               style={{ width: "100%", padding: "13px", borderRadius: 11, border: "none", background: loading ? "#fde68a" : "linear-gradient(135deg,#f59e0b,#b45309)", color: "#fff", fontSize:13, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 14px rgba(245,158,11,.35)", transition: "opacity .2s" }}
             >
               {loading ? <Loader2 size={16} style={{ animation: "spin .7s linear infinite" }} /> : <ShieldCheck size={16} />}
               {loading ? "Signing in…" : "Sign In"}
-            </button>
+            </Anchor.Button>
           </form>
 
           <div style={{ marginTop: 22, paddingTop: 18, borderTop: "1px solid #fef3c7", textAlign: "center" }}>

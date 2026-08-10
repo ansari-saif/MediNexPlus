@@ -1,0 +1,60 @@
+---
+description: UIAnchor stable data-ui identities for app + Playwright E2E
+globs: src/**/*.{tsx,ts},e2e/**/*.ts
+alwaysApply: false
+---
+
+# UIAnchor
+
+Stable UI identity shared by app code and Playwright. Contract: `data-ui="<identity>"`. Helpers: `@/lib/uianchor` · `ui()` in `e2e/fixtures.ts`.
+
+## When to anchor
+
+Anchor only what E2E will click, fill, or assert: form fields/submit, primary nav/logout, page landmarks, list static actions. Do not anchor layout/decoration or icon-only children of an already-anchored control.
+
+## Contract
+
+One component declaration → one identity → one `data-ui` → one Playwright `ui()` locator. App owns the identity; tests consume it. Never invent IDs only in tests. Prefer `data-ui` over `data-testid` for new anchors.
+
+```tsx
+import { Anchor } from "@/lib/uianchor";
+<Anchor.Input ui="auth.login.email" id="login-email" type="email" />
+<Anchor.Button ui="auth.login.submit" type="submit">Sign In</Anchor.Button>
+```
+
+- `ui` → `data-ui` (identity). Keep native HTML `id` for a11y/labels — never put the UIAnchor identity in HTML `id`.
+- Landmarks may use raw `data-ui` on a plain element.
+- Primitives: `Anchor.Button` · `Anchor.Input` · `Anchor.Select` · `Anchor.Link`.
+
+## Naming
+
+Format: `<domain>.<area>.<element>[.<action>]` — lowercase, dot-separated, ≥2 segments, each `[a-z][a-z0-9-]*`. Describe what, not how.
+
+Prefixes: `auth.*` · `public.*` · `shared.*` · `superadmin.*` · `hospitaladmin.*` · `doctor.*` · `staff.*` · `receptionist.*` · `finance.*` · `parentdept.*` · `subdept.*` (type suffix when needed) · `clinical.*` / `diagnostic.*` / `administrative.*` / `support.*`.
+
+Prefer portal-scoped IDs for shell chrome. Shared panels: pass `uiPrefix` (preferred) or use `shared.*` only when meaning is identical everywhere.
+
+## Playwright
+
+```ts
+import { test, expect } from "./fixtures";
+await ui("auth.login.email").fill("…");
+await ui("auth.login.submit").click();
+await expect(ui("hospitaladmin.dashboard")).toBeVisible();
+```
+
+No new CSS/text/nth-child selectors for controls that have (or should have) a UIAnchor. Use Playwright built-ins only.
+
+## Generated inventory
+
+After adding/changing anchors, run `npm run uianchor:generate` (also runs on `pretypecheck`).
+
+- Manifest: `src/lib/uianchor/ui-anchor.manifest.json`
+- Typed union: `src/lib/uianchor/ids.generated.ts` (`UIAnchorId`)
+- Playwright `ui()` is typed with `UIAnchorId` — never hand-edit generated files or invent IDs only in tests
+
+## Do not
+
+- Encode CSS/layout into IDs, or derive identity from classes/DOM position/copy/random IDs
+- Use array indexes as identity (`row(0)`); instance IDs (`data-ui-instance`) are deferred
+- Turn UIAnchor into a framework, assertion library, or hand-written ID inventory

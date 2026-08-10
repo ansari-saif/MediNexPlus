@@ -320,7 +320,7 @@ export default function ServicePanel() {
               </div>
             )}
           </div>
-          <button className="sp-btn-primary" onClick={openAdd}>
+          <button data-ui="hospitaladmin.configure.services.create" className="sp-btn-primary" onClick={openAdd}>
             <Plus size={14} />Add Service/Package
           </button>
         </div>
@@ -592,7 +592,7 @@ export default function ServicePanel() {
               {msg && <div style={{ gridColumn: "1/-1", fontSize: 13, color: "#ef4444", fontWeight: 600 }}>{msg}</div>}
               <div style={{ gridColumn: "1/-1", display: "flex", gap: 10, marginTop: 4 }}>
                 <button type="button" className="sp-btn-ghost" onClick={() => setModal(false)}>Cancel</button>
-                <button type="submit" className="sp-btn-primary" disabled={saving}>
+                <button data-ui="hospitaladmin.configure.services.save" type="submit" className="sp-btn-primary" disabled={saving}>
                   {saving && <Loader2 size={14} className="sp-spin" />}
                   {editItem ? "Update" : "Create"}
                 </button>

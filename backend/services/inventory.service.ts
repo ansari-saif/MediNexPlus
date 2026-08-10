@@ -1,4 +1,5 @@
 import * as repo from "../repositories/inventory.repo";
+import { Prisma } from "@prisma/client";
 
 export class InventoryServiceError extends Error {
   constructor(message: string) {
@@ -7,18 +8,26 @@ export class InventoryServiceError extends Error {
   }
 }
 
+type InventoryItemCreateData = Omit<Prisma.InventoryItemUncheckedCreateInput, "hospitalId"> & {
+  openingStock?: unknown;
+};
+
+type InventoryItemUpdateData = Prisma.InventoryItemUncheckedUpdateInput & {
+  openingStock?: unknown;
+};
+
 /** Fields accepted by API but not stored on InventoryItem (handled separately). */
-const stripInventoryApiFields = <T extends Record<string, unknown>>(data: T) => {
+const stripInventoryApiFields = <T extends { openingStock?: unknown }>(data: T): Omit<T, "openingStock"> => {
   const { openingStock: _openingStock, ...itemData } = data;
   return itemData;
 };
 
 // --- Items ---
-export const addItem = async (hospitalId: string, data: any) => {
+export const addItem = async (hospitalId: string, data: InventoryItemCreateData) => {
   return repo.createInventoryItem({ ...stripInventoryApiFields(data), hospitalId });
 };
 
-export const updateItem = async (id: string, hospitalId: string, data: any) => {
+export const updateItem = async (id: string, hospitalId: string, data: InventoryItemUpdateData) => {
   return repo.updateInventoryItem(id, hospitalId, stripInventoryApiFields(data));
 };
 

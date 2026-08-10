@@ -653,7 +653,7 @@ function StaffForm({ editItem, departments, onSuccess, onCancel, addToast }: {
       {/* Footer */}
       <div className="sp-form-footer">
         <button type="button" className="sp-btn-ghost" onClick={onCancel}>Cancel</button>
-        <button type="submit" className="sp-btn-primary" disabled={saving}>
+        <button type="submit" data-ui="hospitaladmin.staff.save" className="sp-btn-primary" disabled={saving}>
           {saving && <Loader2 size={13} className="sp-spin" />}
           {saving ? "Saving..." : editItem ? "Update Staff" : "Create Staff Member"}
         </button>
@@ -898,7 +898,7 @@ export default function StaffPanel() {
         <div className="sp-toolbar-right">
           <div className="sp-search-wrap">
             <Search size={14} color="#94a3b8" />
-            <input className="sp-search-input" placeholder="Search by name, email or phone..."
+            <input data-ui="hospitaladmin.staff.search" className="sp-search-input" placeholder="Search by name, email or phone..."
               value={search}
               onChange={e => { setSearch(e.target.value); setPagination(p => ({ ...p, page: 1 })); }} />
             {search && <button className="sp-icon-btn" style={{ flexShrink: 0 }} onClick={() => setSearch("")}><X size={13} /></button>}
@@ -943,7 +943,7 @@ export default function StaffPanel() {
               <Trash2 size={13} /> Delete ({selectedIds.size})
             </button>
           )}
-          <button className="sp-btn-primary" onClick={() => setView("add")}>
+          <button data-ui="hospitaladmin.staff.create" className="sp-btn-primary" onClick={() => setView("add")}>
             <Plus size={14} /> Add Staff
           </button>
         </div>

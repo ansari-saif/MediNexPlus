@@ -11,6 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAppointment } from "./AppointmentProvider";
+import { Anchor } from "@/lib/uianchor";
 import styles from "./Navbar.module.css";
 
 const treatmentsLeft = [
@@ -89,10 +90,10 @@ export default function Navbar() {
             </span>
           </div>
           <div className={styles.topBarRight}>
-            <Link href="/login" className={styles.topBarLink}>
+            <Anchor.Link href="/login" ui="public.nav.login" className={styles.topBarLink}>
               <LogIn size={14} />
               Login
-            </Link>
+            </Anchor.Link>
           </div>
         </div>
       </div>
@@ -251,12 +252,13 @@ export default function Navbar() {
               <PhoneCall size={15} />
               +91 90590 53938
             </a>
-            <button
+            <Anchor.Button
+              ui="public.nav.book"
               onClick={openAppointment}
               className={`${styles.navBtn} ${styles.navCta}`}
             >
               Book Appointment
-            </button>
+            </Anchor.Button>
           </div>
 
           {/* Mobile Toggle */}

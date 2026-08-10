@@ -933,7 +933,7 @@ export default function SubDepartmentPanel() {
           </button>
           <div className="sd-search-wrap">
             <Search size={14} color="#94a3b8" />
-            <input className="sd-search-input" placeholder="Search sub-departments..." value={search}
+            <input data-ui="hospitaladmin.configure.subdepartments.search" className="sd-search-input" placeholder="Search sub-departments..." value={search}
               onChange={e => { setSearch(e.target.value); setPagination(p => ({ ...p, page: 1 })); }} />
             {search && <button className="sd-icon-btn" onClick={() => setSearch("")}><X size={13} /></button>}
           </div>
@@ -965,7 +965,7 @@ export default function SubDepartmentPanel() {
             {bulkSending ? <Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} /> : <Send size={13} />}
             Send All
           </button>
-          <button className="sd-btn-primary" onClick={openAdd}><Plus size={14} />Add Sub-Department</button>
+          <button data-ui="hospitaladmin.configure.subdepartments.create" className="sd-btn-primary" onClick={openAdd}><Plus size={14} />Add Sub-Department</button>
         </div>
       </div>
 
@@ -1311,7 +1311,7 @@ export default function SubDepartmentPanel() {
               </div>
               <div className="sd-modal-foot">
                 <button type="button" className="sd-btn-ghost" style={{padding:"7px 14px",fontSize:12}} onClick={() => setModal(false)}>Cancel</button>
-                <button type="submit" className="sd-btn-primary" style={{padding:"7px 14px",fontSize:12}} disabled={saving}>
+                <button data-ui="hospitaladmin.configure.subdepartments.save" type="submit" className="sd-btn-primary" style={{padding:"7px 14px",fontSize:12}} disabled={saving}>
                   {saving && <Loader2 size={13} className="sd-spin" />}{editItem ? "Update" : "Create"}
                 </button>
               </div>

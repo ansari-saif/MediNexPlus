@@ -420,7 +420,7 @@ const PRIORITY_MAP: Record<string, { label: string; color: string; bg: string }>
 
 
 
-export default function PharmacyDashboard({ profile, user, activeTab, onReady }: { profile: any; user: any; activeTab?: string; onReady?: () => void }) {
+export default function PharmacyDashboard({ profile, user, activeTab, onReady, uiPrefix }: { profile: any; user: any; activeTab?: string; onReady?: () => void; uiPrefix?: string }) {
 
   const [tab, setTab] = useState<"overview" | "queue" | "inventory" | "billing" | "reports" | "counter-sell" | "revenue" | "expense">("overview");
 
@@ -3794,13 +3794,13 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
               <button className="ph-btn-ghost" onClick={loadQueue} disabled={queueLoading}><RefreshCw size={13} className={queueLoading ? "ph-spin" : ""} /> Refresh</button>
 
-              <button className="ph-btn-primary" style={{ background: ACCENT }} onClick={() => { setCounterSaleModal(true); setCsError(""); }}>
+              <button className="ph-btn-primary" style={{ background: ACCENT }} data-ui={uiPrefix ? `${uiPrefix}.queue.counter-sell` : undefined} onClick={() => { setCounterSaleModal(true); setCsError(""); }}>
 
                 <ShoppingCart size={14} /> New Transaction
 
               </button>
 
-              <button className="ph-btn-primary" onClick={() => { setRxCreateModal(true); setRxCreateError(""); if (rxCreateDoctors.length === 0) api("/api/config/doctors?simple=true").then(r => { if (r.success) setRxCreateDoctors(Array.isArray(r.data) ? r.data : r.data?.data || []); }); }}>
+              <button className="ph-btn-primary" data-ui={uiPrefix ? `${uiPrefix}.queue.add-rx` : undefined} onClick={() => { setRxCreateModal(true); setRxCreateError(""); if (rxCreateDoctors.length === 0) api("/api/config/doctors?simple=true").then(r => { if (r.success) setRxCreateDoctors(Array.isArray(r.data) ? r.data : r.data?.data || []); }); }}>
 
                 <Plus size={14} /> Add Walk-in Rx
 
@@ -5881,7 +5881,7 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
         <div className="ph-section">
 
-          <PharmacyCounterSellPanel profile={profile} user={user} />
+          <PharmacyCounterSellPanel profile={profile} user={user} uiPrefix={uiPrefix} />
 
         </div>
 
@@ -5895,7 +5895,7 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
         <div className="ph-section" style={{ padding: 24 }}>
 
-          <BillingModule scope="pharmacy" />
+          <BillingModule scope="pharmacy" uiPrefix={uiPrefix} />
 
         </div>
 
@@ -8835,7 +8835,7 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
       {/* ── Inventory Tab ── */}
 
-      {tab === "inventory" && <AdminInventoryPanel allowDeptTransfers={false} />}
+      {tab === "inventory" && <AdminInventoryPanel allowDeptTransfers={false} uiPrefix={uiPrefix} />}
 
 
 
@@ -8847,7 +8847,7 @@ export default function PharmacyDashboard({ profile, user, activeTab, onReady }:
 
         <div className="ph-section" style={{ padding: 0 }}>
 
-          <BillingQueue scope="pharmacy" />
+          <BillingQueue scope="pharmacy" uiPrefix={uiPrefix} />
 
         </div>
 

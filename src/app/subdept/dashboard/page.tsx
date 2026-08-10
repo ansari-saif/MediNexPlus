@@ -51,8 +51,8 @@ const CriticalCareDashboardLazy = dynamic<{ profile: any; user: any; activeTab?:
 const SpecialtyClinicDashboardLazy = dynamic<{ profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void }>(() => import("@/components/SpecialtyClinicDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Specialty Dashboard...</span></div> });
 const DentalOPDDashboardLazy = dynamic<{ profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void; meta: any }>(() => import("@/components/DentalOPDDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Dental OPD Dashboard...</span></div> });
 const OPDDashboardLazy = dynamic<{ profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void; meta: any }>(() => import("@/components/OPDDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading OPD Dashboard...</span></div> });
-const PathologyDashboardLazy = dynamic<{ profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void }>(() => import("@/components/PathologyDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Pathology Dashboard...</span></div> });
-const BillingDepartmentDashboardLazy = dynamic<{ profile: any; user: any; activeTab: string; onTabChange: (t: string) => void; meta: any }>(() => import("@/components/BillingDepartmentDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Billing Dashboard...</span></div> });
+const PathologyDashboardLazy = dynamic<{ profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void; uiPrefix?: string }>(() => import("@/components/PathologyDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Pathology Dashboard...</span></div> });
+const BillingDepartmentDashboardLazy = dynamic<{ profile: any; user: any; activeTab: string; onTabChange: (t: string) => void; meta: any; uiPrefix?: string }>(() => import("@/components/BillingDepartmentDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Billing Dashboard...</span></div> });
 const AccountSettingsPanelLazy = dynamic<{ user: any }>(() => import("@/components/AccountSettingsPanel"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Account Settings...</span></div> });
 const HRDepartmentDashboardLazy = dynamic<{ profile: any; user: any; activeTab: string; onTabChange: (t: string) => void; meta: any }>(() => import("@/components/HRDepartmentDashboard"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading HR Dashboard...</span></div> });
 
@@ -1282,7 +1282,7 @@ function SubDeptDashboardContent() {
           <nav className="sd2-nav">
             <div className="sd2-nav-sec">Navigation</div>
             {navItems.map(n => (
-              <button key={n.id} className={`sd2-nb${tab===n.id?" on":""}`} onClick={()=>{setTab(n.id as any);setSidebarOpen(false);}}>
+              <button key={n.id} className={`sd2-nb${tab===n.id?" on":""}`} onClick={()=>{setTab(n.id as any);setSidebarOpen(false);}} data-ui={`subdept.shell.nav.${n.id}`} id={`subdept-nav-${n.id}`}>
                 <div className="sd2-nb-dot"/>
                 <span style={{display:"flex"}}>{n.icon}</span>
                 {n.label}
@@ -1306,7 +1306,7 @@ function SubDeptDashboardContent() {
                 <div style={{fontSize:10,fontWeight:500,color:meta.accent}}>Sub-Dept Head</div>
               </div>
             </div>
-            <button className="sd2-logout" onClick={logout}><LogOut size={13}/>Log Out</button>
+            <button className="sd2-logout" onClick={logout} data-ui="subdept.shell.logout" id="subdept-logout"><LogOut size={13}/>Log Out</button>
           </div>
         </aside>
 
@@ -1390,6 +1390,7 @@ function SubDeptDashboardContent() {
                         </button>
                         <button 
                           onClick={() => { setProfileDropdownOpen(false); logout(); }}
+                          data-ui="subdept.shell.logout" id="subdept-logout-dropdown"
                           style={{
                             width: "100%",
                             padding: "10px 12px",
@@ -1420,15 +1421,15 @@ function SubDeptDashboardContent() {
             </div>
           </header>
 
-          <div className="sd2-body" style={tab === "inventory" ? { padding: "32px 20px" } : (tab === "billing-queue" || tab === "reports" || tab === "billing" || tab === "revenue") ? { padding: 0 } : {}}>
+          <div data-ui="subdept.dashboard" className="sd2-body" style={tab === "inventory" ? { padding: "32px 20px" } : (tab === "billing-queue" || tab === "reports" || tab === "billing" || tab === "revenue") ? { padding: 0 } : {}}>
 
             {/* ═══════════════════ SUPPORT DEPARTMENT DASHBOARDS ═══════════════════ */}
             {deptType === "PATHOLOGY" && tab !== "account-settings" ? (
-              <PathologyDashboardLazy profile={profile} user={user} activeTab={tab} onTabChange={(t: string) => setTab(t as any)} />
+              <PathologyDashboardLazy profile={profile} user={user} activeTab={tab} onTabChange={(t: string) => setTab(t as any)} uiPrefix="subdept.pathology" />
             ) : tab === "account-settings" ? (
               <AccountSettingsPanelLazy user={user} />
             ) : deptType === "PHARMACY" ? (
-              <PharmacyDashboardLazy profile={profile} user={user} activeTab={tab} onReady={() => setPharmacyReady(true)} />
+              <PharmacyDashboardLazy profile={profile} user={user} activeTab={tab} onReady={() => setPharmacyReady(true)} uiPrefix="subdept.pharmacy" />
             ) : deptType === "NURSING" ? (
               <NursingDashboardLazy profile={profile} user={user} />
             ) : deptType === "HOUSEKEEPING" ? (
@@ -1448,7 +1449,7 @@ function SubDeptDashboardContent() {
             ) : deptType === "HR" && ["overview", "staff", "doctors"].includes(tab) ? (
               <HRDepartmentDashboardLazy profile={profile} user={user} activeTab={tab} onTabChange={(t: string) => setTab(t as any)} meta={meta} />
             ) : deptType === "BILLING" && ["overview","billing-queue","finance","inventory"].includes(tab) ? (
-              <BillingDepartmentDashboardLazy profile={profile} user={user} activeTab={tab} onTabChange={(t: string) => setTab(t as any)} meta={meta} />
+              <BillingDepartmentDashboardLazy profile={profile} user={user} activeTab={tab} onTabChange={(t: string) => setTab(t as any)} meta={meta} uiPrefix="subdept.billing-dept" />
             ) : (<>
 
             {/* ═══════════════════ OVERVIEW ═══════════════════ */}
@@ -3954,7 +3955,7 @@ function SubDeptDashboardContent() {
             )}
 
             {/* ═══════════════════ PATIENTS (Reception) ═══════════════════ */}
-            {tab==="patients" && <PatientsManagementPanelLazy/>}
+            {tab==="patients" && <PatientsManagementPanelLazy uiPrefix="subdept.patients"/>}
 
             {/* ═══════════════════ DOCTORS (Reception) ═══════════════════ */}
             {tab==="doctors" && <DoctorPanelLazy />}

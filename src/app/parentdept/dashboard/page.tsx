@@ -130,14 +130,14 @@ function DashboardContent() {
     return (
       <div className="hd-body">
         <div className="hd-center">
-          <PharmacyDashboard profile={deptProfile} user={user} activeTab={tab} />
+          <PharmacyDashboard profile={deptProfile} user={user} activeTab={tab} uiPrefix="parentdept" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="hd-body">
+    <div className="hd-body" data-ui="parentdept.dashboard">
       <div className="hd-center">
         {tab === "overview" && <OverviewTab deptProfile={deptProfile} onOpenSubDept={openSubDeptDashboard} />}
         {tab === "subdepts" && !viewingSubDept && <SubDeptsTab onOpenSubDept={openSubDeptDashboard} />}
@@ -179,7 +179,7 @@ function OverviewTab({ deptProfile, onOpenSubDept }: { deptProfile: any; onOpenS
       {/* Header: title + live indicator + refresh */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }} data-ui="parentdept.dashboard">
             {deptProfile?.name || "Pharmacy"} Overview
           </div>
           <div style={{ fontSize: 12, color: "#64748b", marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
@@ -692,6 +692,7 @@ function SubDeptDetailView({ subDeptId, onBack }: { subDeptId: string; onBack: (
         {sections.map(s => (
           <button
             key={s.id}
+            data-ui={`parentdept.dashboard.tab.${s.id}`}
             onClick={() => setActiveSection(s.id as any)}
             style={{
               display: "flex", alignItems: "center", gap: 5,

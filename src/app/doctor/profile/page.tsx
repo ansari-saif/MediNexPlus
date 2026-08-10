@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { Anchor } from "@/lib/uianchor";
 import { useRouter } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, Users, HelpCircle, LogOut, Search, Bell,
@@ -283,9 +284,13 @@ export default function DoctorProfilePage() {
                     </div>
                   </div>
                   <div style={{ marginTop: 20 }}>
-                    <button type="submit" disabled={saving} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#10b981", color: "#fff", fontSize:12, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(16,185,129,0.25)" }}>
+                    <Anchor.Button 
+                      ui="doctor.profile.save"
+                      type="submit" 
+                      disabled={saving} 
+                      style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#10b981", color: "#fff", fontSize:12, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(16,185,129,0.25)" }}>
                       {saving ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />Saving...</> : <><Save size={16} />Save Changes</>}
-                    </button>
+                    </Anchor.Button>
                   </div>
                 </form>
               </div>

@@ -3,6 +3,7 @@ import React,{useEffect,useState,useCallback,useRef}from"react";
 import dynamic from"next/dynamic";
 import{PieChart,Pie,Cell,BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Legend}from"recharts";
 import{FlaskConical,TestTube2,Activity,Plus,X,RefreshCw,Loader2,CheckCircle2,Clock,AlertTriangle,FileText,Mail,MessageSquare,Eye,Edit2,Trash2,Check,TrendingUp,IndianRupee,ClipboardList,ShieldCheck,ToggleLeft,ToggleRight,Save,ArrowRight,BarChart2,Bell,ChevronRight,Download,FileSpreadsheet,FileType,ChevronDown,Send,Pencil,Receipt,CreditCard,Sparkles,Mic,MicOff,Wand2}from"lucide-react";
+import{Anchor}from"@/lib/uianchor";
 const LabBillingQueue=dynamic(()=>import("@/components/BillingQueue"),{ssr:false,loading:()=><div style={{padding:40,textAlign:"center"}}><Loader2 size={18} style={{animation:"spin .7s linear infinite",display:"inline"}}/><div style={{fontSize:12,color:"#94a3b8",marginTop:8}}>Loading Billing Queue...</div></div>});
 const LabBillingModule=dynamic(()=>import("@/components/BillingModule"),{ssr:false,loading:()=><div style={{padding:40,textAlign:"center"}}><Loader2 size={18} style={{animation:"spin .7s linear infinite",display:"inline"}}/><div style={{fontSize:12,color:"#94a3b8",marginTop:8}}>Loading Bills...</div></div>});
 const A="#047857",G1="#10b981",G2="#047857",L="#f0fdf4",B="#a7f3d0",GR=`linear-gradient(135deg,${G1},${G2})`;
@@ -17,12 +18,12 @@ const BP={name:"",code:"",description:"",price:"",testIds:[] as string[]};
 const fd=(d:string)=>new Date(d).toLocaleDateString("en-IN",{day:"2-digit",month:"short"});
 const ff=(d:string)=>new Date(d).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
 const Bdg=({bg,c,bd,children}:any)=><span style={{display:"inline-flex",alignItems:"center",padding:"1px 7px",borderRadius:100,fontSize:9,fontWeight:700,background:bg,color:c,border:`1px solid ${bd||bg}`}}>{children}</span>;
-const Btn=({onClick,style,disabled,children}:any)=><button onClick={onClick} disabled={disabled} style={{padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:600,cursor:disabled?"not-allowed":"pointer",border:"1px solid",transition:"all .15s",display:"inline-flex",alignItems:"center",gap:4,opacity:disabled?.6:1,...style}}>{children}</button>;
+const Btn=({onClick,style,disabled,children,ui}:any)=><button onClick={onClick} disabled={disabled} data-ui={ui} style={{padding:"4px 9px",borderRadius:6,fontSize:11,fontWeight:600,cursor:disabled?"not-allowed":"pointer",border:"1px solid",transition:"all .15s",display:"inline-flex",alignItems:"center",gap:4,opacity:disabled?.6:1,...style}}>{children}</button>;
 const Lbl=({children}:any)=><label style={{fontSize:11,fontWeight:700,color:"#64748b",display:"block",marginBottom:4}}>{children}</label>;
 const Inp=({style,...p}:any)=><input style={{width:"100%",padding:"7px 10px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:12,outline:"none",boxSizing:"border-box" as any,...style}} {...p}/>;
 const Sel=({children,...p}:any)=><select style={{width:"100%",padding:"7px 10px",borderRadius:8,border:"1px solid #e2e8f0",fontSize:12,outline:"none",background:"#fff",boxSizing:"border-box" as any}} {...p}>{children}</select>;
 
-export default function PathologyDashboard({profile,user,activeTab,onTabChange}:{profile:any;user:any;activeTab?:string;onTabChange?:(t:string)=>void}){
+export default function PathologyDashboard({profile,user,activeTab,onTabChange,uiPrefix}:{profile:any;user:any;activeTab?:string;onTabChange?:(t:string)=>void;uiPrefix?:string}){
   const[tab,setTab]=useState(activeTab||"overview");
   useEffect(()=>{if(activeTab)setTab(activeTab);},[activeTab]);
   const sw=(t:string)=>{setTab(t);onTabChange?.(t);};
@@ -574,7 +575,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
               <div style={{fontSize:11,color:"#64748b",marginTop:2,marginLeft:38}}>{new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
             </div>
             <div style={{display:"flex",gap:6}}>
-              <Btn onClick={()=>{setOForm({...BO,sampleDate:new Date().toISOString().slice(0,10)});setOMsg("");setNewOrderTab(0);setPatR([]);ldTests();ldPanels();ldSubdepts();setShowOM(true);}} style={{background:A,color:"#fff",borderColor:A}}><Plus size={11}/>New Order</Btn>
+              <Btn ui={uiPrefix?`${uiPrefix}.order.create`:"subdept.pathology.order.create"} onClick={()=>{setOForm({...BO,sampleDate:new Date().toISOString().slice(0,10)});setOMsg("");setNewOrderTab(0);setPatR([]);ldTests();ldPanels();ldSubdepts();setShowOM(true);}} style={{background:A,color:"#fff",borderColor:A}}><Plus size={11}/>New Order</Btn>
               <Btn onClick={()=>{ldStats();ldOrders();}} style={{background:"#fff",color:"#64748b",borderColor:"#e2e8f0"}}><RefreshCw size={10} className={sL?"spin":""}/></Btn>
             </div>
           </div>
@@ -630,7 +631,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
                     <span style={{fontSize:20,fontWeight:800,color:c.c}}>{c.count}</span>
                   </div>
                   <div style={{fontSize:10,fontWeight:700,color:c.c}}>{c.label}</div>
-                  <Btn onClick={()=>sw(c.tab)} style={{background:c.c,color:"#fff",borderColor:c.c,fontSize:9,alignSelf:"flex-start",padding:"3px 10px"}}>{c.btn} <ArrowRight size={9}/></Btn>
+                  <Btn ui={uiPrefix?`${uiPrefix}.${c.tab}.${c.btn.toLowerCase().replace(' ','-')}`:`subdept.pathology.${c.tab}.${c.btn.toLowerCase().replace(' ','-')}`} onClick={()=>sw(c.tab)} style={{background:c.c,color:"#fff",borderColor:c.c,fontSize:9,alignSelf:"flex-start",padding:"3px 10px"}}>{c.btn} <ArrowRight size={9}/></Btn>
                 </div>
               ))}
             </div>
@@ -676,9 +677,9 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
                 {oL?<tr><td colSpan={5} className="empty"><Loader2 size={13} className="spin" style={{verticalAlign:"middle"}}/></td></tr>:orders.length===0?<tr><td colSpan={5} className="empty">No orders yet</td></tr>:orders.slice(0,6).map((o:any)=>{const st=OS[o.status]||OS.PENDING;const p=PR[o.priority]||PR.ROUTINE;return(<tr key={o.id}><td style={{fontWeight:700,color:A,fontSize:10}}>{o.orderNo}</td><td><div style={{fontWeight:600,color:"#1e293b",fontSize:11}}>{o.patient?.name||"—"}</div><div style={{fontSize:9,color:"#94a3b8"}}>{o.patient?.patientId}</div></td><td><Bdg bg={p.bg} c={p.c} bd={p.bd}>{p.label}</Bdg></td><td><Bdg bg={st.bg} c={st.c} bd={st.bd}>{st.label}</Bdg></td>
                   <td style={{textAlign:"center" as any}}>
                     {o.status==="PENDING"&&<Btn onClick={()=>{setSmOrder(o);setSmForm({specimenType:"BLOOD",collectedBy:"",notes:""});setShowSM(true);}} style={{background:"#fffbeb",color:"#b45309",borderColor:"#fde68a",fontSize:9,padding:"2px 7px"}}><TestTube2 size={9}/></Btn>}
-                    {["SAMPLE_COLLECTED","IN_PROCESS"].includes(o.status)&&<Btn onClick={()=>{openRes(o);sw("results");}} style={{background:"#faf5ff",color:"#7c3aed",borderColor:"#e9d5ff",fontSize:9,padding:"2px 7px"}}><Edit2 size={9}/></Btn>}
-                    {o.status==="RESULT_ENTERED"&&<Btn onClick={()=>genRep(o.id)} disabled={rActL} style={{background:L,color:A,borderColor:B,fontSize:9,padding:"2px 7px"}}><FileText size={9}/></Btn>}
-                    {o.status==="REPORTED"&&<Btn onClick={()=>doRep(o.id,"verify")} disabled={rActL} style={{background:"#f0f9ff",color:"#0284c7",borderColor:"#bae6fd",fontSize:9,padding:"2px 7px"}}><ShieldCheck size={9}/></Btn>}
+                    {["SAMPLE_COLLECTED","IN_PROCESS"].includes(o.status)&&<Btn ui={uiPrefix?`${uiPrefix}.result.enter`:"subdept.pathology.result.enter"} onClick={()=>{openRes(o);sw("results");}} style={{background:"#faf5ff",color:"#7c3aed",borderColor:"#e9d5ff",fontSize:9,padding:"2px 7px"}}><Edit2 size={9}/></Btn>}
+                    {o.status==="RESULT_ENTERED"&&<Btn ui={uiPrefix?`${uiPrefix}.report.generate`:"subdept.pathology.report.generate"} onClick={()=>genRep(o.id)} disabled={rActL} style={{background:L,color:A,borderColor:B,fontSize:9,padding:"2px 7px"}}><FileText size={9}/></Btn>}
+                    {o.status==="REPORTED"&&<Btn ui={uiPrefix?`${uiPrefix}.report.verify`:"subdept.pathology.report.verify"} onClick={()=>doRep(o.id,"verify")} disabled={rActL} style={{background:"#f0f9ff",color:"#0284c7",borderColor:"#bae6fd",fontSize:9,padding:"2px 7px"}}><ShieldCheck size={9}/></Btn>}
                     {["VERIFIED","DELIVERED","CANCELLED"].includes(o.status)&&<span style={{fontSize:9,color:"#94a3b8"}}>—</span>}
                   </td>
                 </tr>);})}
@@ -760,7 +761,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
             <div style={{width:48,height:48,borderRadius:14,background:L,border:`1.5px solid ${B}`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px"}}><FlaskConical size={22} color={A}/></div>
             <div style={{fontSize:13,fontWeight:700,color:"#1e293b",marginBottom:4}}>No orders yet</div>
             <div style={{fontSize:11,color:"#64748b",marginBottom:12}}>Doctor referrals will appear here. You can also create a walk-in order.</div>
-            <button onClick={()=>{setOForm({...BO,sampleDate:new Date().toISOString().slice(0,10)});setOMsg("");setNewOrderTab(0);setPatR([]);ldTests();ldPanels();ldSubdepts();setShowOM(true);}} style={{padding:"8px 20px",borderRadius:9,background:A,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}><Plus size={13}/>New Walk-in Order</button>
+            <button data-ui={uiPrefix?`${uiPrefix}.order.create`:"subdept.pathology.order.create"} onClick={()=>{setOForm({...BO,sampleDate:new Date().toISOString().slice(0,10)});setOMsg("");setNewOrderTab(0);setPatR([]);ldTests();ldPanels();ldSubdepts();setShowOM(true);}} style={{padding:"8px 20px",borderRadius:9,background:A,color:"#fff",border:"none",fontSize:12,fontWeight:700,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}><Plus size={13}/>New Walk-in Order</button>
           </div>}
 
           {/* Stats bar */}
@@ -782,12 +783,12 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
               {ov.length>0&&<div style={{background:"#fff7ed",border:"1.5px solid #fde68a",borderRadius:9,padding:"9px 14px",marginBottom:6,display:"flex",alignItems:"center",gap:9}}>
                 <AlertTriangle size={14} color="#b45309"/>
                 <div style={{flex:1}}><b style={{color:"#b45309",fontSize:12}}>⚠ {ov.length} order{ov.length>1?"s":""} pending sample collection for over 4 hours</b><span style={{fontSize:10,color:"#92400e",marginLeft:8}}>— Go to Samples tab to collect</span></div>
-                <Btn onClick={()=>sw("samples")} style={{background:"#b45309",color:"#fff",borderColor:"#b45309",fontSize:10}}>Collect <ArrowRight size={9}/></Btn>
+                <Btn ui={uiPrefix?`${uiPrefix}.sample.collect`:"subdept.pathology.sample.collect"} onClick={()=>sw("samples")} style={{background:"#b45309",color:"#fff",borderColor:"#b45309",fontSize:10}}>Collect <ArrowRight size={9}/></Btn>
               </div>}
               {nr.length>0&&<div style={{background:"#faf5ff",border:"1.5px solid #c4b5fd",borderRadius:9,padding:"9px 14px",display:"flex",alignItems:"center",gap:9}}>
                 <AlertTriangle size={14} color="#7c3aed"/>
                 <div style={{flex:1}}><b style={{color:"#7c3aed",fontSize:12}}>⚠ {nr.length} order{nr.length>1?"s":""} awaiting result entry for over 24 hours</b><span style={{fontSize:10,color:"#6d28d9",marginLeft:8}}>— Go to Results tab</span></div>
-                <Btn onClick={()=>sw("results")} style={{background:"#7c3aed",color:"#fff",borderColor:"#7c3aed",fontSize:10}}>Enter Results <ArrowRight size={9}/></Btn>
+                <Btn ui={uiPrefix?`${uiPrefix}.result.enter`:"subdept.pathology.result.enter"} onClick={()=>sw("results")} style={{background:"#7c3aed",color:"#fff",borderColor:"#7c3aed",fontSize:10}}>Enter Results <ArrowRight size={9}/></Btn>
               </div>}
             </div>);
           })()}
@@ -850,7 +851,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
             {/* Refresh / Clear */}
             <button onClick={()=>ldOrders()} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 11px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",color:"#64748b",fontSize:11,cursor:"pointer"}}><RefreshCw size={11} className={oL?"spin":""}/></button>
             {(ordSearch||ordFilter)&&<button onClick={()=>{setOrdSearch("");setOrdFilter("");}} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 11px",borderRadius:8,border:"1px solid #fecaca",background:"#fff5f5",color:"#ef4444",fontSize:11,fontWeight:600,cursor:"pointer"}}><X size={11}/>Clear</button>}
-            <Btn onClick={()=>{setOForm({...BO,sampleDate:new Date().toISOString().slice(0,10)});setOMsg("");setNewOrderTab(0);setPatR([]);ldTests();ldPanels();setShowOM(true);}} style={{background:A,color:"#fff",borderColor:A,marginLeft:"auto"}}><Plus size={12}/>New Order</Btn>
+            <Btn ui={uiPrefix?`${uiPrefix}.order.create`:"subdept.pathology.order.create"} onClick={()=>{setOForm({...BO,sampleDate:new Date().toISOString().slice(0,10)});setOMsg("");setNewOrderTab(0);setPatR([]);ldTests();ldPanels();setShowOM(true);}} style={{background:A,color:"#fff",borderColor:A,marginLeft:"auto"}}><Plus size={12}/>New Order</Btn>
           </div>
 
           {/* Table */}
@@ -917,7 +918,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
           <div className="card" style={{marginBottom:12}}>
             <div className="chd"><span className="ct"><Clock size={12} color="#b45309"/>Awaiting Collection</span></div>
             <table className="pt"><thead><tr><th>Order</th><th>Patient</th><th>Tests</th><th>Priority</th><th>Action</th></tr></thead><tbody>
-              {orders.filter(o=>o.status==="PENDING").length===0?<tr><td colSpan={5} className="empty">No pending collections</td></tr>:orders.filter(o=>o.status==="PENDING").map((o:any)=>{const p=PR[o.priority]||PR.ROUTINE;return(<tr key={o.id}><td style={{fontWeight:700,color:A,fontSize:10}}>{o.orderNo}</td><td style={{fontWeight:600,color:"#1e293b",fontSize:11}}>{o.patient?.name||"—"}</td><td style={{fontSize:10,color:"#475569"}}>{(o.items||[]).map((i:any)=>i.test?.name||i.panel?.name).filter(Boolean).join(", ")||"—"}</td><td><Bdg bg={p.bg} c={p.c} bd={p.bd}>{p.label}</Bdg></td><td><Btn onClick={()=>{setSmOrder(o);setSmForm({specimenType:"BLOOD",collectedBy:"",notes:""});setShowSM(true);}} style={{background:"#fffbeb",color:"#b45309",borderColor:"#fde68a"}}><TestTube2 size={9}/>Collect</Btn></td></tr>);})}
+              {orders.filter(o=>o.status==="PENDING").length===0?<tr><td colSpan={5} className="empty">No pending collections</td></tr>:orders.filter(o=>o.status==="PENDING").map((o:any)=>{const p=PR[o.priority]||PR.ROUTINE;return(<tr key={o.id}><td style={{fontWeight:700,color:A,fontSize:10}}>{o.orderNo}</td><td style={{fontWeight:600,color:"#1e293b",fontSize:11}}>{o.patient?.name||"—"}</td><td style={{fontSize:10,color:"#475569"}}>{(o.items||[]).map((i:any)=>i.test?.name||i.panel?.name).filter(Boolean).join(", ")||"—"}</td><td><Bdg bg={p.bg} c={p.c} bd={p.bd}>{p.label}</Bdg></td><td><Btn ui={uiPrefix?`${uiPrefix}.sample.collect`:"subdept.pathology.sample.collect"} onClick={()=>{setSmOrder(o);setSmForm({specimenType:"BLOOD",collectedBy:"",notes:""});setShowSM(true);}} style={{background:"#fffbeb",color:"#b45309",borderColor:"#fde68a"}}><TestTube2 size={9}/>Collect</Btn></td></tr>);})}
             </tbody></table>
           </div>
           <div className="card">
@@ -1176,7 +1177,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
                 {resMsg&&<div style={{color:"#ef4444",fontSize:11,marginBottom:10,padding:"7px 12px",background:"#fff5f5",borderRadius:7,border:"1px solid #fecaca"}}>{resMsg}</div>}
                 <div style={{display:"flex",gap:8,justifyContent:"flex-end",borderTop:"1px solid #f1f5f9",paddingTop:12}}>
                   <Btn onClick={()=>setResOrder(null)} style={{background:"#fff",color:"#64748b",borderColor:"#e2e8f0"}}>Cancel</Btn>
-                  <Btn onClick={saveRes} disabled={resSav} style={{background:resSav?"#94a3b8":"#7c3aed",color:"#fff",borderColor:"#7c3aed"}}>{resSav?<><Loader2 size={12} className="spin"/>Saving…</>:<><Save size={12}/>Save Results</>}</Btn>
+                  <Btn ui={uiPrefix?`${uiPrefix}.result.save`:"subdept.pathology.result.save"} onClick={saveRes} disabled={resSav} style={{background:resSav?"#94a3b8":"#7c3aed",color:"#fff",borderColor:"#7c3aed"}}>{resSav?<><Loader2 size={12} className="spin"/>Saving…</>:<><Save size={12}/>Save Results</>}</Btn>
                 </div>
               </div>
             </div>
@@ -1323,7 +1324,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
                 <td><div style={{fontWeight:600,color:"#1e293b",fontSize:11}}>{o.patient?.name||"—"}</div><div style={{fontSize:9,color:"#94a3b8"}}>{o.patient?.patientId}</div></td>
                 <td style={{fontSize:10,color:"#64748b"}}>Dr. {o.doctor?.name||"—"}</td>
                 <td style={{fontSize:10,color:"#475569",maxWidth:140}}>{(o.items||[]).slice(0,3).map((i:any)=>i.test?.name||i.panel?.name).filter(Boolean).join(", ")||"—"}{(o.items||[]).length>3&&<span style={{color:"#94a3b8"}}> +{(o.items||[]).length-3}</span>}</td>
-                <td><Btn onClick={()=>genRep(o.id)} disabled={rActL} style={{background:"#f0fdf4",color:"#15803d",borderColor:"#bbf7d0"}}>{rActL?<Loader2 size={9} className="spin"/>:<FileText size={9}/>}Generate</Btn></td>
+                <td><Btn ui={uiPrefix?`${uiPrefix}.report.generate`:"subdept.pathology.report.generate"} onClick={()=>genRep(o.id)} disabled={rActL} style={{background:"#f0fdf4",color:"#15803d",borderColor:"#bbf7d0"}}>{rActL?<Loader2 size={9} className="spin"/>:<FileText size={9}/>}Generate</Btn></td>
               </tr>))}
             </tbody></table>
           </div>}
@@ -2212,7 +2213,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
           </div>
           <div style={{display:"flex",gap:6,alignItems:"center"}}>
             {newOrderTab===0&&<button onClick={()=>{if(!oForm.patientId&&!oForm.patientName.trim()){setOMsg("Please enter or select a patient");return;}if(!oForm.items.length){setOMsg("Add at least one test");return;}setOMsg("");setNewOrderTab(1);ldSubdepts();}} style={{padding:"8px 20px",borderRadius:9,background:A,color:"#fff",border:`1.5px solid ${A}`,fontSize:13,cursor:"pointer",fontWeight:700,display:"flex",alignItems:"center",gap:6}}>Next: Billing <ArrowRight size={13}/></button>}
-            {newOrderTab===1&&<Btn onClick={createOrder} disabled={oSaving} style={{background:oSaving?"#94a3b8":A,color:"#fff",borderColor:A,fontSize:12,padding:"7px 18px"}}>{oSaving?<><Loader2 size={12} className="spin"/>Creating…</>:<><CheckCircle2 size={12}/>Create Order</>}</Btn>}
+            {newOrderTab===1&&<Btn ui={uiPrefix?`${uiPrefix}.order.create`:"subdept.pathology.order.create"} onClick={createOrder} disabled={oSaving} style={{background:oSaving?"#94a3b8":A,color:"#fff",borderColor:A,fontSize:12,padding:"7px 18px"}}>{oSaving?<><Loader2 size={12} className="spin"/>Creating…</>:<><CheckCircle2 size={12}/>Create Order</>}</Btn>}
           </div>
         </div>
       </div>
@@ -2442,8 +2443,8 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
         <div className="mo-ft">
           <button onClick={()=>setVRep(null)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #e2e8f0",background:"#fff",color:"#64748b",fontSize:12,cursor:"pointer"}}>Close</button>
           <button onClick={()=>printReport(vRep)} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #e2e8f0",background:"#f8fafc",color:"#475569",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5}}><Download size={12}/>Download PDF</button>
-          <button onClick={()=>sendRepEmail(vRep)} disabled={rActL} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #bfdbfe",background:"#eff6ff",color:"#2563eb",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,opacity:rActL?.6:1}}><Send size={12}/>Send to Patient</button>
-          {vRep.status==="DRAFT"&&<button onClick={()=>doRep(vRep.orderId,"verify")} disabled={rActL} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #a7f3d0",background:"#ecfdf5",color:"#047857",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,opacity:rActL?.6:1}}><ShieldCheck size={12}/>Verify</button>}
+          <button data-ui={uiPrefix?`${uiPrefix}.report.send`:"subdept.pathology.report.send"} onClick={()=>sendRepEmail(vRep)} disabled={rActL} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #bfdbfe",background:"#eff6ff",color:"#2563eb",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,opacity:rActL?.6:1}}><Send size={12}/>Send to Patient</button>
+          {vRep.status==="DRAFT"&&<button data-ui={uiPrefix?`${uiPrefix}.report.verify`:"subdept.pathology.report.verify"} onClick={()=>doRep(vRep.orderId,"verify")} disabled={rActL} style={{padding:"7px 14px",borderRadius:8,border:"1px solid #a7f3d0",background:"#ecfdf5",color:"#047857",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",gap:5,opacity:rActL?.6:1}}><ShieldCheck size={12}/>Verify</button>}
         </div>
       </div>
     </div>}
@@ -2849,7 +2850,7 @@ export default function PathologyDashboard({profile,user,activeTab,onTabChange}:
           <div style={{fontSize:10,color:"#94a3b8"}}>{wizItems.length} test{wizItems.length!==1?"s":""} · ₹{wizItems.reduce((s:number,i:any)=>s+(parseFloat(i.price)||0),0).toLocaleString("en-IN")}</div>
           {wizStep<3
             ?<Btn onClick={()=>{if(wizStep===2&&!wizItems.length)return alert("Select at least one test");setWizStep(wizStep+1);}} style={{background:A,color:"#fff",borderColor:A}}>Next →</Btn>
-            :<Btn onClick={createOrderFromWizard} disabled={wizSaving||!wizItems.length} style={{background:wizSaving?"#94a3b8":A,color:"#fff",borderColor:A}}>{wizSaving?<><Loader2 size={12} className="spin"/>Creating Order…</>:<><CheckCircle2 size={12}/>Confirm &amp; Create Order</>}</Btn>
+            :<Btn ui={uiPrefix?`${uiPrefix}.order.create`:"subdept.pathology.order.create"} onClick={createOrderFromWizard} disabled={wizSaving||!wizItems.length} style={{background:wizSaving?"#94a3b8":A,color:"#fff",borderColor:A}}>{wizSaving?<><Loader2 size={12} className="spin"/>Creating Order…</>:<><CheckCircle2 size={12}/>Confirm &amp; Create Order</>}</Btn>
           }
         </div>
       </div>

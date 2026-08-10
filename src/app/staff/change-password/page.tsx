@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 
 export default function StaffChangePasswordPage() {
   const router = useRouter();
@@ -164,7 +165,8 @@ export default function StaffChangePasswordPage() {
           <div className="cp-field">
             <label className="cp-label" htmlFor="old-pw">Current Password</label>
             <div className="cp-wrap">
-              <input
+              <Anchor.Input
+                ui="auth.change-password.current"
                 id="old-pw"
                 type={showOld ? "text" : "password"}
                 className={`cp-input${fieldErrors.oldPassword ? " err" : ""}`}
@@ -184,7 +186,8 @@ export default function StaffChangePasswordPage() {
           <div className="cp-field">
             <label className="cp-label" htmlFor="new-pw">New Password</label>
             <div className="cp-wrap">
-              <input
+              <Anchor.Input
+                ui="auth.change-password.new"
                 id="new-pw"
                 type={showNew ? "text" : "password"}
                 className={`cp-input${fieldErrors.newPassword ? " err" : ""}`}
@@ -226,7 +229,8 @@ export default function StaffChangePasswordPage() {
           <div className="cp-field">
             <label className="cp-label" htmlFor="confirm-pw">Confirm New Password</label>
             <div className="cp-wrap">
-              <input
+              <Anchor.Input
+                ui="auth.change-password.confirm"
                 id="confirm-pw"
                 type={showConfirm ? "text" : "password"}
                 className={`cp-input${fieldErrors.confirmPassword ? " err" : ""}`}
@@ -245,7 +249,7 @@ export default function StaffChangePasswordPage() {
             {fieldErrors.confirmPassword && <span className="cp-ferr">{fieldErrors.confirmPassword}</span>}
           </div>
 
-          <button type="submit" className="cp-btn" disabled={loading || success}>
+          <Anchor.Button type="submit" className="cp-btn" ui="auth.change-password.submit" disabled={loading || success}>
             <span className="cp-btn-shine"/>
             {loading
               ? <span className="cp-spinner"/>
@@ -253,7 +257,7 @@ export default function StaffChangePasswordPage() {
               ? "Redirecting..."
               : <>Set New Password <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
             }
-          </button>
+          </Anchor.Button>
         </form>
 
         <div className="cp-divider"/>

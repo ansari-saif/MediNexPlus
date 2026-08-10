@@ -59,6 +59,7 @@ interface Props {
   bgColor?: string;
   borderColor?: string;
   types?: string[];
+  uiPrefix?: string;
 }
 
 export default function NotificationBell({
@@ -66,6 +67,7 @@ export default function NotificationBell({
   bgColor      = "#f8fafc",
   borderColor  = "#e2e8f0",
   types,
+  uiPrefix,
 }: Props) {
   const typesQuery = types && types.length > 0 ? `&types=${types.join(",")}` : "";
   const [open, setOpen]         = useState(false);
@@ -154,6 +156,8 @@ export default function NotificationBell({
     <div ref={dropRef} style={{ position: "relative", display: "inline-flex" }}>
       {/* Bell Button */}
       <button
+        data-ui={uiPrefix ? `${uiPrefix}.notifications.bell` : undefined}
+        id={uiPrefix ? `${uiPrefix}-notifications-bell` : undefined}
         onClick={() => (open ? setOpen(false) : handleOpen())}
         style={{
           width: 36, height: 36,

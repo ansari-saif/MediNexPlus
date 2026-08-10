@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 
 type Step = "form" | "otp" | "success";
 
@@ -281,7 +282,9 @@ export default function HospitalSignupPage() {
                   <div className="mn-field">
                     <label className="mn-label">Hospital Name</label>
                     <div className="mn-input-wrap">
-                      <input
+                      <Anchor.Input
+                        ui="auth.signup.hospital-name"
+                        id="signup-hospital"
                         type="text"
                         className={`mn-input${fieldErrors.hospitalName ? " err" : ""}`}
                         placeholder="e.g. City Medical Center"
@@ -299,7 +302,9 @@ export default function HospitalSignupPage() {
                   <div className="mn-field">
                     <label className="mn-label">Admin Full Name</label>
                     <div className="mn-input-wrap">
-                      <input
+                      <Anchor.Input
+                        ui="auth.signup.admin-name"
+                        id="signup-admin"
                         type="text"
                         className={`mn-input${fieldErrors.adminName ? " err" : ""}`}
                         placeholder="Your full name"
@@ -319,7 +324,9 @@ export default function HospitalSignupPage() {
                   <div className="mn-field">
                     <label className="mn-label">Email Address</label>
                     <div className="mn-input-wrap">
-                      <input
+                      <Anchor.Input
+                        ui="auth.signup.email"
+                        id="signup-email"
                         type="email"
                         className={`mn-input${fieldErrors.email ? " err" : ""}`}
                         placeholder="admin@hospital.com"
@@ -336,7 +343,9 @@ export default function HospitalSignupPage() {
                   <div className="mn-field">
                     <label className="mn-label">Mobile Number</label>
                     <div className="mn-input-wrap">
-                      <input
+                      <Anchor.Input
+                        ui="auth.signup.mobile"
+                        id="signup-mobile"
                         type="tel"
                         className={`mn-input${fieldErrors.mobile ? " err" : ""}`}
                         placeholder="10-digit mobile"
@@ -355,7 +364,9 @@ export default function HospitalSignupPage() {
                 <div className="mn-field">
                   <label className="mn-label">Password</label>
                   <div className="mn-input-wrap">
-                    <input
+                    <Anchor.Input
+                      ui="auth.signup.password"
+                      id="signup-password"
                       type={showPw ? "text" : "password"}
                       className={`mn-input${fieldErrors.password ? " err" : ""}`}
                       placeholder="Minimum 6 characters"
@@ -383,7 +394,9 @@ export default function HospitalSignupPage() {
                 <div className="mn-field">
                   <label className="mn-label">Confirm Password</label>
                   <div className="mn-input-wrap">
-                    <input
+                    <Anchor.Input
+                      ui="auth.signup.confirm-password"
+                      id="signup-confirm-password"
                       type={showConfirm ? "text" : "password"}
                       className={`mn-input${fieldErrors.confirmPassword ? " err" : ""}`}
                       placeholder="Re-enter your password"
@@ -398,11 +411,11 @@ export default function HospitalSignupPage() {
                   {fieldErrors.confirmPassword && <span className="mn-ferr">{fieldErrors.confirmPassword}</span>}
                 </div>
 
-                <button type="submit" className="mn-sp-btn" disabled={loading}>
+                <Anchor.Button type="submit" className="mn-sp-btn" ui="auth.signup.submit" disabled={loading}>
                   {loading ? <span className="mn-spinner" /> : (
                     <>Send Verification OTP <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
                   )}
-                </button>
+                </Anchor.Button>
               </form>
 
               <div className="mn-sp-footer">
@@ -416,10 +429,10 @@ export default function HospitalSignupPage() {
           {/* STEP 2: OTP */}
           {step === "otp" && (
             <>
-              <button className="mn-sp-back" onClick={() => setStep("form")}>
+              <Anchor.Button className="mn-sp-back" ui="auth.signup.back" onClick={() => setStep("form")}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 Back to Details
-              </button>
+              </Anchor.Button>
               <div className="mn-sp-badge s2">Step 2 of 2 · OTP Verification</div>
               <h1 className="mn-sp-title">Check Your Email</h1>
               <p className="mn-sp-sub">We sent a 6-digit OTP to <strong style={{color:"#0F172A"}}>{form.email}</strong>. Enter it below to verify your account.</p>
@@ -438,9 +451,10 @@ export default function HospitalSignupPage() {
                   <div className="mn-sp-otp-wrap" style={{marginTop:10}}>
                     <div className="mn-sp-otp-grid" onPaste={handleOtpPaste}>
                       {otp.map((digit, i) => (
-                        <input
+                        <Anchor.Input
                           key={i}
                           id={`otp-${i}`}
+                          ui={`auth.signup.otp-${i + 1}`}
                           type="text"
                           inputMode="numeric"
                           maxLength={1}
@@ -457,16 +471,16 @@ export default function HospitalSignupPage() {
                   <p className="mn-sp-otp-hint">OTP is valid for 10 minutes</p>
                 </div>
 
-                <button type="submit" className="mn-sp-btn" disabled={loading || otp.join("").length !== 6}>
+                <Anchor.Button type="submit" className="mn-sp-btn" ui="auth.signup.verify" disabled={loading || otp.join("").length !== 6}>
                   {loading ? <span className="mn-spinner" /> : (
                     <>Verify &amp; Create Account <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>
                   )}
-                </button>
+                </Anchor.Button>
               </form>
 
               <p className="mn-sp-resend">
                 Didn&apos;t receive the code?{" "}
-                <button className="mn-sp-resend-btn" onClick={handleResendOTP} disabled={loading}>Resend OTP</button>
+                <Anchor.Button className="mn-sp-resend-btn" ui="auth.signup.resend-otp" onClick={handleResendOTP} disabled={loading}>Resend OTP</Anchor.Button>
               </p>
             </>
           )}

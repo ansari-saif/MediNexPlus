@@ -29,7 +29,7 @@ function withSupplierName(item: any, vendorsById: Map<string, string>) {
   };
 }
 
-async function loadVendorNameMap(hospitalId: string, vendorIds: string[]) {
+async function loadVendorNameMap(hospitalId: string, vendorIds: string[]): Promise<Map<string, string>> {
   const uniqueIds = [...new Set(vendorIds.filter(Boolean))];
   if (uniqueIds.length === 0) return new Map<string, string>();
 
@@ -37,7 +37,7 @@ async function loadVendorNameMap(hospitalId: string, vendorIds: string[]) {
     where: { hospitalId, id: { in: uniqueIds } },
     select: { id: true, name: true },
   });
-  return new Map(vendors.map((v: any) => [v.id, v.name]));
+  return new Map<string, string>(vendors.map((v: any) => [v.id, v.name]));
 }
 
 /**

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { Anchor } from "@/lib/uianchor";
 import {
   FileText, IndianRupee, Clock, CheckCircle2, TrendingUp,
   CreditCard, Loader2, RefreshCw, AlertCircle, ArrowUpRight,
@@ -26,6 +27,7 @@ interface BillingDeptProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   meta: { gradient: string; accent: string; lightBg: string; borderColor: string };
+  uiPrefix?: string;
 }
 
 type BillingTab = "overview" | "billing-queue" | "finance" | "inventory" | "reports" | "dept";
@@ -37,7 +39,7 @@ const apiFetch = async (url: string, opts?: RequestInit) => {
   return r.json();
 };
 
-export default function BillingDepartmentDashboard({ profile, user, activeTab, onTabChange, meta }: BillingDeptProps) {
+export default function BillingDepartmentDashboard({ profile, user, activeTab, onTabChange, meta, uiPrefix }: BillingDeptProps) {
   const tab = (activeTab || "overview") as BillingTab;
   const setTab = (t: BillingTab) => onTabChange(t);
 
@@ -248,6 +250,7 @@ export default function BillingDepartmentDashboard({ profile, user, activeTab, o
             <RefreshCw size={13} style={statsLoading ? { animation: "spin 1s linear infinite" } : {}} /> Refresh
           </button>
           <button
+            data-ui="subdept.billing-dept.billing-queue"
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", borderRadius: 10, border: "none", background: meta.gradient, color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer" }}
             onClick={() => setTab("billing-queue")}
           >
@@ -439,7 +442,7 @@ export default function BillingDepartmentDashboard({ profile, user, activeTab, o
               <span style={{ fontSize: 24, fontWeight: 800, color: queueCount > 0 ? "#ea580c" : "#16a34a", display: "block", lineHeight: 1.2 }}>{queueCount}</span>
               payments waiting
             </div>
-            <button onClick={() => setTab("billing-queue")} style={{ background: meta.gradient, color: "#fff", border: "none", borderRadius: 10, padding: "9px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center" }}>
+            <button onClick={() => setTab("billing-queue")} data-ui="subdept.billing-dept.open-queue" style={{ background: meta.gradient, color: "#fff", border: "none", borderRadius: 10, padding: "9px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center" }}>
               <CreditCard size={14} /> Open Queue
             </button>
           </div>
@@ -454,7 +457,7 @@ export default function BillingDepartmentDashboard({ profile, user, activeTab, o
               <span style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", display: "block" }}>{fmtCur(stats.monthRevenue)}</span>
               collected this month
             </div>
-            <button onClick={() => setTab("finance")} style={{ background: meta.gradient, color: "#fff", border: "none", borderRadius: 10, padding: "9px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center" }}>
+            <button onClick={() => setTab("finance")} data-ui="subdept.billing-dept.view-finance" style={{ background: meta.gradient, color: "#fff", border: "none", borderRadius: 10, padding: "9px 20px", fontSize: 12, fontWeight: 700, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, width: "100%", justifyContent: "center" }}>
               <BarChart2 size={14} /> View Finance
             </button>
           </div>

@@ -426,7 +426,7 @@ function WardModal({ open, onClose, editItem, onSuccess, addToast }: {
         </div>
         <div className="wb-modal-foot">
           <button type="button" className="wb-btn wb-btn-ghost" onClick={onClose}>Cancel</button>
-          <button type="submit" className="wb-btn wb-btn-primary" disabled={saving}>
+          <button data-ui="hospitaladmin.configure.wards.save" type="submit" className="wb-btn wb-btn-primary" disabled={saving}>
             {saving && <Loader2 size={13} className="wb-spin" />}
             {saving ? "Saving..." : editItem ? "Update Ward" : "Create Ward"}
           </button>
@@ -1383,7 +1383,7 @@ export default function WardBedPanel() {
                   <Trash2 size={13} /> Delete ({selectedWardIds.size})
                 </button>
               )}
-              <button className="wb-btn wb-btn-primary" onClick={() => setWardModal({ open: true, item: null })}>
+              <button data-ui="hospitaladmin.configure.wards.create" className="wb-btn wb-btn-primary" onClick={() => setWardModal({ open: true, item: null })}>
                 <Plus size={14} /> Add Ward
               </button>
             </div>

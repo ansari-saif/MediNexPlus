@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
+import { Anchor } from "@/lib/uianchor";
 import {
   Smile, Sparkles, Scissors, Heart, Activity, RefreshCw, Loader2,
   CheckCircle2, Clock, X, IndianRupee, ClipboardList, Users,
@@ -250,7 +251,7 @@ export default function SpecialtyClinicDashboard({ profile, user, activeTab, onT
             </div>
             <div style={{ display:"flex", gap:8 }}>
               <div className="sc-search"><Search size={12} color="#94a3b8" /><input placeholder="Search…" value={qSearch} onChange={e => setQSearch(e.target.value)} /></div>
-              <button onClick={loadQueue} style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:11, color:"#64748b", cursor:"pointer", fontWeight:600 }}>
+              <button onClick={loadQueue} data-ui="subdept.specialty.refresh" style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:11, color:"#64748b", cursor:"pointer", fontWeight:600 }}>
                 <RefreshCw size={12} style={qLoad ? { animation:"sc-spin .7s linear infinite" } : {}} />
               </button>
             </div>
@@ -275,13 +276,13 @@ export default function SpecialtyClinicDashboard({ profile, user, activeTab, onT
                       <td>
                         <div style={{ display:"flex", gap:4 }}>
                           {q.status === "SCHEDULED" && (
-                            <button className="sc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"CONFIRMED")}
+                            <button className="sc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"CONFIRMED")} data-ui="subdept.specialty.start"
                               style={{ background:c.light, color:c.accent, borderColor:c.border }}>
                               {updating===q.id ? <Loader2 size={10} style={{ animation:"sc-spin .7s linear infinite" }} /> : "Start"}
                             </button>
                           )}
                           {q.status === "CONFIRMED" && (
-                            <button className="sc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"COMPLETED")}
+                            <button className="sc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"COMPLETED")} data-ui="subdept.specialty.complete"
                               style={{ background:"#f0fdf4", color:"#15803d", borderColor:"#bbf7d0" }}>
                               {updating===q.id ? <Loader2 size={10} style={{ animation:"sc-spin .7s linear infinite" }} /> : "Complete"}
                             </button>
@@ -313,7 +314,7 @@ export default function SpecialtyClinicDashboard({ profile, user, activeTab, onT
             <div className="sc-section"><div className="sc-dot"/>{c.recordLabel}</div>
             <div style={{ display:"flex", gap:8 }}>
               <div className="sc-search"><Search size={12} color="#94a3b8" /><input placeholder="Search…" value={rSearch} onChange={e => { setRSearch(e.target.value); loadRecords(e.target.value); }} /></div>
-              <button onClick={() => loadRecords(rSearch)} style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:11, color:"#64748b", cursor:"pointer", fontWeight:600 }}>
+              <button onClick={() => loadRecords(rSearch)} data-ui="subdept.specialty.refresh-records" style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:11, color:"#64748b", cursor:"pointer", fontWeight:600 }}>
                 <RefreshCw size={12} style={rLoad ? { animation:"sc-spin .7s linear infinite" } : {}} />
               </button>
             </div>

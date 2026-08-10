@@ -146,7 +146,7 @@ const EMPTY_COLLECT = {
   method: "CASH", amount: "", transactionId: "", notes: ""
 };
 
-export default function BillingQueue({ scope, subDeptId, deptName, defaultCollectBillId, onDefaultCollectConsumed }: { scope?: "lab" | "pharmacy" | "procedure"; subDeptId?: string; deptName?: string; defaultCollectBillId?: string; onDefaultCollectConsumed?: () => void } = {}) {
+export default function BillingQueue({ scope, subDeptId, deptName, defaultCollectBillId, onDefaultCollectConsumed, uiPrefix }: { scope?: "lab" | "pharmacy" | "procedure"; subDeptId?: string; deptName?: string; defaultCollectBillId?: string; onDefaultCollectConsumed?: () => void; uiPrefix?: string } = {}) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -1838,10 +1838,18 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
                       </td>
                       <td>
                         <div className="bq-actions">
-                          <button className="bq-action-btn bq-action-view" onClick={() => handleView(item)} title="View Bill">
+                          <button 
+                            className="bq-action-btn bq-action-view" 
+                            data-ui={uiPrefix ? `${uiPrefix}.billing.view` : undefined}
+                            onClick={() => handleView(item)} 
+                            title="View Bill">
                             <Eye size={14} />
                           </button>
-                          <button className="bq-action-btn bq-action-download" onClick={() => handleDownloadBillPDF(item)} title="Download PDF">
+                          <button 
+                            className="bq-action-btn bq-action-download" 
+                            data-ui={uiPrefix ? `${uiPrefix}.billing.download` : undefined}
+                            onClick={() => handleDownloadBillPDF(item)} 
+                            title="Download PDF">
                             <Download size={14} />
                           </button>
                           <button 
@@ -1855,7 +1863,8 @@ export default function BillingQueue({ scope, subDeptId, deptName, defaultCollec
                           </button>
                           {item.bill?.status !== "PAID" ? (
                             <button 
-                              className="bq-action-btn bq-action-collect" 
+                              className="bq-action-btn bq-action-collect"
+                              data-ui={uiPrefix ? `${uiPrefix}.billing.collect` : undefined}
                               onClick={() => {
                                 if (scope === "pharmacy" && item.bill?.billItems?.some((bi: any) => bi.type !== "PHARMACY")) {
                                   showToast("warning", "Restricted Action", "This bill contains non-pharmacy charges. It must be collected at the main billing desk.");

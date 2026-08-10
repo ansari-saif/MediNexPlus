@@ -10,6 +10,7 @@ import {
   Mic, Brain, ClipboardList, PenLine, Volume2, Waves, Wand2, Clock, ChevronDown
 } from "lucide-react";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 
 const PURPLE = "#7C3AED";
 const PURPLE_DARK = "#6D28D9";
@@ -1159,13 +1160,13 @@ export default function MediNexLanding() {
             Connect doctors and patients with effortless scheduling, secure records, and smooth hospital operations — all in one platform.
           </p>
           <div className="mn-hero-actions">
-            <button onClick={() => setIsDemoModalOpen(true)} className="mn-btn-hero-primary">
+            <Anchor.Button onClick={() => setIsDemoModalOpen(true)} ui="public.landing.cta-book-demo" className="mn-btn-hero-primary">
               <CalendarDays size={16} />
               Book Demo
-            </button>
-            <Link href="/signup" className="mn-btn-free-trial">
+            </Anchor.Button>
+            <Anchor.Link href="/signup" ui="public.landing.cta-signup" className="mn-btn-free-trial">
               free 14 days trial
-            </Link>
+            </Anchor.Link>
           </div>
         </div>
 
@@ -2024,8 +2025,8 @@ export default function MediNexLanding() {
             Whether you&apos;re a patient looking for care or a doctor managing appointments, our platform makes it simple, secure, and seamless for everyone.
           </p>
           <div className="mn-cta-actions">
-            <button onClick={() => setIsDemoModalOpen(true)} className="mn-btn-cta-primary">Book Demo</button>
-            <Link href="/signup" className="mn-btn-free-trial">free 14 days trial</Link>
+            <Anchor.Button onClick={() => setIsDemoModalOpen(true)} ui="public.landing.cta-book-demo" className="mn-btn-cta-primary">Book Demo</Anchor.Button>
+            <Anchor.Link href="/signup" ui="public.landing.cta-signup" className="mn-btn-free-trial">free 14 days trial</Anchor.Link>
           </div>
         </div>
       </section>
@@ -2046,7 +2047,7 @@ export default function MediNexLanding() {
                 <a href="#solutions">Solutions</a>
                 <a href="#features">Features</a>
                 <a href="#pricing">Pricing</a>
-                <Link href="/signup">Get Started</Link>
+                <Anchor.Link href="/signup" ui="public.landing.cta-signup">Get Started</Anchor.Link>
               </div>
             </div>
             <div>

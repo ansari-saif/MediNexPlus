@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Anchor } from "@/lib/uianchor";
 
 export default function SuperAdminLogin() {
   const router = useRouter();
@@ -554,9 +555,10 @@ export default function SuperAdminLogin() {
             <div className="sa-field">
               <label className="sa-label">Admin Email</label>
               <div className="sa-input-wrap">
-                <input
-                  type="email"
+                <Anchor.Input
+                  ui="auth.superadmin.login.email"
                   id="sa-email"
+                  type="email"
                   required
                   autoComplete="email"
                   className="sa-input"
@@ -576,9 +578,10 @@ export default function SuperAdminLogin() {
             <div className="sa-field">
               <label className="sa-label">Root Password</label>
               <div className="sa-input-wrap">
-                <input
-                  type={showPw ? "text" : "password"}
+                <Anchor.Input
+                  ui="auth.superadmin.login.password"
                   id="sa-password"
+                  type={showPw ? "text" : "password"}
                   required
                   autoComplete="current-password"
                   className="sa-input"
@@ -609,9 +612,10 @@ export default function SuperAdminLogin() {
             <div className="sa-field">
               <label className="sa-label">Security Key</label>
               <div className="sa-input-wrap">
-                <input
-                  type={showKey ? "text" : "password"}
+                <Anchor.Input
+                  ui="auth.superadmin.login.security-key"
                   id="sa-security-key"
+                  type={showKey ? "text" : "password"}
                   required
                   className="sa-input"
                   placeholder="••••••••"
@@ -638,7 +642,7 @@ export default function SuperAdminLogin() {
               </div>
             </div>
 
-            <button type="submit" className="sa-btn" disabled={loading}>
+            <Anchor.Button type="submit" className="sa-btn" ui="auth.superadmin.login.submit" disabled={loading}>
               <span className="sa-btn-shine" />
               {loading ? (
                 <>
@@ -648,7 +652,7 @@ export default function SuperAdminLogin() {
               ) : (
                 "Authenticate & Enter System"
               )}
-            </button>
+            </Anchor.Button>
           </form>
 
           {/* Footer */}

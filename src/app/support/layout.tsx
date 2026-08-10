@@ -8,6 +8,7 @@ import {
   ChevronDown, Search, Info, Stethoscope, Menu, X,
 } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
+import { Anchor } from "@/lib/uianchor";
 
 const ACCENT       = "#059669";
 const ACCENT2      = "#047857";
@@ -235,7 +236,7 @@ function SupportLayoutContent({ children }: { children: React.ReactNode }) {
                 {sec.items.map(item => {
                   const isOn = activeId === item.id;
                   return (
-                    <button key={item.id} className={`sp-nb${isOn ? " on" : ""}`} onClick={() => go(item.id)}>
+                    <button key={item.id} className={`sp-nb${isOn ? " on" : ""}`} onClick={() => go(item.id)} data-ui={`support.nav.${item.id}`} id={`support-nav-${item.id}`}>
                       <div className="sp-nb-bar" />
                       <item.Icon size={15} color={isOn ? ACCENT2 : "#94a3b8"} />
                       {item.label}
@@ -247,7 +248,7 @@ function SupportLayoutContent({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="sp-sb-foot">
-            <button className="sp-logout" onClick={logout}><LogOut size={13} /> Log Out</button>
+            <button className="sp-logout" onClick={logout} data-ui="support.logout" id="support-logout"><LogOut size={13} /> Log Out</button>
           </div>
         </aside>
 
@@ -282,12 +283,15 @@ function SupportLayoutContent({ children }: { children: React.ReactNode }) {
                         {deptProfile && <div style={{ fontSize:10, color: ACCENT, marginTop: 4, fontWeight: 600 }}>{deptProfile.name} · SUPPORT</div>}
                       </div>
                       <div style={{ padding: 8 }}>
-                        <button onClick={() => { setProfileOpen(false); logout(); }}
+                        <Anchor.Button
+                          ui="support.logout"
+                          id="support-logout-profile"
+                          onClick={() => { setProfileOpen(false); logout(); }}
                           style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "none", background: "transparent", color: "#ef4444", fontSize:11, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
                           onMouseEnter={e => { e.currentTarget.style.background = "#fef2f2"; }}
                           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
                           <LogOut size={14} color="#ef4444" /> Log Out
-                        </button>
+                        </Anchor.Button>
                       </div>
                     </div>
                   </>

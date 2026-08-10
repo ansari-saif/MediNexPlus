@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Anchor } from "@/lib/uianchor";
 
 export default function HospitalAdminChangePasswordPage() {
   const router = useRouter();
@@ -175,7 +176,7 @@ export default function HospitalAdminChangePasswordPage() {
           <div className="cp-field">
             <label className="cp-label">Current Password</label>
             <div className="cp-wrap">
-              <input type={showOld ? "text" : "password"} className={`cp-input${fieldErrors.oldPassword ? " err" : ""}`} placeholder="Enter your current password" value={oldPassword} onChange={e => { setOldPassword(e.target.value); setFieldErrors(f => ({...f, oldPassword: ""})); setApiError(""); }} autoComplete="current-password" autoFocus />
+              <Anchor.Input type={showOld ? "text" : "password"} ui="auth.change-password.current" id="ha-cp-current" className={`cp-input${fieldErrors.oldPassword ? " err" : ""}`} placeholder="Enter your current password" value={oldPassword} onChange={e => { setOldPassword(e.target.value); setFieldErrors(f => ({...f, oldPassword: ""})); setApiError(""); }} autoComplete="current-password" autoFocus />
               <button type="button" className="cp-eye" onClick={() => setShowOld(!showOld)}><EyeIcon show={showOld} /></button>
             </div>
             {fieldErrors.oldPassword && <span className="cp-ferr">{fieldErrors.oldPassword}</span>}
@@ -184,7 +185,7 @@ export default function HospitalAdminChangePasswordPage() {
           <div className="cp-field">
             <label className="cp-label">New Password</label>
             <div className="cp-wrap">
-              <input type={showNew ? "text" : "password"} className={`cp-input${fieldErrors.newPassword ? " err" : ""}`} placeholder="Choose a strong password" value={newPassword} onChange={e => { setNewPassword(e.target.value); setFieldErrors(f => ({...f, newPassword: ""})); }} autoComplete="new-password" />
+              <Anchor.Input type={showNew ? "text" : "password"} ui="auth.change-password.new" id="ha-cp-new" className={`cp-input${fieldErrors.newPassword ? " err" : ""}`} placeholder="Choose a strong password" value={newPassword} onChange={e => { setNewPassword(e.target.value); setFieldErrors(f => ({...f, newPassword: ""})); }} autoComplete="new-password" />
               <button type="button" className="cp-eye" onClick={() => setShowNew(!showNew)}><EyeIcon show={showNew} /></button>
             </div>
             {newPassword && (
@@ -202,17 +203,17 @@ export default function HospitalAdminChangePasswordPage() {
           <div className="cp-field">
             <label className="cp-label">Confirm New Password</label>
             <div className="cp-wrap">
-              <input type={showConfirm ? "text" : "password"} className={`cp-input${fieldErrors.confirmPassword ? " err" : ""}`} placeholder="Repeat your new password" value={confirmPassword} onChange={e => { setConfirmPassword(e.target.value); setFieldErrors(f => ({...f, confirmPassword: ""})); }} autoComplete="new-password" />
+              <Anchor.Input type={showConfirm ? "text" : "password"} ui="auth.change-password.confirm" id="ha-cp-confirm" className={`cp-input${fieldErrors.confirmPassword ? " err" : ""}`} placeholder="Repeat your new password" value={confirmPassword} onChange={e => { setConfirmPassword(e.target.value); setFieldErrors(f => ({...f, confirmPassword: ""})); }} autoComplete="new-password" />
               <button type="button" className="cp-eye" onClick={() => setShowConfirm(!showConfirm)}><EyeIcon show={showConfirm} /></button>
             </div>
             {confirmPassword && newPassword && confirmPassword === newPassword && <span style={{ fontSize:11, color: "#10b981", marginTop: 4, display: "block", fontWeight: 600 }}>✓ Passwords match</span>}
             {fieldErrors.confirmPassword && <span className="cp-ferr">{fieldErrors.confirmPassword}</span>}
           </div>
 
-          <button type="submit" className="cp-btn" disabled={loading || success}>
+          <Anchor.Button type="submit" className="cp-btn" ui="auth.change-password.submit" disabled={loading || success}>
             <span className="cp-btn-shine"/>
             {loading ? <span className="cp-spinner"/> : success ? "Redirecting..." : <>Update Password <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></>}
-          </button>
+          </Anchor.Button>
         </form>
 
         <div className="cp-divider"/>

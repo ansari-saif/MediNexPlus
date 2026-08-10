@@ -8,6 +8,7 @@ import {
   ClipboardList, ChevronDown, Search,
   Stethoscope, Info, Menu, X,
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 import NotificationBell from "@/components/NotificationBell";
 
 const initials = (n: string) =>
@@ -283,15 +284,17 @@ function ClinicalLayoutContent({ children }: { children: React.ReactNode }) {
                 {sec.items.map(item => {
                   const isOn = activeId === item.id;
                   return (
-                    <button
+                    <Anchor.Button
                       key={item.id}
+                      ui={`clinical.nav.${item.id}`}
+                      id={`clinical-nav-${item.id}`}
                       className={`cl-nb${isOn ? " on" : ""}`}
                       onClick={() => { router.push(item.href); setSidebarOpen(false); }}
                     >
                       <div className="cl-nb-bar" />
                       <item.Icon size={15} color={isOn ? "#0A6B70" : "#94a3b8"} />
                       {item.label}
-                    </button>
+                    </Anchor.Button>
                   );
                 })}
               </div>
@@ -299,9 +302,14 @@ function ClinicalLayoutContent({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="cl-sb-foot">
-            <button className="cl-logout" onClick={logout}>
+            <Anchor.Button
+              ui="clinical.logout"
+              id="clinical-logout"
+              className="cl-logout"
+              onClick={logout}
+            >
               <LogOut size={13} /> Log Out
-            </button>
+            </Anchor.Button>
           </div>
         </aside>
 
@@ -348,14 +356,16 @@ function ClinicalLayoutContent({ children }: { children: React.ReactNode }) {
                         {deptProfile && <div style={{ fontSize: 10, color: "#0E898F", marginTop: 4, fontWeight: 600 }}>{deptProfile.name} · CLINICAL</div>}
                       </div>
                       <div style={{ padding: 8 }}>
-                        <button
+                        <Anchor.Button
+                          ui="clinical.logout"
+                          id="clinical-logout-profile"
                           onClick={() => { setProfileOpen(false); logout(); }}
                           style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "none", background: "transparent", color: "#ef4444", fontSize: 11, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
                           onMouseEnter={e => { e.currentTarget.style.background = "#fef2f2"; }}
                           onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                         >
                           <LogOut size={14} color="#ef4444" /> Log Out
-                        </button>
+                        </Anchor.Button>
                       </div>
                     </div>
                   </>

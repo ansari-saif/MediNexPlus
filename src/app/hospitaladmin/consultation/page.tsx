@@ -521,7 +521,7 @@ function ConsultationContent() {
           <div className="ac-card-head">
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <button onClick={() => goDate(-1)} style={{ width: 30, height: 30, borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b" }}><ChevronLeft size={14} /></button>
-              <div style={{ textAlign: "center", minWidth: 160 }}>
+              <div data-ui="hospitaladmin.consultation" style={{ textAlign: "center", minWidth: 160 }}>
                 <div className="ac-card-title">{isToday ? "Today's Appointments" : "Appointments"}</div>
                 <div className="ac-card-sub">{selectedDate.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
               </div>
@@ -656,7 +656,7 @@ function ConsultationContent() {
                         <td>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                             {canConsult && (
-                              <button onClick={() => setConsultAppt(a)}
+                              <button data-ui="hospitaladmin.consultation.start" onClick={() => setConsultAppt(a)}
                                 style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: `linear-gradient(135deg,${ACCENT},#0A6B70)`, color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", boxShadow: `0 3px 10px ${ACCENT}4d` }}>
                                 <PlayCircle size={12} />{a.status === "IN_PROGRESS" ? "Continue" : "Consult"}
                               </button>
@@ -676,7 +676,7 @@ function ConsultationContent() {
                             {!canConsult && a.status !== "COMPLETED" && (
                               <span style={{ fontSize: 10, color: "#94a3b8" }}>—</span>
                             )}
-                            <select
+                            <select data-ui="hospitaladmin.consultation.status"
                               value={a.status}
                               disabled={updatingStatusId === a.id}
                               onChange={e => updateStatus(a.id, e.target.value)}

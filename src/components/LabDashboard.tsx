@@ -31,7 +31,7 @@ const fmt     = (d: string) => new Date(d).toLocaleDateString("en-IN", { day: "n
 const fmtTime = (t?: string) => t ? t.slice(0, 5) : "—";
 
 /* ─── Main ────────────────────────────────────────────────────────── */
-export default function LabDashboard({ profile, user, activeTab, onTabChange }: { profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void }) {
+export default function LabDashboard({ profile, user, activeTab, onTabChange, uiPrefix }: { profile: any; user: any; activeTab?: string; onTabChange?: (t: string) => void; uiPrefix?: string }) {
   const c = TYPE_CFG[profile?.type] || DEF;
   const { Icon } = c;
 

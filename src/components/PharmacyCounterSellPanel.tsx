@@ -39,7 +39,7 @@ interface Sale { id: string; billNo: string; patient: any; items: any[]; subtota
 interface Stats { totalSales: number; totalRevenue: number; totalDiscount: number; bestMedicine: { name: string; qty: number; revenue: number } | null; }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function PharmacyCounterSellPanel({ profile, user, defaultOpen }: { profile: any; user: any; defaultOpen?: boolean }) {
+export default function PharmacyCounterSellPanel({ profile, user, defaultOpen, uiPrefix }: { profile: any; user: any; defaultOpen?: boolean; uiPrefix?: string }) {
   const [period, setPeriod]             = useState<"today"|"week"|"month"|"all">("month");
   const [sales, setSales]               = useState<Sale[]>([]);
   const [stats, setStats]               = useState<Stats | null>(null);
@@ -399,7 +399,7 @@ export default function PharmacyCounterSellPanel({ profile, user, defaultOpen }:
             </button>
             <button className="cs-btn ghost" onClick={exportCSV}><FileSpreadsheet size={13} /> CSV</button>
             <button className="cs-btn ghost" onClick={exportPrint}><Printer size={13} /> Print</button>
-            <button className="cs-btn primary" onClick={() => { setModal(true); }}>
+            <button className="cs-btn primary" data-ui={uiPrefix ? `${uiPrefix}.counter-sell.create` : undefined} onClick={() => { setModal(true); }}>
               <Plus size={15} /> New Counter Sale
             </button>
           </div>

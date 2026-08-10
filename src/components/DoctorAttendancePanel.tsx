@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { Anchor } from "@/lib/uianchor";
 import {
   Clock, MapPin, LogOut, RefreshCw, Loader2, ChevronLeft, ChevronRight,
   CalendarDays, CheckCircle2, X, Download, ArrowUpDown, ClipboardCheck,
@@ -336,11 +337,14 @@ export function DoctorAttendancePanel({ doctor, accent = "#0E898F" }: Props) {
               </div>
             ) : null}
             {todayRecord?.loginTime && !todayRecord?.logoutTime && (
-              <button onClick={handleCheckout} disabled={checkoutLoading}
+              <Anchor.Button 
+                ui="doctor.attendance.checkout"
+                onClick={handleCheckout} 
+                disabled={checkoutLoading}
                 style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 18px", borderRadius: 10, border: "2px solid rgba(255,255,255,.6)", background: "rgba(255,255,255,.15)", color: "#fff", fontSize: 12, fontWeight: 700, cursor: checkoutLoading ? "not-allowed" : "pointer", backdropFilter: "blur(6px)", transition: "all .15s" }}>
                 {checkoutLoading ? <Loader2 size={14} style={{ animation: "spin .7s linear infinite" }} /> : <LogOut size={14} />}
                 {checkoutLoading ? "Checking out…" : "Check Out"}
-              </button>
+              </Anchor.Button>
             )}
             {todayRecord?.totalWorkHours ? (
               <div style={{ textAlign: "center" }}>
@@ -568,11 +572,14 @@ export function DoctorAttendancePanel({ doctor, accent = "#0E898F" }: Props) {
                       </td>
                       <td style={{ padding: "12px 14px", textAlign: "right" }}>
                         {canCheckout && (
-                          <button onClick={handleCheckout} disabled={checkoutLoading}
+                          <Anchor.Button 
+                            ui="doctor.attendance.checkout"
+                            onClick={handleCheckout} 
+                            disabled={checkoutLoading}
                             style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "1px solid #d1fae5", background: checkoutLoading ? "#f8fafc" : "#f0fdf4", color: "#059669", fontSize: 10, fontWeight: 700, cursor: checkoutLoading ? "not-allowed" : "pointer", opacity: checkoutLoading ? 0.6 : 1 }}>
                             {checkoutLoading ? <Loader2 size={11} style={{ animation: "spin .7s linear infinite" }} /> : <LogOut size={11} />}
                             {checkoutLoading ? "Saving…" : "Check Out"}
-                          </button>
+                          </Anchor.Button>
                         )}
                         {!canCheckout && rec.logoutTime && (
                           <CheckCircle2 size={14} color="#16a34a" />

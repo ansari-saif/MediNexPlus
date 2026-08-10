@@ -464,7 +464,7 @@ function DoctorForm({ editItem, departments, onSuccess, onCancel, addToast }: {
 
       <div className="dp-form-footer">
         <button type="button" className="dp-btn-ghost" onClick={onCancel} disabled={saving}>Cancel</button>
-        <button type="submit" className="dp-btn-primary" disabled={saving}>
+        <button data-ui="hospitaladmin.doctors.save" type="submit" className="dp-btn-primary" disabled={saving}>
           {saving && <Loader2 size={14} className="dp-spin" />}
           {editItem ? "Update Doctor" : "Add Doctor"}
         </button>
@@ -846,7 +846,7 @@ export default function DoctorPanel({ onOpenAvailability, onOpenLeave }: DoctorP
           </button>
           <div className="dp-search-wrap">
             <Search size={14} color="#94a3b8" />
-            <input className="dp-search-input" placeholder="Search doctors..." value={search}
+            <input data-ui="hospitaladmin.doctors.search" className="dp-search-input" placeholder="Search doctors..." value={search}
               onChange={e => { setSearch(e.target.value); setPagination(p => ({ ...p, page: 1 })); }} />
             {search && <button className="dp-icon-btn" onClick={() => setSearch("")}><X size={14} /></button>}
           </div>
@@ -878,7 +878,7 @@ export default function DoctorPanel({ onOpenAvailability, onOpenLeave }: DoctorP
             {bulkSending ? <Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} /> : <Send size={13} />}
             Send All
           </button>
-          <button className="dp-btn-primary" onClick={() => setView("add")}>
+          <button data-ui="hospitaladmin.doctors.create" className="dp-btn-primary" onClick={() => setView("add")}>
             <Plus size={14} /> Add Doctor
           </button>
         </div>

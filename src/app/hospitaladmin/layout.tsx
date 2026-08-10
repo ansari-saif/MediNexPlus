@@ -7,6 +7,7 @@ import {
   LogOut, Search, MessageSquare, Building2, Stethoscope, ClipboardList,
   IndianRupee, CreditCard, ChevronDown, User, LogIn, BedDouble, BarChart2, Menu, X
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 import NotificationBell from "@/components/NotificationBell";
 import AppointmentAlertModal from "@/components/AppointmentAlertModal";
 import SupportModal from "@/components/SupportModal";
@@ -303,8 +304,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           <nav className="hd-nav">
             <div className="hd-nav-sec">General</div>
             {generalItems.map(n => (
-              <button
+              <Anchor.Button
                 key={n.id}
+                ui={`hospitaladmin.nav.${n.id}`}
                 className={`hd-nb${activeId === n.id ? " on" : ""}`}
                 onClick={() => navigate(n)}
                 style={{ position: "relative" }}
@@ -314,13 +316,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <n.Icon size={16} />
                 </span>
                 {n.label}
-              </button>
+              </Anchor.Button>
             ))}
 
             <div className="hd-nav-sec">System</div>
             {systemItems.map(n => (
-              <button
+              <Anchor.Button
                 key={n.id}
+                ui={`hospitaladmin.nav.${n.id}`}
                 className={`hd-nb${activeId === n.id ? " on" : ""}`}
                 onClick={() => navigate(n)}
                 style={{ position: "relative" }}
@@ -330,10 +333,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <n.Icon size={16} />
                 </span>
                 {n.label}
-              </button>
+              </Anchor.Button>
             ))}
 
-            <button
+            <Anchor.Button
+              ui="hospitaladmin.nav.configure"
               className={`hd-nb${activeId === "configure" ? " on" : ""}`}
               onClick={() => router.push("/hospitaladmin/configure")}
               style={{ position: "relative" }}
@@ -343,7 +347,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <Building2 size={16} />
               </span>
               Configure Hospital
-            </button>
+            </Anchor.Button>
 
             <button className="hd-nb" onClick={() => setSupportOpen(true)}>
               <span style={{ color: "#94a3b8", display: "flex" }}><HelpCircle size={16} /></span>
@@ -359,9 +363,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <div className="hd-urole">Hospital Admin</div>
               </div>
             </div>
-            <button className="hd-logout" onClick={logout}>
+            <Anchor.Button className="hd-logout" ui="hospitaladmin.logout" onClick={logout}>
               <LogOut size={13} /> Log Out
-            </button>
+            </Anchor.Button>
           </div>
         </aside>
 
@@ -385,7 +389,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               />
             </div>
             <div className="hd-topbar-right">
-              <NotificationBell accentColor="#0E898F" bgColor="#f8fafc" borderColor="#e2e8f0" />
+              <NotificationBell uiPrefix="hospitaladmin" accentColor="#0E898F" bgColor="#f8fafc" borderColor="#e2e8f0" />
               <div
                 className="hd-profile"
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
@@ -444,7 +448,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <AppointmentAlertModal />
-      <SupportModal open={supportOpen} onClose={() => setSupportOpen(false)} />
+      <SupportModal uiPrefix="hospitaladmin" open={supportOpen} onClose={() => setSupportOpen(false)} />
     </>
   );
 }

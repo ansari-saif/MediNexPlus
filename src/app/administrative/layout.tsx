@@ -242,7 +242,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                 {sec.items.map(item => {
                   const isOn = activeId === item.id;
                   return (
-                    <button key={item.id} className={`ad-nb${isOn ? " on" : ""}`} onClick={() => go(item.id)}>
+                    <button key={item.id} className={`ad-nb${isOn ? " on" : ""}`} data-ui={`administrative.nav.${item.id}`} id={`administrative-nav-${item.id}`} onClick={() => go(item.id)}>
                       <div className="ad-nb-bar" />
                       <item.Icon size={15} color={isOn ? ACCENT2 : "#94a3b8"} />
                       {item.label}
@@ -254,7 +254,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="ad-sb-foot">
-            <button className="ad-logout" onClick={logout}>
+            <button className="ad-logout" data-ui="administrative.logout" id="administrative-logout" onClick={logout}>
               <LogOut size={13} /> Log Out
             </button>
           </div>

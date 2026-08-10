@@ -375,7 +375,7 @@ function CrudPanel({endpoint,columns,formFields,entityName,searchable=true,mapPa
   return(<div>
     <div className="cfg-toolbar">
       {searchable&&<div className="cfg-search-wrap"><input className="cfg-search-input" placeholder={`Search ${entityName}s...`} value={search} onChange={e=>setSearch(e.target.value)}/></div>}
-      <button className="cfg-btn-primary" onClick={openAdd}><Plus size={14}/>Add {entityName}</button>
+      <button data-ui={`hospitaladmin.configure.${entityName.toLowerCase().replace(/\s+/g,'')}.create`} className="cfg-btn-primary" onClick={openAdd}><Plus size={14}/>Add {entityName}</button>
     </div>
 
     {loading?<div className="cfg-loading"><Loader2 size={20} className="cfg-spin"/>Loading...</div>:
@@ -579,7 +579,7 @@ function ConfigureContent(){
 
         <div className="cfg-tabs">
           {TABS.map(t=>{const Icon=t.icon;return(
-            <button key={t.id} className={`cfg-tab${tab===t.id?" on":""}`} onClick={()=>setTab(t.id)}>
+            <button data-ui={`hospitaladmin.configure.tab.${t.id}`} key={t.id} className={`cfg-tab${tab===t.id?" on":""}`} onClick={()=>setTab(t.id)}>
               <Icon size={13}/>{t.label}
             </button>
           );})}

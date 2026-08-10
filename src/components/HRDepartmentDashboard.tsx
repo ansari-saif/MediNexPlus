@@ -5,6 +5,7 @@ import {
   Users, UserCheck, UserX, Stethoscope, Loader2, RefreshCw,
   ArrowUpRight, BarChart2, Shield, Briefcase, Activity
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 
 const StaffPage = dynamic(() => import("@/app/hospitaladmin/staff/page"), { ssr: false, loading: () => <LoadingPlaceholder label="Staff Management" /> });
 const DoctorsPage = dynamic(() => import("@/app/hospitaladmin/doctors/page"), { ssr: false, loading: () => <LoadingPlaceholder label="Doctors Management" /> });
@@ -110,14 +111,14 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
                 {profile?.description && <p style={{ fontSize: 13, opacity: .82, maxWidth: 520 }}>{profile.description}</p>}
               </div>
               <div style={{ flexShrink: 0 }}>
-                <button onClick={() => setTab("staff")} style={{
+                <Anchor.Button ui="subdept.hr.manage-staff-doctors" onClick={() => setTab("staff")} style={{
                   background: "rgba(255,255,255,.2)", padding: "10px 18px", borderRadius: 100,
                   fontSize: 13, fontWeight: 700, border: "1px solid rgba(255,255,255,.3)",
                   color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 8,
                   backdropFilter: "blur(4px)"
                 }}>
                   <Briefcase size={16} /> Manage Staff & Doctors
-                </button>
+                </Anchor.Button>
               </div>
             </div>
           </div>
@@ -125,14 +126,14 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
           {/* Stats Grid */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginBottom: 22 }}>
             {[
-              { label: "Total Staff", value: stats.total, Icon: Users, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("staff") },
-              { label: "Active Staff", value: stats.active, Icon: UserCheck, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("staff") },
-              { label: "Total Doctors", value: doctorStats.total, Icon: Stethoscope, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("doctors") },
-              { label: "Available Doctors", value: doctorStats.available, Icon: Activity, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("doctors") },
+              { label: "Total Staff", value: stats.total, Icon: Users, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("staff"), ui: "subdept.hr.staff-total" },
+              { label: "Active Staff", value: stats.active, Icon: UserCheck, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("staff"), ui: "subdept.hr.staff-active" },
+              { label: "Total Doctors", value: doctorStats.total, Icon: Stethoscope, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("doctors"), ui: "subdept.hr.doctors-total" },
+              { label: "Available Doctors", value: doctorStats.available, Icon: Activity, color: "#0E898F", bg: "#E6F4F4", click: () => setTab("doctors"), ui: "subdept.hr.doctors-available" },
             ].map((s, i) => {
               const SI = s.Icon;
               return (
-                <div key={i} onClick={s.click} className="sd2-sc" style={{ cursor: "pointer", padding: 16, gap: 14 }}>
+                <div key={i} onClick={s.click} data-ui={s.ui} className="sd2-sc" style={{ cursor: "pointer", padding: 16, gap: 14 }}>
                   <div style={{ width: 42, height: 42, borderRadius: 11, background: s.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <SI size={20} color={s.color} />
                   </div>
@@ -153,13 +154,13 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
             <div className="sd2-card">
               <div className="sd2-card-hd">
                 <span className="sd2-card-title"><Users size={15} color={meta.accent} /> Staff Management</span>
-                <button onClick={() => setTab("staff")} style={{
+                <Anchor.Button ui="subdept.hr.open-staff" onClick={() => setTab("staff")} style={{
                   fontSize: 12, fontWeight: 600, color: meta.accent, background: meta.lightBg,
                   border: `1px solid ${meta.borderColor}`, borderRadius: 8, padding: "5px 12px",
                   cursor: "pointer", display: "flex", alignItems: "center", gap: 4
                 }}>
                   Open <ArrowUpRight size={12} />
-                </button>
+                </Anchor.Button>
               </div>
               <div style={{ padding: "20px 18px", textAlign: "center" }}>
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: "#E6F4F4", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
@@ -169,13 +170,13 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
                   {statsLoading ? <Loader2 size={18} style={{ animation: "spin .7s linear infinite" }} /> : stats.total}
                 </div>
                 <div style={{ fontSize: 13, color: "#64748b", marginBottom: 14 }}>Total staff members</div>
-                <button onClick={() => setTab("staff")} style={{
+                <Anchor.Button ui="subdept.hr.manage-staff" onClick={() => setTab("staff")} style={{
                   background: meta.gradient, color: "#fff", border: "none", borderRadius: 10,
                   padding: "10px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer",
                   display: "inline-flex", alignItems: "center", gap: 8
                 }}>
                   <Briefcase size={15} /> Manage Staff
-                </button>
+                </Anchor.Button>
               </div>
             </div>
 
@@ -183,13 +184,13 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
             <div className="sd2-card">
               <div className="sd2-card-hd">
                 <span className="sd2-card-title"><Stethoscope size={15} color={meta.accent} /> Doctors Management</span>
-                <button onClick={() => setTab("doctors")} style={{
+                <Anchor.Button ui="subdept.hr.open-doctors" onClick={() => setTab("doctors")} style={{
                   fontSize: 12, fontWeight: 600, color: meta.accent, background: meta.lightBg,
                   border: `1px solid ${meta.borderColor}`, borderRadius: 8, padding: "5px 12px",
                   cursor: "pointer", display: "flex", alignItems: "center", gap: 4
                 }}>
                   Open <ArrowUpRight size={12} />
-                </button>
+                </Anchor.Button>
               </div>
               <div style={{ padding: "20px 18px", textAlign: "center" }}>
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: "#E6F4F4", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
@@ -199,13 +200,13 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
                   {statsLoading ? <Loader2 size={18} style={{ animation: "spin .7s linear infinite" }} /> : doctorStats.total}
                 </div>
                 <div style={{ fontSize: 13, color: "#64748b", marginBottom: 14 }}>Total doctors registered</div>
-                <button onClick={() => setTab("doctors")} style={{
+                <Anchor.Button ui="subdept.hr.manage-doctors" onClick={() => setTab("doctors")} style={{
                   background: meta.gradient, color: "#fff", border: "none", borderRadius: 10,
                   padding: "10px 22px", fontSize: 13, fontWeight: 700, cursor: "pointer",
                   display: "inline-flex", alignItems: "center", gap: 8
                 }}>
                   <Stethoscope size={15} /> Manage Doctors
-                </button>
+                </Anchor.Button>
               </div>
             </div>
 
@@ -248,14 +249,14 @@ export default function HRDepartmentDashboard({ profile, user, activeTab, onTabC
 
           {/* Refresh */}
           <div style={{ display: "flex", justifyContent: "center", marginTop: 18 }}>
-            <button onClick={loadStats} disabled={statsLoading} style={{
+            <Anchor.Button ui="subdept.hr.refresh-stats" onClick={loadStats} disabled={statsLoading} style={{
               display: "flex", alignItems: "center", gap: 6, background: "#f8fafc",
               border: "1px solid #e2e8f0", borderRadius: 8, padding: "7px 16px",
               fontSize: 12, fontWeight: 600, color: "#64748b", cursor: statsLoading ? "not-allowed" : "pointer"
             }}>
               <RefreshCw size={13} style={statsLoading ? { animation: "spin .7s linear infinite" } : {}} />
               {statsLoading ? "Loading..." : "Refresh Stats"}
-            </button>
+            </Anchor.Button>
           </div>
         </>
       )}

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { Anchor } from "@/lib/uianchor";
 import {
   BedDouble, Plus, Search, RefreshCw, Loader2, X, CheckCircle2,
   User, Phone, Stethoscope, Calendar, Clock, AlertTriangle, LogOut, Download,
@@ -393,7 +394,7 @@ function DischargeModal({ allocation, bedNumber, onClose, onDone }: { allocation
   );
 }
 
-export default function IPDPanel() {
+export default function IPDPanel({ uiPrefix = "hospitaladmin" }: { uiPrefix?: string } = {}) {
   const [overview, setOverview] = useState<BedOverview | null>(null);
   const [allocations, setAllocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -517,9 +518,12 @@ export default function IPDPanel() {
               </button>
             ))}
           </div>
-          <button onClick={() => setAllocateBed({ isGlobal: true })} style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 9, border: "none", background: "linear-gradient(135deg,#0E898F,#07595D)", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(14,137,143,.28)", whiteSpace: "nowrap" }}>
+          <Anchor.Button 
+            ui={`${uiPrefix}.ipd.admit`}
+            onClick={() => setAllocateBed({ isGlobal: true })} 
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 9, border: "none", background: "linear-gradient(135deg,#0E898F,#07595D)", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(14,137,143,.28)", whiteSpace: "nowrap" }}>
             <Plus size={13} /> Admit Patient
-          </button>
+          </Anchor.Button>
           <a href="/api/export/ipd" download title="Export IPD admissions as CSV"
             style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 9, border: "1px solid #d1fae5", background: "#f0fdf4", color: "#059669", fontSize: 12, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}>
             <Download size={13} />Export CSV
@@ -550,7 +554,8 @@ export default function IPDPanel() {
       {/* Search */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "9px 14px", marginBottom: 18 }}>
         <Search size={15} color="#94a3b8" />
-        <input
+        <Anchor.Input
+          ui={`${uiPrefix}.ipd.search`}
           placeholder={view === "beds" ? "Search ward or bed number..." : "Search patient or bed..."}
           value={search}
           onChange={e => setSearch(e.target.value)}

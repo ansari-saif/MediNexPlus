@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { Anchor } from "@/lib/uianchor";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import {
   ArrowLeft, Sparkles, Plus, Trash2, Save, CheckCircle2,
@@ -744,12 +745,23 @@ export default function PrescriptionPage() {
                 )}
                 {!locked && <>
                   <button onClick={() => aiSmartAssist()} disabled={aiLoading} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, border: "none", background: aiLoading ? "#e9d5ff" : "linear-gradient(135deg,#7c3aed,#5b21b6)", color: aiLoading ? "#7c3aed" : "#fff", fontSize: 10, fontWeight: 700, cursor: aiLoading ? "not-allowed" : "pointer" }}>{aiLoading ? <Loader2 size={12} style={{ animation: "spin .7s linear infinite" }} /> : <Sparkles size={12} />} AI Assist</button>
-                  <button onClick={() => setShowVoiceRecorder(!showVoiceRecorder)} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, border: "none", background: showVoiceRecorder ? "linear-gradient(135deg,#ef4444,#dc2626)" : "linear-gradient(135deg,#10b981,#059669)", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}><Stethoscope size={12} /> {showVoiceRecorder ? "Close Voice" : "Voice Rx"}</button>
+                  <Anchor.Button 
+                    ui={`doctor.rx.voice.${showVoiceRecorder ? 'close' : 'start'}`}
+                    onClick={() => setShowVoiceRecorder(!showVoiceRecorder)} 
+                    style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, border: "none", background: showVoiceRecorder ? "linear-gradient(135deg,#ef4444,#dc2626)" : "linear-gradient(135deg,#10b981,#059669)", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>
+                    <Stethoscope size={12} /> {showVoiceRecorder ? "Close Voice" : "Voice Rx"}
+                  </Anchor.Button>
                   <div style={{ width: 1, height: 20, background: "#e2e8f0", margin: "0 2px" }} />
                 </>}
                 <button onClick={downloadPdf} disabled={downloadingPdf} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", background: downloadingPdf ? "#f0fdf4" : "#fff", color: downloadingPdf ? "#16a34a" : "#64748b", fontSize: 10, fontWeight: 600, cursor: downloadingPdf ? "not-allowed" : "pointer" }}>{downloadingPdf ? <Loader2 size={12} style={{ animation: "spin .7s linear infinite" }} /> : <Download size={12} />} {downloadingPdf ? "Generating..." : "Download PDF"}</button>
                 <button onClick={email} disabled={emailSending || !patient?.email} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#fff", color: patient?.email ? "#0E898F" : "#cbd5e1", fontSize: 10, fontWeight: 600, cursor: patient?.email ? "pointer" : "not-allowed" }}>{emailSending ? <Loader2 size={12} style={{ animation: "spin .7s linear infinite" }} /> : <Mail size={12} />} Email</button>
-                <button onClick={save} disabled={saving || locked} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 14px", borderRadius: 8, border: "none", background: locked ? "#e2e8f0" : "linear-gradient(135deg,#0E898F,#0A6B70)", color: locked ? "#94a3b8" : "#fff", fontSize: 10, fontWeight: 700, cursor: locked ? "default" : "pointer" }}>{saving ? <Loader2 size={12} style={{ animation: "spin .7s linear infinite" }} /> : <Save size={12} />} Save</button>
+                <Anchor.Button 
+                  ui="doctor.rx.save"
+                  onClick={save} 
+                  disabled={saving || locked} 
+                  style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 14px", borderRadius: 8, border: "none", background: locked ? "#e2e8f0" : "linear-gradient(135deg,#0E898F,#0A6B70)", color: locked ? "#94a3b8" : "#fff", fontSize: 10, fontWeight: 700, cursor: locked ? "default" : "pointer" }}>
+                  {saving ? <Loader2 size={12} style={{ animation: "spin .7s linear infinite" }} /> : <Save size={12} />} Save
+                </Anchor.Button>
                 <button onClick={complete} disabled={completing || !canComplete} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 14px", borderRadius: 8, border: "none", background: canComplete ? "linear-gradient(135deg,#10b981,#059669)" : "#dcfce7", color: canComplete ? "#fff" : "#16a34a", fontSize: 10, fontWeight: 700, cursor: canComplete ? "pointer" : "default" }}>{completing ? <Loader2 size={12} style={{ animation: "spin .7s linear infinite" }} /> : <CheckCircle2 size={12} />} {canComplete ? (rx?.status === "DRAFT" ? "Complete" : "Re-Complete") : rx?.status}</button>
               </div>
             </div>
@@ -1047,8 +1059,12 @@ export default function PrescriptionPage() {
                       ))}</tbody>
                     </table>
                   </div>}
-                  {!locked && <button onClick={() => setMeds(p => [...p, { name: "", dosage: "", frequency: "", duration: "", route: "Oral", instructions: "" }])}
-                    style={{ display: "flex", alignItems: "center", gap: 4, padding: "7px 12px", borderRadius: 7, border: "1.5px dashed #fde68a", background: "#fffbeb", color: "#92400e", fontSize: 10, fontWeight: 600, cursor: "pointer" }}><Plus size={12} /> Add Medication</button>}
+                  {!locked && <Anchor.Button 
+                    ui="doctor.rx.add-medication"
+                    onClick={() => setMeds(p => [...p, { name: "", dosage: "", frequency: "", duration: "", route: "Oral", instructions: "" }])}
+                    style={{ display: "flex", alignItems: "center", gap: 4, padding: "7px 12px", borderRadius: 7, border: "1.5px dashed #fde68a", background: "#fffbeb", color: "#92400e", fontSize: 10, fontWeight: 600, cursor: "pointer" }}>
+                    <Plus size={12} /> Add Medication
+                  </Anchor.Button>}
                 </SectionCard>
 
                 {/* Lab Tests + Sub-Dept Referrals — side by side */}

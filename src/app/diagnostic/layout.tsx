@@ -235,7 +235,7 @@ function DiagnosticLayoutContent({ children }: { children: React.ReactNode }) {
                 {sec.items.map(item => {
                   const isOn = activeId === item.id;
                   return (
-                    <button key={item.id} className={`dg-nb${isOn ? " on" : ""}`} onClick={() => go(item.id)}>
+                    <button key={item.id} className={`dg-nb${isOn ? " on" : ""}`} data-ui={`diagnostic.nav.${item.id}`} id={`diagnostic-nav-${item.id}`} onClick={() => go(item.id)}>
                       <div className="dg-nb-bar" />
                       <item.Icon size={15} color={isOn ? ACCENT2 : "#94a3b8"} />
                       {item.label}
@@ -247,7 +247,7 @@ function DiagnosticLayoutContent({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="dg-sb-foot">
-            <button className="dg-logout" onClick={logout}><LogOut size={13} /> Log Out</button>
+            <button className="dg-logout" data-ui="diagnostic.logout" id="diagnostic-logout" onClick={logout}><LogOut size={13} /> Log Out</button>
           </div>
         </aside>
 

@@ -49,7 +49,7 @@ const apiFetch = async (url: string, opts?: RequestInit) => {
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function BillingModule({ scope }: { scope?: "lab" | "pharmacy" } = {}) {
+export default function BillingModule({ scope, uiPrefix }: { scope?: "lab" | "pharmacy"; uiPrefix?: string } = {}) {
   const [view, setView] = useState<BillView>("list");
   const [bills, setBills] = useState<any[]>([]);
   const [stats, setStats] = useState({ todayRevenue: 0, monthRevenue: 0, pendingCount: 0 });
@@ -120,6 +120,7 @@ export default function BillingModule({ scope }: { scope?: "lab" | "pharmacy" } 
             onRefresh={()=>fetchBills(1)} onPageChange={fetchBills}
             onNew={()=>setView("create")} onOpen={openBill}
             scope={scope}
+            uiPrefix={uiPrefix}
           />
         )}
         {view === "create" && (
@@ -127,6 +128,7 @@ export default function BillingModule({ scope }: { scope?: "lab" | "pharmacy" } 
             hospitalInfo={hospitalInfo}
             onBack={()=>setView("list")}
             onCreated={(id)=>{ fetchBills(1); openBill(id); }}
+            uiPrefix={uiPrefix}
           />
         )}
         {view === "detail" && (
@@ -134,6 +136,7 @@ export default function BillingModule({ scope }: { scope?: "lab" | "pharmacy" } 
             bill={selectedBill} loading={detailLoading} hospitalInfo={hospitalInfo}
             onBack={()=>{ setView("list"); setSelectedBill(null); }}
             onRefresh={()=>selectedBill && openBill(selectedBill.id)}
+            uiPrefix={uiPrefix}
           />
         )}
       </div>
@@ -146,7 +149,7 @@ function getPharmacyTotal(b: any): number {
   return (b?.billItems || []).filter((it: any) => it.type === "PHARMACY").reduce((s: number, it: any) => s + (it.amount || 0), 0);
 }
 function BillsList({ bills,stats,pagination,loading,search,setSearch,statusFilter,setStatusFilter,
-  dateFrom,setDateFrom,dateTo,setDateTo,onRefresh,onPageChange,onNew,onOpen,scope }:any) {
+  dateFrom,setDateFrom,dateTo,setDateTo,onRefresh,onPageChange,onNew,onOpen,scope,uiPrefix }:any) {
   const [selectedBills, setSelectedBills] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
   const [exportDropdown, setExportDropdown] = useState(false);
@@ -224,7 +227,7 @@ function BillsList({ bills,stats,pagination,loading,search,setSearch,statusFilte
               Download Selected ({selectedBills.length})
             </button>
           )}
-          {scope !== "pharmacy" && <button className="bm-btn-primary" onClick={onNew}><Plus size={15}/>New Bill</button>}
+          {scope !== "pharmacy" && <button data-ui={uiPrefix ? `${uiPrefix}.billing.create` : undefined} className="bm-btn-primary" onClick={onNew}><Plus size={15}/>New Bill</button>}
         </div>
       </div>
 
@@ -387,7 +390,7 @@ function BillsList({ bills,stats,pagination,loading,search,setSearch,statusFilte
 }
 
 // ─── New Bill ─────────────────────────────────────────────────────────────────
-function NewBill({ hospitalInfo, onBack, onCreated }:{ hospitalInfo:any; onBack:()=>void; onCreated:(id:string)=>void }) {
+function NewBill({ hospitalInfo, onBack, onCreated, uiPrefix }:{ hospitalInfo:any; onBack:()=>void; onCreated:(id:string)=>void; uiPrefix?:string }) {
   const [patientQuery, setPatientQuery]   = useState("");
   const [patientResults, setPatientResults] = useState<any[]>([]);
   const [patientLoading, setPatientLoading] = useState(false);
@@ -779,7 +782,7 @@ function NewBill({ hospitalInfo, onBack, onCreated }:{ hospitalInfo:any; onBack:
             </div>
 
             {error && <div className="bm-error">{error}</div>}
-            <button className="bm-btn-primary" style={{width:"100%",marginTop:14,padding:"12px 0",fontSize:14,justifyContent:"center"}}
+            <button data-ui={uiPrefix ? `${uiPrefix}.billing.generate` : undefined} className="bm-btn-primary" style={{width:"100%",marginTop:14,padding:"12px 0",fontSize:14,justifyContent:"center"}}
               onClick={createBill} disabled={creating||!patient||lineItems.length===0}>
               {creating?<><Loader2 size={14} className="bm-spin"/>Generating…</>:<><FileText size={14}/>Generate Bill</>}
             </button>
@@ -791,7 +794,7 @@ function NewBill({ hospitalInfo, onBack, onCreated }:{ hospitalInfo:any; onBack:
 }
 
 // ─── Bill Detail ──────────────────────────────────────────────────────────────
-function BillDetail({ bill, loading, hospitalInfo, onBack, onRefresh }:any) {
+function BillDetail({ bill, loading, hospitalInfo, onBack, onRefresh, uiPrefix }:any) {
   const [payModal, setPayModal]   = useState(false);
   const [payAmount, setPayAmount] = useState("");
   const [payMethod, setPayMethod] = useState("CASH");
@@ -1086,7 +1089,7 @@ ${printContent}
             </button>
           )}
           {bill.status!=="PAID" && bill.status!=="CANCELLED" && (
-            <button className="bm-btn-primary" onClick={()=>setPayModal(true)}><CreditCard size={14}/>Record Payment</button>
+            <button data-ui={uiPrefix ? `${uiPrefix}.billing.pay` : undefined} className="bm-btn-primary" onClick={()=>setPayModal(true)}><CreditCard size={14}/>Record Payment</button>
           )}
         </div>
       </div>

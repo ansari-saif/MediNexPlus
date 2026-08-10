@@ -286,6 +286,7 @@ export default function StaffDashboard() {
                   </button>
                   <button
                     onClick={() => { setProfileDropdownOpen(false); handleLogout(); }}
+                    data-ui="staff.logout" id="staff-logout"
                     style={{
                       width: "100%",
                       padding: "10px 12px",
@@ -322,7 +323,7 @@ export default function StaffDashboard() {
         <aside style={{ width: 220, background: "#fff", borderRight: "1px solid #e2e8f0", padding: "20px 12px", display: "flex", flexDirection: "column", gap: 4, flexShrink: 0 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".06em", padding: "0 6px", marginBottom: 8 }}>Navigation</div>
           {NAV_ITEMS.map(n => (
-            <button key={n.id} className={`sd-nav-btn${tab === n.id ? " active" : ""}`} onClick={() => setTab(n.id)}>
+            <button key={n.id} className={`sd-nav-btn${tab === n.id ? " active" : ""}`} onClick={() => setTab(n.id)} data-ui={`staff.nav.${n.id}`} id={`staff-nav-${n.id}`}>
               <span style={{ color: tab === n.id ? "#059669" : "#94a3b8", display: "flex" }}>{n.icon}</span>
               {n.label}
             </button>
@@ -340,7 +341,7 @@ export default function StaffDashboard() {
         </aside>
 
         {/* Main Content */}
-        <main style={{ flex: 1, overflow: "auto", padding: 24 }}>
+        <main data-ui="staff.dashboard" style={{ flex: 1, overflow: "auto", padding: 24 }}>
           {selectedPatientId ? (
             <PatientProfilePanel
               patientId={selectedPatientId}
@@ -509,7 +510,7 @@ export default function StaffDashboard() {
               {/* ── APPOINTMENTS TAB ── */}
               {tab === "appointments" && (
                 <div style={{ animation: "fadeIn .25s ease" }}>
-                  <AppointmentPanel onViewPatient={setSelectedPatientId} />
+                  <AppointmentPanel uiPrefix="staff" onViewPatient={setSelectedPatientId} />
                 </div>
               )}
 
@@ -605,7 +606,7 @@ export default function StaffDashboard() {
                         }}>{st.label}</button>
                     ))}
                   </div>
-                  {billingSubTab === "queue" ? <BillingQueue deptName={profile?.department?.name || "Billing Counter"} /> : <BillingModule />}
+                  {billingSubTab === "queue" ? <BillingQueue uiPrefix="staff" deptName={profile?.department?.name || "Billing Counter"} /> : <BillingModule uiPrefix="staff" />}
                 </div>
               )}
 

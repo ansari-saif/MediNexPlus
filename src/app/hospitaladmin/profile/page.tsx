@@ -7,6 +7,7 @@ import {
   Shield, Key, Camera,
   Lock, Eye, EyeOff,
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 
 interface UserData {
   id: string;
@@ -251,21 +252,21 @@ export default function ProfilePage() {
                       <label style={{ display: "block", fontSize:10, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Full Name</label>
                       <div style={{ position: "relative" }}>
                         <User size={16} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: "100%", padding: "10px 10px 10px 40px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize:12, color: "#1e293b", outline: "none" }} placeholder="Enter your full name" required />
+                        <Anchor.Input id="profile-name" type="text" ui="hospitaladmin.profile.name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: "100%", padding: "10px 10px 10px 40px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize:12, color: "#1e293b", outline: "none" }} placeholder="Enter your full name" required />
                       </div>
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize:10, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Email Address</label>
                       <div style={{ position: "relative" }}>
                         <Mail size={16} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: "100%", padding: "10px 10px 10px 40px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize:12, color: "#1e293b", outline: "none" }} placeholder="Enter your email address" required />
+                        <Anchor.Input id="profile-email" type="email" ui="hospitaladmin.profile.email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: "100%", padding: "10px 10px 10px 40px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize:12, color: "#1e293b", outline: "none" }} placeholder="Enter your email address" required />
                       </div>
                     </div>
                   </div>
                   <div style={{ marginTop: 20 }}>
-                    <button type="submit" disabled={saving} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#0E898F", color: "#fff", fontSize:12, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(59,130,246,0.25)" }}>
+                    <Anchor.Button ui="hospitaladmin.profile.save" type="submit" disabled={saving} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#0E898F", color: "#fff", fontSize:12, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(59,130,246,0.25)" }}>
                       {saving ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />Saving...</> : <><Save size={16} />Save Changes</>}
-                    </button>
+                    </Anchor.Button>
                   </div>
                 </form>
               </div>
@@ -291,8 +292,10 @@ export default function ProfilePage() {
                       <label style={{ display: "block", fontSize:10, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Current Password</label>
                       <div style={{ position: "relative" }}>
                         <Lock size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input
+                        <Anchor.Input
+                          id="profile-current-password"
                           type={cpShowOld ? "text" : "password"}
+                          ui="hospitaladmin.profile.current-password"
                           value={cpOld}
                           onChange={(e) => setCpOld(e.target.value)}
                           placeholder="Enter current password"
@@ -308,8 +311,10 @@ export default function ProfilePage() {
                       <label style={{ display: "block", fontSize:10, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>New Password</label>
                       <div style={{ position: "relative" }}>
                         <Lock size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input
+                        <Anchor.Input
+                          id="profile-new-password"
                           type={cpShowNew ? "text" : "password"}
+                          ui="hospitaladmin.profile.new-password"
                           value={cpNew}
                           onChange={(e) => setCpNew(e.target.value)}
                           placeholder="Choose a strong password"
@@ -331,8 +336,10 @@ export default function ProfilePage() {
                       <label style={{ display: "block", fontSize:10, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Confirm New Password</label>
                       <div style={{ position: "relative" }}>
                         <Lock size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input
+                        <Anchor.Input
+                          id="profile-confirm-password"
                           type={cpShowConfirm ? "text" : "password"}
+                          ui="hospitaladmin.profile.confirm-password"
                           value={cpConfirm}
                           onChange={(e) => setCpConfirm(e.target.value)}
                           placeholder="Repeat your new password"
@@ -346,9 +353,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div style={{ marginTop: 18 }}>
-                    <button type="submit" disabled={cpSaving} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#f59e0b", color: "#fff", fontSize:12, fontWeight: 600, cursor: cpSaving ? "not-allowed" : "pointer", opacity: cpSaving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(245,158,11,0.25)" }}>
+                    <Anchor.Button ui="hospitaladmin.profile.change-password.submit" type="submit" disabled={cpSaving} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#f59e0b", color: "#fff", fontSize:12, fontWeight: 600, cursor: cpSaving ? "not-allowed" : "pointer", opacity: cpSaving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(245,158,11,0.25)" }}>
                       {cpSaving ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />Updating...</> : <><Shield size={16} />Update Password</>}
-                    </button>
+                    </Anchor.Button>
                   </div>
                 </form>
               </div>

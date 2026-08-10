@@ -7,7 +7,7 @@ const WA_LINK = `https://wa.me/91${PHONE}?text=${encodeURIComponent("Hi, I need 
 const CALL_LINK = `tel:+91${PHONE}`;
 const MAIL_LINK = `mailto:${EMAIL}?subject=${encodeURIComponent("Support Request — Hospital Management System")}`;
 
-export default function SupportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function SupportModal({ open, onClose, uiPrefix }: { open: boolean; onClose: () => void; uiPrefix?: string }) {
   if (!open) return null;
 
   return (
@@ -19,7 +19,7 @@ export default function SupportModal({ open, onClose }: { open: boolean; onClose
         fontFamily: "'Inter',sans-serif",
       }}
     >
-      <div style={{
+      <div data-ui={uiPrefix ? `${uiPrefix}.support` : undefined} style={{
         background: "#fff", borderRadius: 20, width: "100%", maxWidth: 420, boxShadow: "0 24px 64px rgba(0,0,0,0.18)",
         overflow: "hidden", animation: "supportFadeIn .25s ease",
       }}>

@@ -225,7 +225,7 @@ export default function ReceptionistDashboard() {
         <nav className="rec-nav">
           <div className="rec-nav-sec">Front Desk</div>
           {navItems.map(n=>(
-            <button key={n.id} className={`rec-nb${tab===n.id?" on":""}`} onClick={()=>{setTab(n.id);setSidebarOpen(false);}}>
+            <button key={n.id} data-ui={`receptionist.nav.${n.id}`} id={`receptionist-nav-${n.id}`} className={`rec-nb${tab===n.id?" on":""}`} onClick={()=>{setTab(n.id);setSidebarOpen(false);}}>
               <div className="rec-nb-dot"/>
               <span style={{color:tab===n.id?"#854d0e":"#94a3b8",display:"flex"}}>{n.icon}</span>
               {n.label}
@@ -239,11 +239,11 @@ export default function ReceptionistDashboard() {
             <div className="rec-av">{user?.name?initials(user.name):"RC"}</div>
             <div><div className="rec-uname">{user?.name||"Receptionist"}</div><div className="rec-urole">Receptionist</div></div>
           </div>
-          <button className="rec-logout" onClick={logout}><LogOut size={13}/>Log Out</button>
+          <button data-ui="receptionist.logout" id="receptionist-logout" className="rec-logout" onClick={logout}><LogOut size={13}/>Log Out</button>
         </div>
       </aside>
 
-      <main className="rec-main">
+      <main className="rec-main" data-ui="receptionist.dashboard">
         <header className="rec-topbar">
           <button className="rec-burger" onClick={() => setSidebarOpen(o => !o)} aria-label="Toggle sidebar">
             {sidebarOpen ? <X size={18} color="#eab308" /> : <Menu size={18} color="#64748b" />}
@@ -285,7 +285,7 @@ export default function ReceptionistDashboard() {
               <div className="rec-card">
                 <div className="rec-card-head">
                   <div><div className="rec-card-title">Live Queue</div><div className="rec-card-sub">Click actions to update status</div></div>
-                  <button onClick={()=>setTab("book")} style={{padding:"7px 14px",borderRadius:9,border:"none",background:"#eab308",color:"#fff",fontSize:11,fontWeight:700,cursor:"pointer",boxShadow:"0 3px 10px rgba(234,179,8,0.3)"}}>+ New Appointment</button>
+                  <button onClick={()=>setTab("book")} data-ui="receptionist.appointments.create" id="receptionist-appointments-create" style={{padding:"7px 14px",borderRadius:9,border:"none",background:"#eab308",color:"#fff",fontSize:11,fontWeight:700,cursor:"pointer",boxShadow:"0 3px 10px rgba(234,179,8,0.3)"}}>+ New Appointment</button>
                 </div>
                 <div style={{overflowX:"auto"}}>
                   <table className="rec-tbl">

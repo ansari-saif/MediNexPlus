@@ -10,6 +10,7 @@ import {
   Settings, Menu
 } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
+import { Anchor } from "@/lib/uianchor";
 
 const api = async (url: string, method = "GET", body?: any) => {
   const opts: any = { method, credentials: "include", headers: { "Content-Type": "application/json" } };
@@ -101,7 +102,7 @@ function PaymentModal({ bill, onClose, onDone }: { bill: any; onClose: () => voi
           </div>
           {msg && <div style={{ fontSize:11, color: "#ef4444", marginTop: 12, fontWeight: 600 }}>{msg}</div>}
           <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-            <button type="submit" disabled={saving} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff", fontSize:12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <button type="submit" disabled={saving} data-ui="finance.payments.submit" id="finance-payments-submit" style={{ flex: 1, padding: "11px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff", fontSize:12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
               {saving ? <Loader2 size={14} style={{ animation: "spin .7s linear infinite" }} /> : <Check size={14} />} Confirm Payment
             </button>
             <button type="button" onClick={onClose} style={{ padding: "11px 18px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#f8fafc", color: "#64748b", fontSize:12, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
@@ -234,7 +235,7 @@ function BillDetailModal({ billId, onClose, onPayment }: { billId: string; onClo
         {/* Actions */}
         <div style={{ display: "flex", gap: 10, paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
           {bill?.status !== "PAID" && bill?.status !== "CANCELLED" && (
-            <button onClick={() => onPayment(bill)} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff", fontSize:12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <button onClick={() => onPayment(bill)} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#10b981,#059669)", color: "#fff", fontSize:12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} data-ui="finance.payments.initiate-modal" id={`finance-payments-initiate-modal-${billId}`}>
               <CreditCard size={14} /> Collect Payment
             </button>
           )}
@@ -374,7 +375,7 @@ function NewBillModal({ onClose, onDone }: { onClose: () => void; onDone: () => 
 
             <div style={{ display: "flex", gap: 10 }}>
               <button onClick={() => setStep("patient")} style={{ padding: "11px 18px", borderRadius: 10, border: "1.5px solid #e2e8f0", background: "#f8fafc", color: "#64748b", fontSize:12, fontWeight: 600, cursor: "pointer" }}>← Back</button>
-              <button onClick={submit} disabled={saving} style={{ flex: 1, padding: "11px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#f59e0b,#b45309)", color: "#fff", fontSize:12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <button onClick={submit} disabled={saving} data-ui="finance.bills.submit" id="finance-bills-submit" style={{ flex: 1, padding: "11px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#f59e0b,#b45309)", color: "#fff", fontSize:12, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                 {saving ? <Loader2 size={14} style={{ animation: "spin .7s linear infinite" }} /> : <FileText size={14} />} Generate Bill
               </button>
             </div>
@@ -610,14 +611,14 @@ export default function FinanceDashboard() {
             {navItems.map(n => {
               const Icon = n.icon;
               return (
-                <button key={n.id} className={`fin-nb${tab === n.id ? " on" : ""}`} onClick={() => { setTab(n.id); setSidebarOpen(false); }}>
+                <button key={n.id} className={`fin-nb${tab === n.id ? " on" : ""}`} onClick={() => { setTab(n.id); setSidebarOpen(false); }} data-ui={`finance.nav.${n.id}`} id={`finance-nav-${n.id}`}>
                   <Icon size={15} />{n.label}
                 </button>
               );
             })}
             <div className="fin-nav-sec">Actions</div>
-            <button className="fin-nb" onClick={() => setShowNewBill(true)}><Plus size={15} />New Bill</button>
-            <button className="fin-nb" onClick={() => { setShowExpForm(true); setEditExp(null); setExpForm({ title: "", category: "OTHER", amount: "", date: new Date().toISOString().split("T")[0], description: "" }); setTab("expenses"); }}>
+            <button className="fin-nb" onClick={() => setShowNewBill(true)} data-ui="finance.bills.create-alt" id="finance-bills-create-alt"><Plus size={15} />New Bill</button>
+            <button className="fin-nb" onClick={() => { setShowExpForm(true); setEditExp(null); setExpForm({ title: "", category: "OTHER", amount: "", date: new Date().toISOString().split("T")[0], description: "" }); setTab("expenses"); }} data-ui="finance.expenses.create" id="finance-expenses-create">
               <TrendingDown size={15} />Add Expense
             </button>
           </nav>
@@ -631,7 +632,7 @@ export default function FinanceDashboard() {
                 <div style={{ fontSize:10, color: "#f59e0b", fontWeight: 600 }}>Finance Head</div>
               </div>
             </div>
-            <button onClick={logout} style={{ width: "100%", padding: 8, borderRadius: 9, background: "#fff5f5", border: "1px solid #fee2e2", color: "#ef4444", fontSize:11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <button onClick={logout} data-ui="finance.logout" id="finance-logout" style={{ width: "100%", padding: 8, borderRadius: 9, background: "#fff5f5", border: "1px solid #fee2e2", color: "#ef4444", fontSize:11, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
               <LogOut size={13} />Log Out
             </button>
           </div>
@@ -644,7 +645,7 @@ export default function FinanceDashboard() {
               {sidebarOpen ? <X size={18} color="#f59e0b" /> : <Menu size={18} color="#64748b" />}
             </button>
             <div>
-              <div style={{ fontSize:15, fontWeight: 800, color: "#1e293b" }}>
+              <div data-ui="finance.dashboard" style={{ fontSize:15, fontWeight: 800, color: "#1e293b" }}>
                 {tab === "overview" ? "Financial Overview" : tab === "bills" ? "Bills & Invoices" : tab === "payments" ? "Payment History" : tab === "expenses" ? "Expense Management" : "Revenue Reports"}
               </div>
               <div style={{ fontSize:10, color: "#94a3b8", marginTop: 1 }}>
@@ -655,8 +656,7 @@ export default function FinanceDashboard() {
               <button onClick={() => { loadStats(); if (tab === "bills") loadBills(); if (tab === "expenses") loadExpenses(); }} style={{ width: 36, height: 36, borderRadius: 10, background: "#fffbeb", border: "1px solid #fde68a", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 <RefreshCw size={15} color="#f59e0b" />
               </button>
-              <NotificationBell accentColor="#f59e0b" bgColor="#fffbeb" borderColor="#fde68a" types={["BILLING_TRANSFER","PAYMENT_RECEIVED"]} />
-              <button onClick={() => setShowNewBill(true)} className="fin-primary"><Plus size={14} />New Bill</button>
+              <button onClick={() => setShowNewBill(true)} className="fin-primary" data-ui="finance.bills.create" id="finance-bills-create"><Plus size={14} />New Bill</button>
               <div 
                 className="fin-av" 
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
@@ -713,6 +713,7 @@ export default function FinanceDashboard() {
                         </button>
                         <button 
                           onClick={() => { setProfileDropdownOpen(false); logout(); }}
+                          data-ui="finance.logout" id="finance-logout-dropdown"
                           style={{
                             width: "100%",
                             padding: "10px 12px",
@@ -743,7 +744,7 @@ export default function FinanceDashboard() {
             </div>
           </header>
 
-          <div className="fin-body">
+          <div className="fin-body" data-ui="finance.dashboard">
 
             {/* ═══ OVERVIEW ═══ */}
             {tab === "overview" && stats && (<>
@@ -916,7 +917,7 @@ export default function FinanceDashboard() {
                   download title="Export bills as CSV"
                   style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", borderRadius: 10, border: "1px solid #d1fae5", background: "#f0fdf4", color: "#059669", fontSize:12, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}
                 ><Download size={13} />Export CSV</a>
-                <button onClick={() => setShowNewBill(true)} className="fin-primary"><Plus size={14} />New Bill</button>
+                <button onClick={() => setShowNewBill(true)} className="fin-primary" data-ui="finance.bills.create-list" id="finance-bills-create-list"><Plus size={14} />New Bill</button>
               </div>
 
               {/* Summary bar */}
@@ -962,7 +963,7 @@ export default function FinanceDashboard() {
                             <td onClick={e => e.stopPropagation()}>
                               <div style={{ display: "flex", gap: 5 }}>
                                 {b.status !== "PAID" && b.status !== "CANCELLED" && (
-                                  <button onClick={() => setPayBill(b)} className="fin-btn" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }}><CreditCard size={11} />Pay</button>
+                                  <button onClick={() => setPayBill(b)} className="fin-btn" style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0" }} data-ui="finance.payments.initiate" id={`finance-payments-initiate-${b.id}`}><CreditCard size={11} />Pay</button>
                                 )}
                                 <button onClick={() => setViewBillId(b.id)} className="fin-btn" style={{ background: "#fffbeb", color: "#b45309", border: "1px solid #fde68a" }}><FileText size={11} />View</button>
                               </div>
@@ -1016,7 +1017,7 @@ export default function FinanceDashboard() {
                     </div>
                     {expMsg && <div style={{ fontSize:11, color: "#ef4444", marginTop: 12 }}>{expMsg}</div>}
                     <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
-                      <button onClick={saveExpense} disabled={expSaving} className="fin-primary">
+                      <button onClick={saveExpense} disabled={expSaving} className="fin-primary" data-ui="finance.expenses.submit" id="finance-expenses-submit">
                         {expSaving ? <Loader2 size={14} style={{ animation: "spin .7s linear infinite" }} /> : <Save size={14} />}
                         {editExp ? "Update" : "Add Expense"}
                       </button>
@@ -1062,7 +1063,7 @@ export default function FinanceDashboard() {
                     <a href="/api/export/expenses" download title="Export expenses as CSV"
                       style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 9, border: "1px solid #d1fae5", background: "#f0fdf4", color: "#059669", fontSize:11, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}
                     ><Download size={12} />Export</a>
-                    <button onClick={() => { setShowExpForm(true); setEditExp(null); }} className="fin-primary" style={{ padding: "6px 14px", fontSize:11 }}><Plus size={13} />Add</button>
+                    <button onClick={() => { setShowExpForm(true); setEditExp(null); }} className="fin-primary" style={{ padding: "6px 14px", fontSize:11 }} data-ui="finance.expenses.create-list" id="finance-expenses-create-list"><Plus size={13} />Add</button>
                   </div>
                 </div>
                 {expLoading ? (

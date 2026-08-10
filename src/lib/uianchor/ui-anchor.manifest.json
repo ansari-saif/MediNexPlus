@@ -1,0 +1,1008 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-10T21:56:27.465Z",
+  "components": {
+    "administrative.logout": {
+      "type": "button"
+    },
+    "administrative.nav.appointments": {
+      "type": "button"
+    },
+    "administrative.nav.dept-info": {
+      "type": "button"
+    },
+    "administrative.nav.overview": {
+      "type": "button"
+    },
+    "administrative.nav.patients": {
+      "type": "button"
+    },
+    "administrative.nav.queue": {
+      "type": "button"
+    },
+    "administrative.nav.subdepts": {
+      "type": "button"
+    },
+    "auth.change-password.confirm": {
+      "type": "input"
+    },
+    "auth.change-password.current": {
+      "type": "input"
+    },
+    "auth.change-password.new": {
+      "type": "input"
+    },
+    "auth.change-password.submit": {
+      "type": "button"
+    },
+    "auth.finance.login.email": {
+      "type": "input"
+    },
+    "auth.finance.login.password": {
+      "type": "input"
+    },
+    "auth.finance.login.submit": {
+      "type": "button"
+    },
+    "auth.forgot.close": {
+      "type": "button"
+    },
+    "auth.forgot.confirm": {
+      "type": "input"
+    },
+    "auth.forgot.email": {
+      "type": "input"
+    },
+    "auth.forgot.go-to-signin": {
+      "type": "button"
+    },
+    "auth.forgot.otp-1": {
+      "type": "input"
+    },
+    "auth.forgot.otp-2": {
+      "type": "input"
+    },
+    "auth.forgot.otp-3": {
+      "type": "input"
+    },
+    "auth.forgot.otp-4": {
+      "type": "input"
+    },
+    "auth.forgot.otp-5": {
+      "type": "input"
+    },
+    "auth.forgot.otp-6": {
+      "type": "input"
+    },
+    "auth.forgot.password": {
+      "type": "input"
+    },
+    "auth.forgot.resend-otp": {
+      "type": "button"
+    },
+    "auth.forgot.send-otp": {
+      "type": "button"
+    },
+    "auth.forgot.submit": {
+      "type": "button"
+    },
+    "auth.forgot.verify-otp": {
+      "type": "button"
+    },
+    "auth.login.email": {
+      "type": "input"
+    },
+    "auth.login.password": {
+      "type": "input"
+    },
+    "auth.login.submit": {
+      "type": "button"
+    },
+    "auth.parentdept.login.email": {
+      "type": "input"
+    },
+    "auth.parentdept.login.password": {
+      "type": "input"
+    },
+    "auth.parentdept.login.submit": {
+      "type": "button"
+    },
+    "auth.signup.admin-name": {
+      "type": "input"
+    },
+    "auth.signup.back": {
+      "type": "button"
+    },
+    "auth.signup.confirm-password": {
+      "type": "input"
+    },
+    "auth.signup.email": {
+      "type": "input"
+    },
+    "auth.signup.hospital-name": {
+      "type": "input"
+    },
+    "auth.signup.mobile": {
+      "type": "input"
+    },
+    "auth.signup.otp-1": {
+      "type": "input"
+    },
+    "auth.signup.otp-2": {
+      "type": "input"
+    },
+    "auth.signup.otp-3": {
+      "type": "input"
+    },
+    "auth.signup.otp-4": {
+      "type": "input"
+    },
+    "auth.signup.otp-5": {
+      "type": "input"
+    },
+    "auth.signup.otp-6": {
+      "type": "input"
+    },
+    "auth.signup.password": {
+      "type": "input"
+    },
+    "auth.signup.resend-otp": {
+      "type": "button"
+    },
+    "auth.signup.submit": {
+      "type": "button"
+    },
+    "auth.signup.verify": {
+      "type": "button"
+    },
+    "auth.staff.login.email": {
+      "type": "input"
+    },
+    "auth.staff.login.password": {
+      "type": "input"
+    },
+    "auth.staff.login.submit": {
+      "type": "button"
+    },
+    "auth.subdept.login.email": {
+      "type": "input"
+    },
+    "auth.subdept.login.password": {
+      "type": "input"
+    },
+    "auth.subdept.login.submit": {
+      "type": "button"
+    },
+    "auth.superadmin.login.email": {
+      "type": "input"
+    },
+    "auth.superadmin.login.password": {
+      "type": "input"
+    },
+    "auth.superadmin.login.security-key": {
+      "type": "input"
+    },
+    "auth.superadmin.login.submit": {
+      "type": "button"
+    },
+    "clinical.logout": {
+      "type": "button"
+    },
+    "clinical.nav.appointments": {
+      "type": "button"
+    },
+    "clinical.nav.dept-info": {
+      "type": "button"
+    },
+    "clinical.nav.overview": {
+      "type": "button"
+    },
+    "clinical.nav.patients": {
+      "type": "button"
+    },
+    "clinical.nav.queue": {
+      "type": "button"
+    },
+    "clinical.nav.subdepts": {
+      "type": "button"
+    },
+    "diagnostic.logout": {
+      "type": "button"
+    },
+    "diagnostic.nav.appointments": {
+      "type": "button"
+    },
+    "diagnostic.nav.dept-info": {
+      "type": "button"
+    },
+    "diagnostic.nav.overview": {
+      "type": "button"
+    },
+    "diagnostic.nav.patients": {
+      "type": "button"
+    },
+    "diagnostic.nav.queue": {
+      "type": "button"
+    },
+    "diagnostic.nav.subdepts": {
+      "type": "button"
+    },
+    "doctor.attendance.checkout": {
+      "type": "button"
+    },
+    "doctor.dashboard": {
+      "type": "landmark"
+    },
+    "doctor.inventory.create": {
+      "type": "button"
+    },
+    "doctor.inventory.search": {
+      "type": "input"
+    },
+    "doctor.ipd.admit": {
+      "type": "button"
+    },
+    "doctor.ipd.search": {
+      "type": "input"
+    },
+    "doctor.logout": {
+      "type": "button"
+    },
+    "doctor.nav.appointments": {
+      "type": "button"
+    },
+    "doctor.nav.attendance": {
+      "type": "button"
+    },
+    "doctor.nav.patients": {
+      "type": "button"
+    },
+    "doctor.nav.prescription-settings": {
+      "type": "button"
+    },
+    "doctor.nav.profile": {
+      "type": "button"
+    },
+    "doctor.nav.reports": {
+      "type": "button"
+    },
+    "doctor.nav.rx": {
+      "type": "button"
+    },
+    "doctor.nav.schedule": {
+      "type": "button"
+    },
+    "doctor.nav.schedule-mgmt": {
+      "type": "button"
+    },
+    "doctor.nav.treatment-plans": {
+      "type": "button"
+    },
+    "doctor.patients.create": {
+      "type": "button"
+    },
+    "doctor.patients.search": {
+      "type": "input"
+    },
+    "doctor.profile.save": {
+      "type": "button"
+    },
+    "doctor.rx.add-medication": {
+      "type": "button"
+    },
+    "doctor.rx.save": {
+      "type": "button"
+    },
+    "doctor.rx.voice.close": {
+      "type": "button"
+    },
+    "doctor.rx.voice.start": {
+      "type": "button"
+    },
+    "doctor.schedule.consult": {
+      "type": "button"
+    },
+    "doctor.schedule.edit-rx": {
+      "type": "button"
+    },
+    "doctor.schedule.view-rx": {
+      "type": "button"
+    },
+    "finance.bills.create": {
+      "type": "button"
+    },
+    "finance.bills.create-alt": {
+      "type": "button"
+    },
+    "finance.bills.create-list": {
+      "type": "button"
+    },
+    "finance.bills.submit": {
+      "type": "button"
+    },
+    "finance.dashboard": {
+      "type": "landmark"
+    },
+    "finance.expenses.create": {
+      "type": "button"
+    },
+    "finance.expenses.create-list": {
+      "type": "button"
+    },
+    "finance.expenses.submit": {
+      "type": "button"
+    },
+    "finance.logout": {
+      "type": "button"
+    },
+    "finance.nav.bills": {
+      "type": "button"
+    },
+    "finance.nav.expenses": {
+      "type": "button"
+    },
+    "finance.nav.overview": {
+      "type": "button"
+    },
+    "finance.nav.payments": {
+      "type": "button"
+    },
+    "finance.nav.reports": {
+      "type": "button"
+    },
+    "finance.payments.initiate": {
+      "type": "button"
+    },
+    "finance.payments.initiate-modal": {
+      "type": "button"
+    },
+    "finance.payments.submit": {
+      "type": "button"
+    },
+    "hospitaladmin.billing": {
+      "type": "landmark"
+    },
+    "hospitaladmin.configure.departments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.departments.save": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.departments.search": {
+      "type": "input"
+    },
+    "hospitaladmin.configure.services.create": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.services.save": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.subdepartments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.subdepartments.save": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.subdepartments.search": {
+      "type": "input"
+    },
+    "hospitaladmin.configure.tab.appointments": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.billing": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.departments": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.doctors": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.finance": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.inventory": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.overview": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.patients": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.permissions": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.services": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.settings": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.staff": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.subdepts": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.treatments": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.tab.wards": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.wards.create": {
+      "type": "button"
+    },
+    "hospitaladmin.configure.wards.save": {
+      "type": "button"
+    },
+    "hospitaladmin.consultation": {
+      "type": "landmark"
+    },
+    "hospitaladmin.consultation.start": {
+      "type": "button"
+    },
+    "hospitaladmin.consultation.status": {
+      "type": "select"
+    },
+    "hospitaladmin.dashboard": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.appointments": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.billing": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.departments": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.inventory": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.ipd": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.overview": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.patients": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.reports": {
+      "type": "landmark"
+    },
+    "hospitaladmin.dashboard.tab.staff": {
+      "type": "landmark"
+    },
+    "hospitaladmin.doctors.create": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.save": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.search": {
+      "type": "input"
+    },
+    "hospitaladmin.finance.expense.submit": {
+      "type": "button"
+    },
+    "hospitaladmin.finance.revenue.submit": {
+      "type": "button"
+    },
+    "hospitaladmin.inventory.create": {
+      "type": "button"
+    },
+    "hospitaladmin.inventory.search": {
+      "type": "input"
+    },
+    "hospitaladmin.ipd.admit": {
+      "type": "button"
+    },
+    "hospitaladmin.ipd.search": {
+      "type": "input"
+    },
+    "hospitaladmin.logout": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.appointments": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.billing": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.configure": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.consultation": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.departments": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.doctors": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.finance": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.inventory": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.ipd": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.overview": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.patients": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.reports": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.staff": {
+      "type": "button"
+    },
+    "hospitaladmin.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.patients.search": {
+      "type": "input"
+    },
+    "hospitaladmin.profile.change-password.submit": {
+      "type": "button"
+    },
+    "hospitaladmin.profile.confirm-password": {
+      "type": "landmark"
+    },
+    "hospitaladmin.profile.current-password": {
+      "type": "landmark"
+    },
+    "hospitaladmin.profile.email": {
+      "type": "input"
+    },
+    "hospitaladmin.profile.name": {
+      "type": "input"
+    },
+    "hospitaladmin.profile.new-password": {
+      "type": "landmark"
+    },
+    "hospitaladmin.profile.save": {
+      "type": "button"
+    },
+    "hospitaladmin.staff.create": {
+      "type": "button"
+    },
+    "hospitaladmin.staff.save": {
+      "type": "button"
+    },
+    "hospitaladmin.staff.search": {
+      "type": "input"
+    },
+    "parentdept.dashboard": {
+      "type": "landmark"
+    },
+    "parentdept.dashboard.tab.completed": {
+      "type": "button"
+    },
+    "parentdept.dashboard.tab.overview": {
+      "type": "button"
+    },
+    "parentdept.dashboard.tab.procedures": {
+      "type": "button"
+    },
+    "parentdept.dashboard.tab.queue": {
+      "type": "button"
+    },
+    "parentdept.dashboard.tab.records": {
+      "type": "button"
+    },
+    "parentdept.inventory.create": {
+      "type": "button"
+    },
+    "parentdept.inventory.search": {
+      "type": "input"
+    },
+    "parentdept.ipd.admit": {
+      "type": "button"
+    },
+    "parentdept.ipd.search": {
+      "type": "input"
+    },
+    "parentdept.logout": {
+      "type": "button"
+    },
+    "parentdept.nav.analytics": {
+      "type": "button"
+    },
+    "parentdept.nav.billing": {
+      "type": "button"
+    },
+    "parentdept.nav.inventory": {
+      "type": "button"
+    },
+    "parentdept.nav.overview": {
+      "type": "button"
+    },
+    "parentdept.nav.purchases": {
+      "type": "button"
+    },
+    "parentdept.nav.queue": {
+      "type": "button"
+    },
+    "parentdept.nav.reports": {
+      "type": "button"
+    },
+    "parentdept.nav.subdepts": {
+      "type": "button"
+    },
+    "parentdept.patients.create": {
+      "type": "button"
+    },
+    "parentdept.patients.search": {
+      "type": "input"
+    },
+    "public.booking.date": {
+      "type": "input"
+    },
+    "public.booking.department": {
+      "type": "select"
+    },
+    "public.booking.doctor": {
+      "type": "select"
+    },
+    "public.booking.email": {
+      "type": "input"
+    },
+    "public.booking.name": {
+      "type": "input"
+    },
+    "public.booking.phone": {
+      "type": "input"
+    },
+    "public.booking.submit": {
+      "type": "button"
+    },
+    "public.landing.cta-book-demo": {
+      "type": "button"
+    },
+    "public.landing.cta-signup": {
+      "type": "button"
+    },
+    "public.nav.book": {
+      "type": "button"
+    },
+    "public.nav.login": {
+      "type": "link"
+    },
+    "receptionist.appointments.create": {
+      "type": "button"
+    },
+    "receptionist.dashboard": {
+      "type": "landmark"
+    },
+    "receptionist.logout": {
+      "type": "button"
+    },
+    "receptionist.nav.book": {
+      "type": "button"
+    },
+    "receptionist.nav.patients": {
+      "type": "button"
+    },
+    "receptionist.nav.queue": {
+      "type": "button"
+    },
+    "shared.patients.search": {
+      "type": "input"
+    },
+    "staff.dashboard": {
+      "type": "landmark"
+    },
+    "staff.inventory.create": {
+      "type": "button"
+    },
+    "staff.inventory.search": {
+      "type": "input"
+    },
+    "staff.ipd.admit": {
+      "type": "button"
+    },
+    "staff.ipd.search": {
+      "type": "input"
+    },
+    "staff.logout": {
+      "type": "button"
+    },
+    "staff.nav.appointments": {
+      "type": "button"
+    },
+    "staff.nav.billing": {
+      "type": "button"
+    },
+    "staff.nav.bills": {
+      "type": "button"
+    },
+    "staff.nav.followups": {
+      "type": "button"
+    },
+    "staff.nav.overview": {
+      "type": "button"
+    },
+    "staff.nav.patients": {
+      "type": "button"
+    },
+    "staff.nav.queue": {
+      "type": "button"
+    },
+    "staff.patients.create": {
+      "type": "button"
+    },
+    "staff.patients.search": {
+      "type": "input"
+    },
+    "subdept.billing-dept.billing-queue": {
+      "type": "button"
+    },
+    "subdept.billing-dept.inventory.create": {
+      "type": "button"
+    },
+    "subdept.billing-dept.inventory.search": {
+      "type": "input"
+    },
+    "subdept.billing-dept.ipd.admit": {
+      "type": "button"
+    },
+    "subdept.billing-dept.ipd.search": {
+      "type": "input"
+    },
+    "subdept.billing-dept.open-queue": {
+      "type": "button"
+    },
+    "subdept.billing-dept.patients.create": {
+      "type": "button"
+    },
+    "subdept.billing-dept.patients.search": {
+      "type": "input"
+    },
+    "subdept.billing-dept.view-finance": {
+      "type": "button"
+    },
+    "subdept.critical-care.admit": {
+      "type": "button"
+    },
+    "subdept.critical-care.discharge": {
+      "type": "button"
+    },
+    "subdept.critical-care.refresh": {
+      "type": "button"
+    },
+    "subdept.dashboard": {
+      "type": "landmark"
+    },
+    "subdept.hr.manage-doctors": {
+      "type": "button"
+    },
+    "subdept.hr.manage-staff": {
+      "type": "button"
+    },
+    "subdept.hr.manage-staff-doctors": {
+      "type": "button"
+    },
+    "subdept.hr.open-doctors": {
+      "type": "button"
+    },
+    "subdept.hr.open-staff": {
+      "type": "button"
+    },
+    "subdept.hr.refresh-stats": {
+      "type": "button"
+    },
+    "subdept.modal.edit-record.cancel": {
+      "type": "button"
+    },
+    "subdept.modal.edit-record.submit": {
+      "type": "button"
+    },
+    "subdept.modal.transfer-patient.cancel": {
+      "type": "button"
+    },
+    "subdept.modal.transfer-patient.submit": {
+      "type": "button"
+    },
+    "subdept.modal.view-prescription.download": {
+      "type": "landmark"
+    },
+    "subdept.pathology.inventory.create": {
+      "type": "button"
+    },
+    "subdept.pathology.inventory.search": {
+      "type": "input"
+    },
+    "subdept.pathology.ipd.admit": {
+      "type": "button"
+    },
+    "subdept.pathology.ipd.search": {
+      "type": "input"
+    },
+    "subdept.pathology.patients.create": {
+      "type": "button"
+    },
+    "subdept.pathology.patients.search": {
+      "type": "input"
+    },
+    "subdept.patients.inventory.create": {
+      "type": "button"
+    },
+    "subdept.patients.inventory.search": {
+      "type": "input"
+    },
+    "subdept.patients.ipd.admit": {
+      "type": "button"
+    },
+    "subdept.patients.ipd.search": {
+      "type": "input"
+    },
+    "subdept.patients.patients.create": {
+      "type": "button"
+    },
+    "subdept.patients.patients.search": {
+      "type": "input"
+    },
+    "subdept.pharmacy.inventory.create": {
+      "type": "button"
+    },
+    "subdept.pharmacy.inventory.search": {
+      "type": "input"
+    },
+    "subdept.pharmacy.ipd.admit": {
+      "type": "button"
+    },
+    "subdept.pharmacy.ipd.search": {
+      "type": "input"
+    },
+    "subdept.pharmacy.patients.create": {
+      "type": "button"
+    },
+    "subdept.pharmacy.patients.search": {
+      "type": "input"
+    },
+    "subdept.shell.logout": {
+      "type": "button"
+    },
+    "subdept.shell.nav.account-settings": {
+      "type": "button"
+    },
+    "subdept.shell.nav.analytics": {
+      "type": "button"
+    },
+    "subdept.shell.nav.appointments": {
+      "type": "button"
+    },
+    "subdept.shell.nav.billing": {
+      "type": "button"
+    },
+    "subdept.shell.nav.billing-queue": {
+      "type": "button"
+    },
+    "subdept.shell.nav.consultations": {
+      "type": "button"
+    },
+    "subdept.shell.nav.counter-sell": {
+      "type": "button"
+    },
+    "subdept.shell.nav.doctors": {
+      "type": "button"
+    },
+    "subdept.shell.nav.expense": {
+      "type": "button"
+    },
+    "subdept.shell.nav.expenses": {
+      "type": "button"
+    },
+    "subdept.shell.nav.finance": {
+      "type": "button"
+    },
+    "subdept.shell.nav.inventory": {
+      "type": "button"
+    },
+    "subdept.shell.nav.orders": {
+      "type": "button"
+    },
+    "subdept.shell.nav.overview": {
+      "type": "button"
+    },
+    "subdept.shell.nav.panels": {
+      "type": "button"
+    },
+    "subdept.shell.nav.patients": {
+      "type": "button"
+    },
+    "subdept.shell.nav.procedures": {
+      "type": "button"
+    },
+    "subdept.shell.nav.purchases": {
+      "type": "button"
+    },
+    "subdept.shell.nav.queue": {
+      "type": "button"
+    },
+    "subdept.shell.nav.records": {
+      "type": "button"
+    },
+    "subdept.shell.nav.reports": {
+      "type": "button"
+    },
+    "subdept.shell.nav.results": {
+      "type": "button"
+    },
+    "subdept.shell.nav.revenue": {
+      "type": "button"
+    },
+    "subdept.shell.nav.samples": {
+      "type": "button"
+    },
+    "subdept.shell.nav.staff": {
+      "type": "button"
+    },
+    "subdept.shell.nav.tests": {
+      "type": "button"
+    },
+    "subdept.specialty.complete": {
+      "type": "button"
+    },
+    "subdept.specialty.refresh": {
+      "type": "button"
+    },
+    "subdept.specialty.refresh-records": {
+      "type": "button"
+    },
+    "subdept.specialty.start": {
+      "type": "button"
+    },
+    "superadmin.dashboard": {
+      "type": "landmark"
+    },
+    "superadmin.hospitals.create.submit": {
+      "type": "button"
+    },
+    "superadmin.logout": {
+      "type": "button"
+    },
+    "superadmin.nav.activity": {
+      "type": "button"
+    },
+    "superadmin.nav.hospitals": {
+      "type": "button"
+    },
+    "superadmin.nav.overview": {
+      "type": "button"
+    },
+    "superadmin.nav.settings": {
+      "type": "button"
+    },
+    "support.logout": {
+      "type": "button"
+    },
+    "support.nav.appointments": {
+      "type": "button"
+    },
+    "support.nav.dept-info": {
+      "type": "button"
+    },
+    "support.nav.overview": {
+      "type": "button"
+    },
+    "support.nav.patients": {
+      "type": "button"
+    },
+    "support.nav.queue": {
+      "type": "button"
+    },
+    "support.nav.subdepts": {
+      "type": "button"
+    }
+  }
+}

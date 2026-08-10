@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
+import { Anchor } from "@/lib/uianchor";
 import {
   Activity, AlertCircle, BedDouble, Heart, RefreshCw, Loader2,
   CheckCircle2, Clock, X, IndianRupee, ClipboardList, Users,
@@ -231,7 +232,7 @@ export default function CriticalCareDashboard({ profile, user, activeTab, onTabC
             </div>
             <div style={{ display:"flex", gap:8 }}>
               <div className="cc-search"><Search size={12} color="#94a3b8" /><input placeholder="Search patient…" value={search} onChange={e => setSearch(e.target.value)} /></div>
-              <button onClick={loadQueue} style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:11, color:"#64748b", cursor:"pointer", fontWeight:600 }}>
+              <button onClick={loadQueue} data-ui="subdept.critical-care.refresh" style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", background:"#fff", fontSize:11, color:"#64748b", cursor:"pointer", fontWeight:600 }}>
                 <RefreshCw size={12} style={qLoad ? { animation:"cc-spin .7s linear infinite" } : {}} />
               </button>
             </div>
@@ -257,13 +258,13 @@ export default function CriticalCareDashboard({ profile, user, activeTab, onTabC
                       <td>
                         <div style={{ display:"flex", gap:4 }}>
                           {q.status === "SCHEDULED" && (
-                            <button className="cc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"CONFIRMED")}
+                            <button className="cc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"CONFIRMED")} data-ui="subdept.critical-care.admit"
                               style={{ background:c.light, color:c.accent, borderColor:c.border }}>
                               {updating===q.id ? <Loader2 size={10} style={{ animation:"cc-spin .7s linear infinite" }} /> : "Admit"}
                             </button>
                           )}
                           {q.status === "CONFIRMED" && (
-                            <button className="cc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"COMPLETED")}
+                            <button className="cc-btn" disabled={updating===q.id} onClick={() => updateStatus(q.id,"COMPLETED")} data-ui="subdept.critical-care.discharge"
                               style={{ background:"#f0fdf4", color:"#15803d", borderColor:"#bbf7d0" }}>
                               {updating===q.id ? <Loader2 size={10} style={{ animation:"cc-spin .7s linear infinite" }} /> : "Discharge"}
                             </button>

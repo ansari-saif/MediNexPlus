@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Anchor } from "@/lib/uianchor";
 import SupportModal from "@/components/SupportModal";
 import {
   LayoutDashboard, Building2, Activity, Settings, HelpCircle,
@@ -462,16 +463,24 @@ export default function SuperAdminDashboard() {
               <div className="sa-modal-body">
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 14px" }}>
                   {[
-                    { key: "hospitalName", label: "Hospital Name", placeholder: "City General Hospital", span: 2 },
-                    { key: "adminName", label: "Admin Name", placeholder: "Dr. John Doe", span: 1 },
-                    { key: "mobile", label: "Mobile", placeholder: "+91 9876543210", span: 1 },
-                    { key: "email", label: "Email Address", placeholder: "admin@hospital.com", span: 2 },
-                    { key: "password", label: "Password", placeholder: "Min. 6 characters", span: 1 },
-                    { key: "confirmPassword", label: "Confirm Password", placeholder: "Re-enter password", span: 1 },
+                    { key: "hospitalName", label: "Hospital Name", placeholder: "City General Hospital", span: 2, ui: "superadmin.hospitals.create.name" },
+                    { key: "adminName", label: "Admin Name", placeholder: "Dr. John Doe", span: 1, ui: "superadmin.hospitals.create.admin-name" },
+                    { key: "mobile", label: "Mobile", placeholder: "+91 9876543210", span: 1, ui: "superadmin.hospitals.create.mobile" },
+                    { key: "email", label: "Email Address", placeholder: "admin@hospital.com", span: 2, ui: "superadmin.hospitals.create.email" },
+                    { key: "password", label: "Password", placeholder: "Min. 6 characters", span: 1, ui: "superadmin.hospitals.create.password" },
+                    { key: "confirmPassword", label: "Confirm Password", placeholder: "Re-enter password", span: 1, ui: "superadmin.hospitals.create.confirm-password" },
                   ].map(f => (
                     <div key={f.key} className="sa-field" style={{ gridColumn: f.span === 2 ? "1/-1" : undefined }}>
                       <label className="sa-label">{f.label}</label>
-                      <input type={f.key.toLowerCase().includes("password") ? "password" : "text"} className="sa-input" placeholder={f.placeholder} value={(newHospital as any)[f.key]} onChange={e => setNewHospital(n => ({ ...n, [f.key]: e.target.value }))} required />
+                      <Anchor.Input 
+                        ui={(f as any).ui}
+                        type={f.key.toLowerCase().includes("password") ? "password" : "text"} 
+                        className="sa-input" 
+                        placeholder={f.placeholder} 
+                        value={(newHospital as any)[f.key]} 
+                        onChange={e => setNewHospital(n => ({ ...n, [f.key]: e.target.value }))} 
+                        required 
+                      />
                     </div>
                   ))}
                 </div>
@@ -479,9 +488,15 @@ export default function SuperAdminDashboard() {
               </div>
               <div className="sa-modal-footer">
                 <button type="button" className="sa-btn sa-btn-md sa-btn-ghost" style={{ flex: 1 }} onClick={() => setShowCreate(false)}>Cancel</button>
-                <button type="submit" className="sa-btn sa-btn-md sa-btn-primary" style={{ flex: 2 }} disabled={creating}>
+                <Anchor.Button 
+                  ui="superadmin.hospitals.create.submit"
+                  type="submit" 
+                  className="sa-btn sa-btn-md sa-btn-primary" 
+                  style={{ flex: 2 }} 
+                  disabled={creating}
+                >
                   {creating ? <span className="sa-spin" /> : <><Plus size={15} />Create Hospital</>}
-                </button>
+                </Anchor.Button>
               </div>
             </form>
           </div>
@@ -724,7 +739,7 @@ export default function SuperAdminDashboard() {
           <nav className="sa-nav">
             <div className="sa-nav-label">Navigation</div>
             {NAV.map(n => (
-              <button key={n.id} className={`sa-nav-btn${tab === n.id ? " active" : ""}`} onClick={() => { setTab(n.id); setSidebarOpen(false); }}>
+              <button key={n.id} className={`sa-nav-btn${tab === n.id ? " active" : ""}`} onClick={() => { setTab(n.id); setSidebarOpen(false); }} data-ui={`superadmin.nav.${n.id}`} id={`superadmin-nav-${n.id}`}>
                 {n.icon}{n.label}
               </button>
             ))}
@@ -736,7 +751,7 @@ export default function SuperAdminDashboard() {
               <div className="sa-sb-avatar">SA</div>
               <div><div className="sa-sb-uname">Super Admin</div><div className="sa-sb-urole">Root Access</div></div>
             </div>
-            <button className="sa-sb-logout" onClick={logout}><LogOut size={14} />Log Out</button>
+            <button className="sa-sb-logout" onClick={logout} data-ui="superadmin.logout" id="superadmin-logout"><LogOut size={14} />Log Out</button>
           </div>
         </aside>
 
@@ -768,7 +783,7 @@ export default function SuperAdminDashboard() {
                   <>
                     <div style={{ position: "fixed", inset: 0, zIndex: 60 }} onClick={() => setProfileOpen(false)} />
                     <div className="sa-pdrop">
-                      <button className="sa-dropdown-item" style={{ color: "#ef4444" }} onClick={logout} onMouseEnter={e => e.currentTarget.style.background = "#fef2f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                      <button className="sa-dropdown-item" style={{ color: "#ef4444" }} onClick={logout} data-ui="superadmin.logout" id="superadmin-logout-dropdown" onMouseEnter={e => e.currentTarget.style.background = "#fef2f2"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                         <LogOut size={15} color="#ef4444" />Log Out
                       </button>
                     </div>
@@ -779,7 +794,7 @@ export default function SuperAdminDashboard() {
           </header>
 
           {/* Content */}
-          <div className="sa-content">
+          <div data-ui="superadmin.dashboard" className="sa-content">
             {/* ─── Overview ─── */}
             {tab === "overview" && (
               <>

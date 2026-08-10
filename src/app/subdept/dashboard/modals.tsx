@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import { X, Loader2, Save, ArrowRight, FileText, Pill, Activity } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 
 // View Record Modal
 export function ViewRecordModal({ record, onClose, meta }: any) {
@@ -133,11 +134,11 @@ export function EditRecordModal({ record, onClose, onSave, meta }: any) {
           </div>
 
           <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-            <button type="button" onClick={onClose} disabled={saving}
+            <button type="button" onClick={onClose} disabled={saving} data-ui="subdept.modal.edit-record.cancel"
               style={{ flex: 1, padding: "10px", borderRadius: 9, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize:12, fontWeight: 600, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? .5 : 1 }}>
               Cancel
             </button>
-            <button type="submit" disabled={saving}
+            <button type="submit" disabled={saving} data-ui="subdept.modal.edit-record.submit"
               style={{ flex: 1, padding: "10px", borderRadius: 9, border: "none", background: meta.gradient, color: "#fff", fontSize:12, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? .7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
               {saving && <Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} />}
               {saving ? "Saving..." : "Save Changes"}
@@ -198,11 +199,11 @@ export function TransferPatientModal({ record, subDepts, onClose, onTransfer, me
           </div>
 
           <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-            <button type="button" onClick={onClose} disabled={transferring}
+            <button type="button" onClick={onClose} disabled={transferring} data-ui="subdept.modal.transfer-patient.cancel"
               style={{ flex: 1, padding: "10px", borderRadius: 9, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize:12, fontWeight: 600, cursor: transferring ? "not-allowed" : "pointer", opacity: transferring ? .5 : 1 }}>
               Cancel
             </button>
-            <button type="submit" disabled={transferring}
+            <button type="submit" disabled={transferring} data-ui="subdept.modal.transfer-patient.submit"
               style={{ flex: 1, padding: "10px", borderRadius: 9, border: "none", background: "#10b981", color: "#fff", fontSize:12, fontWeight: 700, cursor: transferring ? "not-allowed" : "pointer", opacity: transferring ? .7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
               {transferring && <Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} />}
               <ArrowRight size={13} />
@@ -414,6 +415,7 @@ export function ViewPrescriptionModal({ appointment, onClose, meta }: any) {
                 setDlPdf(false);
               }}
               disabled={dlPdf}
+              data-ui="subdept.modal.view-prescription.download"
               style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0", background: dlPdf ? "#f0fdf4" : "#fff", color: dlPdf ? "#16a34a" : "#1e293b", fontSize:11, fontWeight: 700, cursor: dlPdf ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 6 }}
               title="Download PDF"
             >

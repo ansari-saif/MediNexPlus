@@ -1061,6 +1061,7 @@ export default function DepartmentPanel() {
             <Search size={14} color="#94a3b8" />
             <input
               className="dept-search-input"
+              data-ui="hospitaladmin.configure.departments.search"
               placeholder="Search departments..."
               value={search}
               onChange={(e) => {
@@ -1093,7 +1094,7 @@ export default function DepartmentPanel() {
               </div>
             )}
           </div>
-          <button className="dept-btn-primary" onClick={openAdd}>
+          <button data-ui="hospitaladmin.configure.departments.create" className="dept-btn-primary" onClick={openAdd}>
             <Plus size={14} />
             Add Department
           </button>
@@ -1522,7 +1523,7 @@ export default function DepartmentPanel() {
             <button type="button" className="dept-btn-ghost" style={{padding:"7px 14px",fontSize:12}} onClick={() => setModal(false)}>
               Cancel
             </button>
-            <button type="submit" className="dept-btn-primary" style={{padding:"7px 14px",fontSize:12}} disabled={saving}>
+            <button data-ui="hospitaladmin.configure.departments.save" type="submit" className="dept-btn-primary" style={{padding:"7px 14px",fontSize:12}} disabled={saving}>
               {saving && <Loader2 size={13} className="dept-spin" />}
               {editItem ? "Update Department" : "Create Department"}
             </button>

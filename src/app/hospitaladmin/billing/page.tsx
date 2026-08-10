@@ -3,8 +3,8 @@ import BillingModule from "@/components/BillingModule";
 
 export default function BillingPage() {
   return (
-    <div style={{ padding: "32px 24px" }}>
-      <BillingModule />
+    <div data-ui="hospitaladmin.billing" style={{ padding: "32px 24px" }}>
+      <BillingModule uiPrefix="hospitaladmin" />
     </div>
   );
 }
