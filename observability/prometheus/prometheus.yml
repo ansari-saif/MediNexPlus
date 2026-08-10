@@ -15,3 +15,13 @@ scrape_configs:
   - job_name: mysqld-exporter
     static_configs:
       - targets: ["mysqld-exporter:9104"]
+
+  - job_name: n8n-app
+    metrics_path: /metrics
+    scheme: https
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["n8n.ansarisaif.com"]
+        labels:
+          service: n8n
+          environment: production

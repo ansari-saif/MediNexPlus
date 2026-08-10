@@ -48,7 +48,7 @@ services:
       sbom: false
     container_name: medinexplus
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     env_file:
       - .env
     environment:
@@ -101,6 +101,8 @@ services:
     image: grafana/loki:3.4.2
     container_name: medinexplus-loki
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:3100:3100"
     command: -config.file=/etc/loki/loki-config.yaml
     volumes:
       - ./observability/loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
@@ -112,6 +114,9 @@ services:
     image: grafana/tempo:2.7.1
     container_name: medinexplus-tempo
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:4318:4318"
+      - "127.0.0.1:3200:3200"
     command: -config.file=/etc/tempo/tempo-config.yaml
     volumes:
       - ./observability/tempo/tempo-config.yaml:/etc/tempo/tempo-config.yaml:ro
@@ -138,6 +143,8 @@ services:
     image: grafana/pyroscope:latest
     container_name: medinexplus-pyroscope
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:4040:4040"
     volumes:
       - pyroscope_data:/data
     profiles:
@@ -167,6 +174,8 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_INSTALL_PLUGINS: grafana-pyroscope-datasource
+      GF_SERVER_DOMAIN: ${GF_SERVER_DOMAIN:-grafana.ansarisaif.com}
+      GF_SERVER_ROOT_URL: ${GF_SERVER_ROOT_URL:-https://grafana.ansarisaif.com}
     volumes:
       - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
