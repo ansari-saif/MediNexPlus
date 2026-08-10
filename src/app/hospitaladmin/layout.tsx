@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, Users, UserRound, Settings, HelpCircle,
   LogOut, Search, MessageSquare, Building2, Stethoscope, ClipboardList,
-  IndianRupee, CreditCard, ChevronDown, User, LogIn, BedDouble, BarChart2, FileQuestion, BookOpen, Globe, Menu, X
+  IndianRupee, CreditCard, ChevronDown, User, LogIn, BedDouble, BarChart2, Menu, X
 } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import AppointmentAlertModal from "@/components/AppointmentAlertModal";
@@ -24,9 +24,6 @@ const NAV_ITEMS = [
   { id: "doctors", label: "Doctors", Icon: Stethoscope, section: "General", route: "/hospitaladmin/doctors" },
   { id: "patients", label: "Patients", Icon: UserRound, section: "General", route: "/hospitaladmin/dashboard?tab=patients" },
   { id: "departments", label: "Departments", Icon: Building2, section: "General", route: "/hospitaladmin/dashboard?tab=departments" },
-  { id: "enquiries", label: "Enquiries", Icon: FileQuestion, section: "General", route: "/hospitaladmin/dashboard?tab=enquiries" },
-  { id: "tourism", label: "Medical Tourism", Icon: Globe, section: "General", route: "/hospitaladmin/dashboard?tab=tourism" },
-  { id: "blogs", label: "Blogs", Icon: BookOpen, section: "General", route: "/hospitaladmin/dashboard?tab=blogs" },
   { id: "reports", label: "Reports", Icon: BarChart2, section: "System", route: "/hospitaladmin/dashboard?tab=reports" },
   { id: "finance", label: "Finance", Icon: IndianRupee, section: "System", route: "/hospitaladmin/finance" },
 ];
@@ -44,9 +41,6 @@ function getActiveId(pathname: string, tab: string | null): string {
     if (tab === "billing") return "billing";
     if (tab === "ipd") return "ipd";
     if (tab === "departments") return "departments";
-    if (tab === "enquiries") return "enquiries";
-    if (tab === "tourism") return "tourism";
-    if (tab === "blogs") return "blogs";
     if (tab === "reports") return "reports";
     if (tab === "finance") return "finance";
     if (tab === "settings") return "settings";
