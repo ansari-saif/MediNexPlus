@@ -16,8 +16,6 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, 
 import BillingQueue from "@/components/BillingQueue";
 import IPDPanel from "@/components/IPDPanel";
 import ReportsPanel from "@/components/ReportsPanel";
-import EnquiryPanel from "@/components/EnquiryPanel";
-import BlogPanel from "@/components/BlogPanel";
 import AdminInventoryPanel from "@/components/AdminInventoryPanel";
 
 const AdminDepartmentsPanel = dynamic(() => import("@/components/AdminDepartmentsPanel"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Departments...</span></div> });
@@ -103,7 +101,7 @@ function MiniCalendar() {
   );
 }
 
-type NavTab = "overview" | "appointments" | "staff" | "doctors" | "patients" | "inventory" | "billing" | "ipd" | "departments" | "enquiries" | "tourism" | "blogs" | "reports" | "finance" | "settings" | "profile";
+type NavTab = "overview" | "appointments" | "staff" | "doctors" | "patients" | "inventory" | "billing" | "ipd" | "departments" | "reports" | "finance" | "settings" | "profile";
 
 // Dead InventoryPanel removed — replaced by AdminInventoryPanel component
 
@@ -150,7 +148,7 @@ function DashboardContent() {
   useEffect(() => {
     const t = searchParams.get("tab") as NavTab;
     if (t === "finance") { router.push("/hospitaladmin/finance"); return; }
-    if (t && ["overview", "appointments", "staff", "doctors", "patients", "inventory", "billing", "ipd", "departments", "enquiries", "tourism", "blogs", "settings", "profile"].includes(t)) {
+    if (t && ["overview", "appointments", "staff", "doctors", "patients", "inventory", "billing", "ipd", "departments", "settings", "profile"].includes(t)) {
       setTab(t);
     }
   }, [searchParams, router]);
@@ -671,18 +669,6 @@ function DashboardContent() {
         <div style={{ padding: "4px 0" }}><ReportsPanel /></div>
       )}
 
-      {tab === "enquiries" && (
-        <EnquiryPanel />
-      )}
-
-      {tab === "tourism" && (
-        <EnquiryPanel typeFilter="MEDICAL_TOURISM" title="Medical Tourism Enquiries" />
-      )}
-
-      {tab === "blogs" && (
-        <BlogPanel />
-      )}
-
       {tab === "settings" && (
         <div className="hd-card mb16">
           <div className="hd-card-head"><div className="hd-card-title">System Settings</div></div>
@@ -700,7 +686,7 @@ function DashboardContent() {
       )}
     </div>
 
-    {tab !== "inventory" && tab !== "billing" && tab !== "ipd" && tab !== "reports" && tab !== "enquiries" && tab !== "tourism" && tab !== "blogs" && tab !== "patients" && tab !== "departments" && (
+    {tab !== "inventory" && tab !== "billing" && tab !== "ipd" && tab !== "reports" && tab !== "patients" && tab !== "departments" && (
       <div className="hd-right">
         <div className="hd-right-sec">
           <div style={{ fontSize:10, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 10 }}>Date</div>

@@ -5,7 +5,7 @@ import {
   User, LogOut, Key, Shield, Briefcase, Building2,
   Phone, Mail, Calendar, CheckCircle, Clock, AlertTriangle,
   ChevronRight, CalendarDays, Users, ChevronDown, Settings, CreditCard, RefreshCw,
-  Search, X, FileQuestion, Globe
+  Search, X
 } from "lucide-react";
 import AppointmentPanel from "@/components/AppointmentPanel";
 import FollowUpDashboard from "@/components/FollowUpDashboard";
@@ -13,7 +13,6 @@ import PatientProfilePanel from "@/components/PatientProfilePanel";
 import NotificationBell from "@/components/NotificationBell";
 import BillingModule from "@/components/BillingModule";
 import BillingQueue from "@/components/BillingQueue";
-import EnquiryPanel from "@/components/EnquiryPanel";
 
 interface StaffProfile {
   id: string;
@@ -64,7 +63,7 @@ const api = async (url: string, method = "GET", body?: any) => {
   return r.json();
 };
 
-type Tab = "overview" | "appointments" | "followups" | "patients" | "billing" | "enquiries" | "tourism";
+type Tab = "overview" | "appointments" | "followups" | "patients" | "billing";
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "overview", label: "Overview", icon: <User size={16} /> },
@@ -72,8 +71,6 @@ const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "followups", label: "Follow-ups", icon: <Clock size={16} /> },
   { id: "patients", label: "Patients", icon: <Users size={16} /> },
   { id: "billing", label: "Billing", icon: <CreditCard size={16} /> },
-  { id: "enquiries", label: "Enquiries", icon: <FileQuestion size={16} /> },
-  { id: "tourism", label: "Medical Tourism", icon: <Globe size={16} /> },
 ];
 
 export default function StaffDashboard() {
@@ -612,19 +609,6 @@ export default function StaffDashboard() {
                 </div>
               )}
 
-              {/* ── ENQUIRIES TAB ── */}
-              {tab === "enquiries" && (
-                <div style={{ animation: "fadeIn .25s ease" }}>
-                  <EnquiryPanel />
-                </div>
-              )}
-
-              {/* ── MEDICAL TOURISM TAB ── */}
-              {tab === "tourism" && (
-                <div style={{ animation: "fadeIn .25s ease" }}>
-                  <EnquiryPanel typeFilter="MEDICAL_TOURISM" title="Medical Tourism Enquiries" />
-                </div>
-              )}
             </>)}
 
         </main>
