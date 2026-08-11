@@ -28,7 +28,6 @@ docker run --rm \
   -v "$ROOT:/app" \
   -v "${NM_VOLUME}:/app/node_modules" \
   -w /app \
-  -e NODE_ENV=production \
   -e NEXT_TELEMETRY_DISABLED=1 \
   -e SKIP_DOCKER_TYPECHECK=1 \
   -e NEXT_UNOPTIMIZED_IMAGES=1 \
@@ -37,12 +36,14 @@ docker run --rm \
   bash -lc '
     set -euo pipefail
     lock_hash=$(sha256sum package-lock.json | awk "{print \$1}")
-    if [ ! -x node_modules/.bin/next ] || [ ! -f node_modules/.lockhash ] || [ "$(cat node_modules/.lockhash)" != "$lock_hash" ]; then
-      echo "==> npm ci (lockfile changed or empty volume)"
-      npm ci --ignore-scripts
+    stamp="${lock_hash}:dev"
+    if [ ! -x node_modules/.bin/next ] || [ ! -f node_modules/.lockhash ] || [ "$(cat node_modules/.lockhash)" != "$stamp" ]; then
+      echo "==> npm ci (including devDependencies for @/ path aliases)"
+      NPM_CONFIG_PRODUCTION=false npm ci --ignore-scripts --include=dev
       npx prisma generate
-      echo "$lock_hash" > node_modules/.lockhash
+      echo "$stamp" > node_modules/.lockhash
     fi
+    export NODE_ENV=production
     npx next build
     rm -rf deploy-out
     mkdir -p deploy-out/standalone deploy-out/static
