@@ -455,29 +455,89 @@ export default function SuperAdminDashboard() {
             <form onSubmit={handleCreate}>
               <div className="sa-modal-body">
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 14px" }}>
-                  {[
-                    { key: "hospitalName", label: "Hospital Name", placeholder: "City General Hospital", span: 2, ui: "superadmin.hospitals.create.name" },
-                    { key: "adminName", label: "Admin Name", placeholder: "Dr. John Doe", span: 1, ui: "superadmin.hospitals.create.admin-name" },
-                    { key: "mobile", label: "Mobile", placeholder: "+91 9876543210", span: 1, ui: "superadmin.hospitals.create.mobile" },
-                    { key: "email", label: "Email Address", placeholder: "admin@hospital.com", span: 2, ui: "superadmin.hospitals.create.email" },
-                    { key: "password", label: "Password", placeholder: "Min. 6 characters", span: 1, ui: "superadmin.hospitals.create.password" },
-                    { key: "confirmPassword", label: "Confirm Password", placeholder: "Re-enter password", span: 1, ui: "superadmin.hospitals.create.confirm-password" },
-                  ].map(f => (
-                    <div key={f.key} className="sa-field" style={{ gridColumn: f.span === 2 ? "1/-1" : undefined }}>
-                      <label className="sa-label">{f.label}</label>
-                      <Anchor.Input 
-                        ui={(f as any).ui}
-                        type={f.key.toLowerCase().includes("password") ? "password" : "text"} 
-                        className="sa-input" 
-                        placeholder={f.placeholder} 
-                        value={(newHospital as any)[f.key]} 
-                        onChange={e => setNewHospital(n => ({ ...n, [f.key]: e.target.value }))} 
-                        required 
-                      />
-                    </div>
-                  ))}
+                  <div className="sa-field" style={{ gridColumn: "1/-1" }}>
+                    <label className="sa-label">Hospital Name</label>
+                    <Anchor.Input
+                      ui="superadmin.hospitals.create.name"
+                      type="text"
+                      className="sa-input"
+                      placeholder="City General Hospital"
+                      value={newHospital.hospitalName}
+                      onChange={(e) => setNewHospital((n) => ({ ...n, hospitalName: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="sa-field">
+                    <label className="sa-label">Admin Name</label>
+                    <Anchor.Input
+                      ui="superadmin.hospitals.create.admin-name"
+                      type="text"
+                      className="sa-input"
+                      placeholder="Dr. John Doe"
+                      value={newHospital.adminName}
+                      onChange={(e) => setNewHospital((n) => ({ ...n, adminName: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="sa-field">
+                    <label className="sa-label">Mobile</label>
+                    <Anchor.Input
+                      ui="superadmin.hospitals.create.mobile"
+                      type="text"
+                      className="sa-input"
+                      placeholder="+91 9876543210"
+                      value={newHospital.mobile}
+                      onChange={(e) => setNewHospital((n) => ({ ...n, mobile: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="sa-field" style={{ gridColumn: "1/-1" }}>
+                    <label className="sa-label">Email Address</label>
+                    <Anchor.Input
+                      ui="superadmin.hospitals.create.email"
+                      type="text"
+                      className="sa-input"
+                      placeholder="admin@hospital.com"
+                      value={newHospital.email}
+                      onChange={(e) => setNewHospital((n) => ({ ...n, email: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="sa-field">
+                    <label className="sa-label">Password</label>
+                    <Anchor.Input
+                      ui="superadmin.hospitals.create.password"
+                      type="password"
+                      className="sa-input"
+                      placeholder="Min. 6 characters"
+                      value={newHospital.password}
+                      onChange={(e) => setNewHospital((n) => ({ ...n, password: e.target.value }))}
+                      required
+                    />
+                  </div>
+                  <div className="sa-field">
+                    <label className="sa-label">Confirm Password</label>
+                    <Anchor.Input
+                      ui="superadmin.hospitals.create.confirm-password"
+                      type="password"
+                      className="sa-input"
+                      placeholder="Re-enter password"
+                      value={newHospital.confirmPassword}
+                      onChange={(e) => setNewHospital((n) => ({ ...n, confirmPassword: e.target.value }))}
+                      required
+                    />
+                  </div>
                 </div>
-                {createMsg && <div className={`sa-msg ${createMsg.startsWith("✓") ? "sa-msg-ok" : "sa-msg-err"}`} style={{ marginTop: 4 }}>{createMsg}</div>}
+                {createMsg?.startsWith("✓") && (
+                  <div data-ui="superadmin.hospitals.create.success" className="sa-msg sa-msg-ok" style={{ marginTop: 4 }}>
+                    {createMsg}
+                  </div>
+                )}
+                {createMsg && !createMsg.startsWith("✓") && (
+                  <div data-ui="superadmin.hospitals.create.error" className="sa-msg sa-msg-err" style={{ marginTop: 4 }}>
+                    {createMsg}
+                  </div>
+                )}
               </div>
               <div className="sa-modal-footer">
                 <button type="button" className="sa-btn sa-btn-md sa-btn-ghost" style={{ flex: 1 }} onClick={() => setShowCreate(false)}>Cancel</button>
@@ -818,7 +878,7 @@ export default function SuperAdminDashboard() {
                       <div className="sa-card-title">Registered Hospitals</div>
                       <div className="sa-card-sub">{hospitals.length} tenants onboarded</div>
                     </div>
-                    <button className="sa-btn sa-btn-sm sa-btn-primary" onClick={() => setShowCreate(true)}><Plus size={14} />Add Hospital</button>
+                    <Anchor.Button type="button" ui="superadmin.hospitals.create.open" className="sa-btn sa-btn-sm sa-btn-primary" onClick={() => setShowCreate(true)}><Plus size={14} />Add Hospital</Anchor.Button>
                   </div>
                   {dataLoading ? (
                     <div style={{ padding: 48, textAlign: "center" }}>
@@ -915,7 +975,7 @@ export default function SuperAdminDashboard() {
               <>
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
                   <div><div className="sa-page-title">All Hospitals</div><div className="sa-page-sub">{filtered.length} of {hospitals.length} hospitals</div></div>
-                  <button className="sa-btn sa-btn-md sa-btn-primary" onClick={() => setShowCreate(true)}><Plus size={15} />Add Hospital</button>
+                  <Anchor.Button type="button" ui="superadmin.hospitals.create.open" className="sa-btn sa-btn-md sa-btn-primary" onClick={() => setShowCreate(true)}><Plus size={15} />Add Hospital</Anchor.Button>
                 </div>
                 <div className="sa-card">
                   {dataLoading ? (

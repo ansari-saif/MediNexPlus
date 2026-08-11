@@ -478,7 +478,7 @@ function ConfigureContent(){
   };
 
   if(loading) return (
-    <div data-ui="hospitaladmin.configure">
+    <div data-ui="hospitaladmin.configure" style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
       <PageDataLoader ui="hospitaladmin.configure.loading" label="Loading..." />
     </div>
   );
@@ -522,7 +522,7 @@ function ConfigureContent(){
     isActive: form.isActive ?? true,
   });
 
-  return(<div data-ui="hospitaladmin.configure">
+  return(<div data-ui="hospitaladmin.configure" style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
       *{box-sizing:border-box;margin:0;padding:0}
@@ -531,7 +531,7 @@ function ConfigureContent(){
       @keyframes spin{to{transform:rotate(360deg)}}
       .cfg-spin{animation:spin .7s linear infinite}
       .cfg-wrap{display:contents}
-      .cfg-tabs{display:flex;flex-wrap:wrap;gap:0;padding:6px 8px;background:#fff;border-bottom:1px solid #e2e8f0;margin-bottom:20px;max-width:100%}
+      .cfg-tabs{display:flex;flex-wrap:wrap;gap:0;padding:6px 8px;background:#fff;border-bottom:1px solid #e2e8f0;margin-bottom:20px;max-width:100%;position:sticky;top:0;z-index:5}
       .cfg-tab{padding:7px 13px;border-radius:8px;border:none;background:none;color:#64748b;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0;position:relative}
       .cfg-tab+.cfg-tab::before{content:"";position:absolute;left:0;top:20%;height:60%;width:1px;background:#e2e8f0}
       .cfg-tab:hover{background:#f8fafc;color:#334155}
@@ -578,6 +578,7 @@ function ConfigureContent(){
       .cfg-modal-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
       .cfg-loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:60px;color:#94a3b8;font-size:13px}
       .cfg-empty{text-align:center;padding:60px 20px;color:#94a3b8;font-size:13px;background:#fff;border-radius:14px;border:1px solid #e2e8f0}
+      .cfg-body{padding:0 20px 32px}
     `}</style>
 
     <>
@@ -590,7 +591,7 @@ function ConfigureContent(){
           );})}
         </div>
 
-        <div className="hd-center">
+        <div className="cfg-body">
           {tab==="settings"&&<SettingsPanel hospitalId={user?.hospitalId||""}/>}
           {tab==="departments"&&<DepartmentPanel/>}
           {tab==="subdepts"&&<SubDepartmentPanel/>}
