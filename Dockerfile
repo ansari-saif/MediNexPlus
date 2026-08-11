@@ -24,7 +24,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SKIP_DOCKER_TYPECHECK=1
 ENV NEXT_UNOPTIMIZED_IMAGES=1
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 RUN --mount=type=cache,target=/app/.next/cache \
     --mount=type=cache,target=/app/node_modules/.cache \
     npx next build
@@ -37,7 +37,8 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
-RUN npm ci --ignore-scripts && npx prisma generate
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --ignore-scripts && npx prisma generate
 
 FROM node:20-bookworm-slim AS runner
 ENV NODE_ENV=production

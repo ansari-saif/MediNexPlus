@@ -28,7 +28,4 @@ jobs:
           script: |
             set -euo pipefail
             cd /root/MediNexPlus
-            git fetch origin work
-            git checkout work
-            git pull --ff-only origin work
             bash scripts/deploy-web.sh

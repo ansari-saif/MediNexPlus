@@ -11,6 +11,12 @@ Dockerfile
 Dockerfile.dev
 docker-compose*.yml
 .cursor
+.github
+e2e
+n8n-server
+playwright.config.ts
+playwright-report
+test-results
 *.md
 tsc*.txt
 npm-debug.log*
@@ -18,4 +24,6 @@ npm-debug.log*
 coverage
 .vercel
 .kiro
+.qoder
 agent-transcripts
+test-openai.js
