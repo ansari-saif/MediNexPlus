@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import { getUnreadCount } from "../../../../../backend/repositories/notification.repo";
 import { withApiRoute } from "../../../../../backend/utils/api-route";
+import { startSsePoll } from "../../../../../backend/utils/sse-poll";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -47,22 +48,15 @@ export const GET = withApiRoute("notifications.stream.get", async (req: NextRequ
         send({ unread: 0 });
       }
 
-      // Poll every 5 seconds
-      const interval = setInterval(async () => {
-        if (closed) { clearInterval(interval); return; }
-        try {
-          const count = await getUnreadCount(hospitalId, {
-            userId: user.userId,
-            role: user.role,
-            types,
-          });
-          send({ unread: count });
-        } catch {
-          // ignore DB errors mid-stream
-        }
-      }, 5000);
+      const stopPoll = startSsePoll(async () => {
+        const count = await getUnreadCount(hospitalId, {
+          userId: user.userId,
+          role: user.role,
+          types,
+        });
+        send({ unread: count });
+      }, 10_000, () => closed);
 
-      // Heartbeat every 25 seconds to keep connection alive
       const heartbeat = setInterval(() => {
         if (closed) { clearInterval(heartbeat); return; }
         try {
@@ -70,13 +64,13 @@ export const GET = withApiRoute("notifications.stream.get", async (req: NextRequ
         } catch {
           closed = true;
           clearInterval(heartbeat);
-          clearInterval(interval);
+          stopPoll();
         }
       }, 25000);
 
       req.signal.addEventListener("abort", () => {
         closed = true;
-        clearInterval(interval);
+        stopPoll();
         clearInterval(heartbeat);
         try { controller.close(); } catch {}
       });

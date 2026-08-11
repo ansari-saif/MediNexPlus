@@ -15,5 +15,9 @@ const cfg = {
 };
 
 export default function DiagnosticDashboardPage() {
-  return <DeptDashboardPage cfg={cfg} />;
+  return (
+    <div data-ui="diagnostic.dashboard">
+      <DeptDashboardPage cfg={cfg} />
+    </div>
+  );
 }

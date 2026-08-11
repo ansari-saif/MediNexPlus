@@ -11,8 +11,13 @@ const cfg = {
   label:        "Administrative",
   basePath:     "/administrative/dashboard",
   icon:         <Building2 size={26} color="#fff" />,
+  uiPrefix:     "administrative",
 };
 
 export default function AdminDashboardPage() {
-  return <DeptDashboardPage cfg={cfg} />;
+  return (
+    <div data-ui="administrative.dashboard">
+      <DeptDashboardPage cfg={cfg} />
+    </div>
+  );
 }

@@ -6,6 +6,7 @@ import {
   Trash2, ArrowUpDown, ChevronDown, CheckSquare, Square, MinusSquare,
   FileSpreadsheet, Printer, FileJson, AlertTriangle, Pencil, Building2, Clock
 } from "lucide-react";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 type ApiResponse<T> = { success: boolean; data?: T; message?: string };
 type SessionUser = { name?: string | null } | null;
@@ -419,7 +420,7 @@ export default function HospitalAdminFinancePage() {
         .fin-badge.warn{background:#ffedd5;color:#9a3412}
       `}</style>
 
-          <div className="hd-center">
+          <div className="hd-center" data-ui="hospitaladmin.finance">
             <div className="fin-head">
               <div>
                 <div className="fin-title">Finance</div>
@@ -452,9 +453,7 @@ export default function HospitalAdminFinancePage() {
 
             {/* Stats Cards */}
             {statsLoading ? (
-              <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "18px 0", color: "#94a3b8", fontSize:12 }}>
-                <Loader2 size={16} style={{ animation: "spin .7s linear infinite" }} /> Loading financials…
-              </div>
+              <PageDataLoader ui="hospitaladmin.finance.loading" label="Loading financials…" minHeight={80} />
             ) : (
               <div className="fin-stats">
                 <div className="fin-card">

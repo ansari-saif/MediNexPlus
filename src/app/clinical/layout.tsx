@@ -41,23 +41,13 @@ function getActiveId(tab: string | null): string {
   return "overview";
 }
 
-function Spinner() {
-  return (
-    <div style={{ minHeight: "100vh", background: "#f0f9f9", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", gap: 14, color: "#64748b", fontSize: 13 }}>
-      <div style={{ width: 30, height: 30, border: "3px solid #B3E0E0", borderTop: "3px solid #0E898F", borderRadius: "50%", animation: "cspin 0.8s linear infinite" }} />
-      <style>{`@keyframes cspin{to{transform:rotate(360deg)}}`}</style>
-      Loading Clinical Dashboard…
-    </div>
-  );
-}
-
 function ClinicalLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [deptProfile, setDeptProfile] = useState<any>(null);
   const [hospitalName, setHospitalName] = useState("Hospital");
   const [hospitalLogo, setHospitalLogo] = useState<string | null>(null);
@@ -108,8 +98,6 @@ function ClinicalLayoutContent({ children }: { children: React.ReactNode }) {
     await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     router.push("/login");
   };
-
-  if (loading) return <Spinner />;
 
   return (
     <>
@@ -385,7 +373,7 @@ function ClinicalLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function ClinicalLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={null}>
       <ClinicalLayoutContent>{children}</ClinicalLayoutContent>
     </Suspense>
   );

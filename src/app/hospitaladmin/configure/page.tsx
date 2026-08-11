@@ -18,6 +18,7 @@ import ServicePanel from "@/components/ServicePanel";
 import TreatmentPlanPanel from "@/components/TreatmentPlanPanel";
 import DynamicDashboard from "@/components/DynamicDashboard";
 import PermissionPanel from "@/components/PermissionPanel";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 type Tab = "settings"|"departments"|"subdepts"|"services"|"treatments"|"clinical"|"doctors"|"staff"|"wards"|"billing"|"inventory"|"permissions";
 
@@ -476,7 +477,11 @@ function ConfigureContent(){
     setLeaveModalOpen(true);
   };
 
-  if(loading) return <div style={{minHeight:"100vh",background:"#f0f4f8",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Inter',sans-serif",gap:12,color:"#64748b"}}><Loader2 size={24} className="cfg-spin"/>Loading...</div>;
+  if(loading) return (
+    <div data-ui="hospitaladmin.configure">
+      <PageDataLoader ui="hospitaladmin.configure.loading" label="Loading..." />
+    </div>
+  );
 
   const clinicalColumns=[{key:"name",label:"Name"},{key:"type",label:"Type",render:(v:string)=><span className="cfg-badge blue">{v}</span>},{key:"department",label:"Department",render:(v:any)=>v?.name||"—"},{key:"isActive",label:"Status",render:(v:boolean)=><span className={`cfg-badge ${v?"green":"red"}`}>{v?"Active":"Inactive"}</span>}];
   const clinicalFields=[{key:"name",label:"Unit Name",required:true},{key:"type",label:"Type",options:[{v:"PHARMACY",l:"Pharmacy"},{v:"PATHOLOGY",l:"Pathology"},{v:"RADIOLOGY",l:"Radiology"},{v:"PROCEDURE",l:"Procedure"},{v:"LABORATORY",l:"Laboratory"},{v:"OTHER",l:"Other"}],required:true}];
@@ -517,7 +522,7 @@ function ConfigureContent(){
     isActive: form.isActive ?? true,
   });
 
-  return(<>
+  return(<div data-ui="hospitaladmin.configure">
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
       *{box-sizing:border-box;margin:0;padding:0}
@@ -634,12 +639,12 @@ function ConfigureContent(){
           </>)}
         </div>
     </>
-  </>);
+  </div>);
 }
 
 export default function ConfigurePage() {
   return (
-    <Suspense fallback={<div style={{minHeight:"100vh",background:"#f0f4f8",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Inter',sans-serif",gap:12,color:"#64748b"}}><Loader2 size={24} className="cfg-spin"/>Loading...</div>}>
+    <Suspense fallback={<PageDataLoader label="Loading..." />}>
       <ConfigureContent />
     </Suspense>
   );

@@ -4,27 +4,23 @@ import { generateOTP } from "../utils/otp";
 import nodemailer from "nodemailer";
 import { env } from "../config/env";
 import { sendOTPviaSMS } from "../utils/sms";
+import { isEmailEnabled } from "../utils/email-enabled";
 const log_backend_services_otp_service = logger.child("backend/services/otp.service");
 
 const emailUsername = env.EMAIL_USERNAME.trim();
 const emailPassword = env.EMAIL_PASSWORD.replace(/\s/g, "");
 
-log_backend_services_otp_service.info("[OTP Mailer] SMTP config", {
-  host: env.EMAIL_HOST,
-  port: env.EMAIL_PORT,
-  user: emailUsername ? `${emailUsername.slice(0, 4)}***${emailUsername.slice(-10)}` : "NOT SET",
-  passLength: emailPassword.length,
-});
-
-const transporter = nodemailer.createTransport({
-  host: env.EMAIL_HOST,
-  port: Number(env.EMAIL_PORT),
-  secure: false,
-  auth: {
-    user: emailUsername,
-    pass: emailPassword,
-  },
-});
+const transporter = isEmailEnabled()
+  ? nodemailer.createTransport({
+      host: env.EMAIL_HOST,
+      port: Number(env.EMAIL_PORT),
+      secure: false,
+      auth: {
+        user: emailUsername,
+        pass: emailPassword,
+      },
+    })
+  : null;
 
 export const requestOTP = async (email: string, mobile?: string) => {
   const otp = generateOTP();
@@ -92,15 +88,19 @@ export const requestOTP = async (email: string, mobile?: string) => {
 </body>
 </html>`;
 
-    await transporter.sendMail({
-      from: Object.is(env.EMAIL_USERNAME, "")
-        ? '"MediNexPlus" <no-reply@medinexplus.com>'
-        : `"MediNexPlus" <${env.EMAIL_USERNAME}>`,
-      to: email,
-      subject: "Your Verification Code – MediNexPlus",
-      text: `Your OTP is: ${otp}\n\nValid for 10 minutes. Do not share this code.`,
-      html,
-    });
+    if (!transporter) {
+      log_backend_services_otp_service.info({}, "[OTP Mailer] skipped (EMAIL_ENABLED=0)");
+    } else {
+      await transporter.sendMail({
+        from: Object.is(env.EMAIL_USERNAME, "")
+          ? '"MediNexPlus" <no-reply@medinexplus.com>'
+          : `"MediNexPlus" <${env.EMAIL_USERNAME}>`,
+        to: email,
+        subject: "Your Verification Code – MediNexPlus",
+        text: `Your OTP is: ${otp}\n\nValid for 10 minutes. Do not share this code.`,
+        html,
+      });
+    }
   } catch (error) {
     log_backend_services_otp_service.error("Failed to send email", error);
   }

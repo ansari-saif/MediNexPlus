@@ -6,7 +6,7 @@ import { ViewRecordModal, EditRecordModal, TransferPatientModal, ViewPrescriptio
 import NotificationBell from "@/components/NotificationBell";
 import SupportModal from "@/components/SupportModal";
 import { BookingWizard } from "@/components/AppointmentPanel";
-import Preloader from "@/components/Preloader";
+import { PageDataLoader } from "@/components/PageDataLoader";
 import {
   ResponsiveContainer as RechartsResponsiveContainer,
   AreaChart as RechartsAreaChart,
@@ -1181,7 +1181,6 @@ function SubDeptDashboardContent() {
 
   return (
     <>
-      <Preloader loading={loading || (deptType === "PHARMACY" && !loading && !pharmacyReady && tab !== "account-settings")} />
       {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
       <style>{`
@@ -1421,7 +1420,12 @@ function SubDeptDashboardContent() {
             </div>
           </header>
 
-          <div data-ui="subdept.dashboard" className="sd2-body" style={tab === "inventory" ? { padding: "32px 20px" } : (tab === "billing-queue" || tab === "reports" || tab === "billing" || tab === "revenue") ? { padding: 0 } : {}}>
+          <div data-ui="subdept.dashboard" className="sd2-body" style={{ position: "relative", ...(tab === "inventory" ? { padding: "32px 20px" } : (tab === "billing-queue" || tab === "reports" || tab === "billing" || tab === "revenue") ? { padding: 0 } : {}) }}>
+            {(loading || (deptType === "PHARMACY" && !pharmacyReady && tab !== "account-settings")) && (
+              <div style={{ position: "absolute", inset: 0, background: "#fff", zIndex: 5 }}>
+                <PageDataLoader ui="subdept.dashboard.loading" label="Loading dashboard..." />
+              </div>
+            )}
 
             {/* ═══════════════════ SUPPORT DEPARTMENT DASHBOARDS ═══════════════════ */}
             {deptType === "PATHOLOGY" && tab !== "account-settings" ? (
@@ -4237,12 +4241,7 @@ function SubDeptDashboardContent() {
 
 export default function SubDeptDashboard() {
   return (
-    <Suspense fallback={
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", color: "#64748b", fontSize:13, gap: 14 }}>
-        <Loader2 size={24} style={{ animation: "spin .7s linear infinite" }} />
-        Loading dashboard...
-      </div>
-    }>
+    <Suspense fallback={<PageDataLoader ui="subdept.dashboard.loading" label="Loading dashboard..." />}>
       <SubDeptDashboardContent />
     </Suspense>
   );

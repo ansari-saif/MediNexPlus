@@ -3,7 +3,6 @@ import { createHospital, findHospitalById } from "../repositories/hospital.repo"
 import { hashPassword, comparePassword } from "../utils/hash";
 import { generateToken } from "../utils/jwt";
 import { Role } from "@prisma/client";
-import { verifyOTP } from "./otp.service";
 import prisma from "../config/db";
 import { recordAuthLogin } from "../utils/auth-metrics";
 
@@ -82,6 +81,7 @@ export const signupHospitalService = async (data: any) => {
 
   // Verify OTP
   try {
+    const { verifyOTP } = await import("./otp.service");
     await verifyOTP(email, otp);
   } catch (error: any) {
     throw new Error(error.message);

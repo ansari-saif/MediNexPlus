@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import AppointmentAlertModal from "@/components/AppointmentAlertModal";
 import SupportModal from "@/components/SupportModal";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 const todayQueue = [
   { token:"T001", name:"Rajesh Verma", doctor:"Dr. Priya Sharma", dept:"Cardiology", time:"09:00 AM", status:"in-progress", mobile:"+91 98765 43210" },
@@ -94,11 +95,6 @@ export default function ReceptionistDashboard() {
   };
   const initials = (n:string) => n.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase();
   const maxBar = Math.max(...barData.map(b=>b.val));
-
-  if(loading) return <div style={{minHeight:"100vh",background:"#fefce8",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Inter',sans-serif",color:"#64748b",fontSize:13,gap:14}}>
-    <div style={{width:32,height:32,border:"3px solid #fef08a",borderTop:"3px solid #eab308",borderRadius:"50%",animation:"sp .8s linear infinite"}}/>
-    <style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style>Loading Receptionist Portal...
-  </div>;
 
   const navItems = [
     {id:"queue" as Tab,   label:"Today's Queue",      icon:<ClipboardList size={16}/>},
@@ -258,6 +254,9 @@ export default function ReceptionistDashboard() {
           </div>
         </header>
 
+        {loading ? (
+          <PageDataLoader ui="receptionist.dashboard.loading" label="Loading Receptionist Portal..." />
+        ) : (
         <div className="rec-body">
           <div className="rec-center">
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18}}>
@@ -429,6 +428,7 @@ export default function ReceptionistDashboard() {
             </div>
           </div>
         </div>
+        )}
       </main>
     </div>
       <AppointmentAlertModal />

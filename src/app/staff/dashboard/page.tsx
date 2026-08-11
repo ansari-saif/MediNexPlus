@@ -13,6 +13,7 @@ import PatientProfilePanel from "@/components/PatientProfilePanel";
 import NotificationBell from "@/components/NotificationBell";
 import BillingModule from "@/components/BillingModule";
 import BillingQueue from "@/components/BillingQueue";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 interface StaffProfile {
   id: string;
@@ -154,35 +155,9 @@ export default function StaffDashboard() {
     router.push("/staff/login");
   };
 
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#f0f4f8",
-        fontFamily: "'Inter', sans-serif",
-        flexDirection: "column",
-        gap: 12,
-        color: "#64748b",
-      }}>
-        <div style={{
-          width: 40, height: 40, border: "3px solid #e2e8f0",
-          borderTopColor: "#10b981", borderRadius: "50%",
-          animation: "spin 0.7s linear infinite"
-        }} />
-        <span>Loading your dashboard...</span>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      </div>
-    );
-  }
-
-  if (!profile) return null;
-
-  const joinDate = new Date(profile.joinDate);
-  const monthsWorked = Math.floor((Date.now() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
-  const roleColors = ROLE_COLORS[profile.role] || ROLE_COLORS.OTHER;
+  const joinDate = profile ? new Date(profile.joinDate) : null;
+  const monthsWorked = joinDate ? Math.floor((Date.now() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 30)) : 0;
+  const roleColors = ROLE_COLORS[profile?.role || "OTHER"] || ROLE_COLORS.OTHER;
 
   return (
     <div style={{ minHeight: "100vh", background: "#f0f4f8", fontFamily: "'Inter', sans-serif", display: "flex", flexDirection: "column" }}>
@@ -228,11 +203,11 @@ export default function StaffDashboard() {
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
           >
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{profile.name}</div>
-              <div style={{ fontSize: 11, color: "#94a3b8" }}>{ROLE_LABELS[profile.role] || profile.role}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{profile?.name || "Staff"}</div>
+              <div style={{ fontSize: 11, color: "#94a3b8" }}>{profile ? (ROLE_LABELS[profile.role] || profile.role) : "Staff"}</div>
             </div>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg,${roleColors.accent},${roleColors.accent}cc)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 13 }}>
-              {profile.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+              {(profile?.name || "ST").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
             </div>
             <ChevronDown size={14} color="#64748b" />
           </div>
@@ -257,8 +232,8 @@ export default function StaffDashboard() {
                 overflow: "hidden",
               }}>
                 <div style={{ padding: 16, borderBottom: "1px solid #f1f5f9" }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{profile.name}</div>
-                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{profile.email}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1e293b" }}>{profile?.name || "Staff"}</div>
+                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>{profile?.email}</div>
                 </div>
                 <div style={{ padding: 8 }}>
                   <button
@@ -342,7 +317,9 @@ export default function StaffDashboard() {
 
         {/* Main Content */}
         <main data-ui="staff.dashboard" style={{ flex: 1, overflow: "auto", padding: 24 }}>
-          {selectedPatientId ? (
+          {!profile ? (
+            <PageDataLoader ui="staff.dashboard.loading" label="Loading your dashboard..." />
+          ) : selectedPatientId ? (
             <PatientProfilePanel
               patientId={selectedPatientId}
               onBack={() => setSelectedPatientId(null)}

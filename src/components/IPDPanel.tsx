@@ -128,7 +128,7 @@ function AllocateModal({ bed, ward, wards, onClose, onDone }: { bed?: Bed; ward?
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api("/api/departments").then(d => {
+    api("/api/config/departments?simple=true").then(d => {
       if (d.success) setDepartments(d.data?.departments || d.data || []);
     });
   }, []);
@@ -411,7 +411,7 @@ export default function IPDPanel({ uiPrefix = "hospitaladmin" }: { uiPrefix?: st
   const [bedSort, setBedSort] = useState<{ key: string; dir: "asc" | "desc" }>({ key: "bedNumber", dir: "asc" });
 
   useEffect(() => {
-    api("/api/departments").then(d => {
+    api("/api/config/departments?simple=true").then(d => {
       if (d.success) setDepartments(d.data?.departments || d.data || []);
     });
   }, []);

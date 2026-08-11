@@ -89,20 +89,18 @@ export default function AppointmentAlertModal() {
   const esRef = useRef<EventSource | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Connect to SSE stream
   useEffect(() => {
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
     const connectSSE = () => {
+      if (cancelled) return;
       const es = new EventSource("/api/appointments/stream", { withCredentials: true });
       esRef.current = es;
-
-      es.onopen = () => {
-        console.log("[AppointmentAlert] SSE connected");
-      };
 
       es.onmessage = (e: MessageEvent) => {
         try {
           const data = JSON.parse(e.data);
-          console.log("[AppointmentAlert] SSE event:", data.type);
           if (data.type === "NEW_APPOINTMENT" && data.appointment) {
             setAlerts(prev => [data.appointment, ...prev]);
           }
@@ -110,14 +108,18 @@ export default function AppointmentAlertModal() {
       };
 
       es.onerror = () => {
-        console.log("[AppointmentAlert] SSE error, reconnecting in 10s");
         es.close();
-        setTimeout(connectSSE, 10000);
+        if (cancelled) return;
+        retryTimer = setTimeout(connectSSE, 10000);
       };
     };
 
     connectSSE();
-    return () => { esRef.current?.close(); };
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+      esRef.current?.close();
+    };
   }, []);
 
   // When new alerts come in, show the first one

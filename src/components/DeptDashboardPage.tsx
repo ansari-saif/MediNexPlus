@@ -9,6 +9,7 @@ import {
   MapPin, Phone, Mail, Pencil, Trash2, Eye, Download,
   ChevronUp, ChevronDown, X, ArrowLeft, Stethoscope, User,
 } from "lucide-react";
+import { PageDataLoader } from "@/components/PageDataLoader";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, PieChart, Pie, Cell,
@@ -47,7 +48,7 @@ type Tab = "overview" | "subdepts" | "appointments" | "queue" | "dept-info";
 ═══════════════════════════════════════════════════════════ */
 export default function DeptDashboardPage({ cfg }: { cfg: DeptDashCfg }) {
   return (
-    <Suspense fallback={<div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>Loading…</div>}>
+    <Suspense fallback={<PageDataLoader ui={cfg.uiPrefix ? `${cfg.uiPrefix}.dashboard.loading` : undefined} label="Loading…" />}>
       <DeptDashboard cfg={cfg} />
     </Suspense>
   );
@@ -488,7 +489,7 @@ function SubDeptDetail({ subDeptId, cfg, onBack }: { subDeptId: string; cfg: Dep
       .catch(() => setLoading(false));
   }, [subDeptId]);
 
-  if (loading) return <div className="dd-empty"><Loader2 size={24} style={{ animation: "dd-spin .7s linear infinite", display: "block", margin: "0 auto 10px" }} /><div>Loading…</div></div>;
+  if (loading) return <PageDataLoader ui={cfg.uiPrefix ? `${cfg.uiPrefix}.dashboard.loading` : undefined} label="Loading…" />;
   if (!data) return <div className="dd-empty"><div>Sub-department not found</div></div>;
 
   return (

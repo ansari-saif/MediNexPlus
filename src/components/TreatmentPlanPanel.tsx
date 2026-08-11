@@ -74,7 +74,7 @@ export default function TreatmentPlanPanel() {
   useEffect(() => {
     if (!showAdd) return;
     api("/api/services").then(d => { if (d.success) setServices(d.data?.services || d.data || []); });
-    api("/api/departments").then(d => { if (d.success) setDepartments(d.data?.departments || d.data || []); });
+    api("/api/config/departments?simple=true").then(d => { if (d.success) setDepartments(d.data?.departments || d.data || []); });
     api("/api/doctors").then(d => { if (d.success) setDoctors(d.data?.doctors || d.data || []); });
   }, [showAdd]);
 

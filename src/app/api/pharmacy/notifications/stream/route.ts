@@ -3,6 +3,7 @@ import { logger } from "../../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../../backend/middlewares/auth.middleware";
 import prisma from "../../../../../../backend/config/db";
 import { withApiRoute } from "../../../../../../backend/utils/api-route";
+import { startSsePoll } from "../../../../../../backend/utils/sse-poll";
 const log_src_app_api_pharmacy_notifications_stream_route = logger.child("src/app/api/pharmacy/notifications/stream/route");
 
 const px = prisma as any;
@@ -65,9 +66,7 @@ export const GET = withApiRoute("pharmacy.notifications.stream.get", async (req:
       // Track notified prescription IDs to avoid duplicates
       const notifiedRxIds = new Set<string>();
 
-      // Poll for new prescriptions every 3 seconds
-      const interval = setInterval(async () => {
-        if (closed) { clearInterval(interval); return; }
+      const stopPoll = startSsePoll(async () => {
         try {
           const checkTime = lastCheckTime;
           
@@ -192,9 +191,8 @@ export const GET = withApiRoute("pharmacy.notifications.stream.get", async (req:
           // Silently ignore errors to keep stream alive
           log_src_app_api_pharmacy_notifications_stream_route.error("Pharmacy notification stream error:", err);
         }
-      }, 3000);
+      }, 10_000, () => closed);
 
-      // Heartbeat every 25 seconds to keep connection alive
       const heartbeat = setInterval(() => {
         if (closed) { clearInterval(heartbeat); return; }
         try {
@@ -202,13 +200,13 @@ export const GET = withApiRoute("pharmacy.notifications.stream.get", async (req:
         } catch {
           closed = true;
           clearInterval(heartbeat);
-          clearInterval(interval);
+          stopPoll();
         }
       }, 25000);
 
       req.signal.addEventListener("abort", () => {
         closed = true;
-        clearInterval(interval);
+        stopPoll();
         clearInterval(heartbeat);
         try { controller.close(); } catch {}
       });

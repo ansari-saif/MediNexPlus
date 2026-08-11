@@ -11,8 +11,13 @@ const cfg = {
   label:        "Support",
   basePath:     "/support/dashboard",
   icon:         <Users size={26} color="#fff" />,
+  uiPrefix:     "support",
 };
 
 export default function SupportDashboardPage() {
-  return <DeptDashboardPage cfg={cfg} />;
+  return (
+    <div data-ui="support.dashboard">
+      <DeptDashboardPage cfg={cfg} />
+    </div>
+  );
 }

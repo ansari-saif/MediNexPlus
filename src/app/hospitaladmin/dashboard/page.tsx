@@ -1,6 +1,6 @@
 // Hot-reload trigger
 "use client";
-import { useEffect, useState, Suspense, Fragment, useRef } from "react";
+import { useEffect, useState, Suspense, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -12,13 +12,23 @@ import {
   User, ChevronDown, Camera, Save, Mail, CheckCircle, AlertCircle, Key, Shield, Eye
 } from "lucide-react";
 
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
-import BillingQueue from "@/components/BillingQueue";
-import IPDPanel from "@/components/IPDPanel";
-import ReportsPanel from "@/components/ReportsPanel";
-import AdminInventoryPanel from "@/components/AdminInventoryPanel";
+const MonthlyTrendChart = dynamic(() => import("./MonthlyTrendChart"), { ssr: false });
 
-const AdminDepartmentsPanel = dynamic(() => import("@/components/AdminDepartmentsPanel"), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Departments...</span></div> });
+function TabFallback({ label }: { label: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", width: "100%" }}>
+      <span style={{ fontSize: 13, color: "#94a3b8", display: "flex", alignItems: "center", gap: 8 }}>
+        <Loader2 size={16} style={{ animation: "spin .7s linear infinite" }} />Loading {label}...
+      </span>
+    </div>
+  );
+}
+
+const AdminDepartmentsPanel = dynamic(() => import("@/components/AdminDepartmentsPanel"), { ssr: false, loading: () => <TabFallback label="Departments" /> });
+const AdminInventoryPanel = dynamic(() => import("@/components/AdminInventoryPanel"), { ssr: false, loading: () => <TabFallback label="Inventory" /> });
+const BillingQueue = dynamic(() => import("@/components/BillingQueue"), { ssr: false, loading: () => <TabFallback label="Billing" /> });
+const IPDPanel = dynamic(() => import("@/components/IPDPanel"), { ssr: false, loading: () => <TabFallback label="IPD" /> });
+const ReportsPanel = dynamic(() => import("@/components/ReportsPanel"), { ssr: false, loading: () => <TabFallback label="Reports" /> });
 
 const api = async (url: string, method = "GET", body?: any) => {
   const opts: any = { method, credentials: "include", headers: { "Content-Type": "application/json" } };
@@ -27,40 +37,7 @@ const api = async (url: string, method = "GET", body?: any) => {
   return r.json();
 };
 
-/* ── Mock Data ── */
-const mockStaff = [
-  { id: "1", name: "Dr. Priya Sharma", role: "DOCTOR", dept: "Cardiology", status: "active", patients: 24 },
-  { id: "2", name: "Dr. Rajan Mehta", role: "DOCTOR", dept: "Neurology", status: "active", patients: 18 },
-  { id: "3", name: "Neha Patil", role: "RECEPTIONIST", dept: "Front Desk", status: "active", patients: 0 },
-  { id: "4", name: "Amit Kumar", role: "STAFF", dept: "Radiology", status: "inactive", patients: 0 },
-  { id: "5", name: "Dr. Sunita Rao", role: "DOCTOR", dept: "Pediatrics", status: "active", patients: 31 },
-];
-const mockPatients = [
-  { id: "P001", name: "Rajesh Verma", age: 54, blood: "O+", dept: "Cardiology", date: "20/03/26", gender: "Male", status: "OPD" },
-  { id: "P002", name: "Meena Joshi", age: 38, blood: "A+", dept: "Neurology", date: "20/03/26", gender: "Female", status: "IPD" },
-  { id: "P003", name: "Suresh Das", age: 8, blood: "B-", dept: "Pediatrics", date: "20/03/26", gender: "Male", status: "OPD" },
-  { id: "P004", name: "Kavita Singh", age: 45, blood: "AB+", dept: "Cardiology", date: "19/03/26", gender: "Female", status: "OPD" },
-  { id: "P005", name: "Ankit Tiwari", age: 29, blood: "O-", dept: "Neurology", date: "18/03/26", gender: "Male", status: "Discharged" },
-];
-const mockAppointments = [
-  { id: "A001", patient: "Rajesh Verma", doctor: "Dr. Priya Sharma", dept: "Cardiology", time: "09:00 AM", status: "confirmed" },
-  { id: "A002", patient: "Meena Joshi", doctor: "Dr. Rajan Mehta", dept: "Neurology", time: "09:30 AM", status: "waiting" },
-  { id: "A003", patient: "Suresh Das", doctor: "Dr. Sunita Rao", dept: "Pediatrics", time: "10:00 AM", status: "in-progress" },
-  { id: "A004", patient: "Kavita Singh", doctor: "Dr. Priya Sharma", dept: "Cardiology", time: "11:00 AM", status: "confirmed" },
-  { id: "A005", patient: "Ankit Tiwari", doctor: "Dr. Rajan Mehta", dept: "Neurology", time: "11:30 AM", status: "cancelled" },
-];
-const PatientsManagementPanelLazy = dynamic(() => import("@/app/subdept/dashboard/PatientsManagementPanel").then(mod => mod.PatientsManagementPanel), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Patient Management...</span></div> });
-const reports = [
-  { icon: <Stethoscope size={14} />, msg: "Ventilator unit requires inspection in ICU", time: "5 minutes ago", highlight: true },
-  { icon: <Settings size={14} />, msg: "Breakdown in elevator on 2nd floor", time: "18 minutes ago", highlight: false },
-  { icon: <AlertTriangle size={14} />, msg: "Damage reported at the main entrance door", time: "2 hours ago", highlight: false },
-];
-const doctorAppts = [
-  { name: "Cardiology", doctor: "Dr. Priya Sharma", time: "09:00 – 12:00", active: false },
-  { name: "Pediatrics", doctor: "Dr. Sunita Rao", time: "10:00 – 13:00", active: true },
-  { name: "Neurology", doctor: "Dr. Rajan Mehta", time: "11:00 – 14:00", active: false },
-  { name: "Radiology", doctor: "Amit Kumar", time: "02:00 – 05:00", active: false },
-];
+const PatientsManagementPanelLazy = dynamic(() => import("@/app/subdept/dashboard/PatientsManagementPanel").then(mod => mod.PatientsManagementPanel), { ssr: false, loading: () => <TabFallback label="Patient Management" /> });
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const DAYS_H = ["M", "T", "W", "T", "F", "S", "S"];
@@ -105,18 +82,24 @@ type NavTab = "overview" | "appointments" | "staff" | "doctors" | "patients" | "
 
 // Dead InventoryPanel removed — replaced by AdminInventoryPanel component
 
+const DASH_TABS: NavTab[] = [
+  "overview", "appointments", "staff", "doctors", "patients", "inventory", "billing",
+  "ipd", "departments", "reports", "enquiries", "tourism", "blogs", "finance", "settings", "profile",
+];
+
+function DashboardTabSync({ onTab }: { onTab: (tab: string | null) => void }) {
+  const searchParams = useSearchParams();
+  const raw = searchParams.get("tab");
+  useEffect(() => { onTab(raw); }, [raw, onTab]);
+  return null;
+}
+
 export default function HospitalAdminDashboard() {
-  return (
-    <Suspense fallback={<div>Loading dashboard...</div>}>
-      <DashboardContent />
-    </Suspense>
-  );
+  return <DashboardContent />;
 }
 
 function DashboardContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [tab, setTab] = useState<NavTab>("overview");
   const [showAddStaff, setShowAddStaff] = useState(false);
@@ -124,10 +107,8 @@ function DashboardContent() {
   const [creating, setCreating] = useState(false);
   const [createMsg, setCreateMsg] = useState("");
   const [search, setSearch] = useState("");
-  const [apptStats, setApptStats] = useState<any>(null);
-  const [patientStats, setPatientStats] = useState<any>(null);
   const [dashboardData, setDashboardData] = useState<any>(null);
-  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
 
   const fetchDashboard = async () => {
     setDashboardLoading(true);
@@ -145,36 +126,29 @@ function DashboardContent() {
   const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const t = searchParams.get("tab") as NavTab;
-    if (t === "finance") { router.push("/hospitaladmin/finance"); return; }
-    if (t && ["overview", "appointments", "staff", "doctors", "patients", "inventory", "billing", "ipd", "departments", "settings", "profile"].includes(t)) {
-      setTab(t);
-    }
-  }, [searchParams, router]);
-
-  useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
-      .then(r => r.json())
-      .then(d => {
-        if (!d.success) { router.push("/login"); return; }
-        if (d.data.role === "DOCTOR") { router.push("/doctor/dashboard"); return; }
-        if (d.data.role === "STAFF" || d.data.role === "RECEPTIONIST") { router.push("/staff/dashboard"); return; }
-        if (d.data.role !== "HOSPITAL_ADMIN") { router.push("/login"); return; }
-        setUser(d.data); setProfileFormData({ name: d.data.name || "", email: d.data.email || "", phone: "" }); if (d.data.profilePhoto) setProfilePhoto(d.data.profilePhoto); setLoading(false);
-      })
-      .catch(() => router.push("/login"));
+  const onTab = useCallback((raw: string | null) => {
+    if (raw === "finance") { router.push("/hospitaladmin/finance"); return; }
+    if (raw && DASH_TABS.includes(raw as NavTab)) setTab(raw as NavTab);
   }, [router]);
 
   useEffect(() => {
-    if (!loading) {
-      fetch("/api/appointments?stats=true", { credentials: "include" }).then(r => r.json()).then(d => { if (d.success) setApptStats(d.data); });
-      fetch("/api/patients?stats=true", { credentials: "include" }).then(r => r.json()).then(d => { if (d.success) setPatientStats(d.data); });
-      fetchDashboard();
-      const interval = setInterval(fetchDashboard, 60000);
-      return () => clearInterval(interval);
-    }
-  }, [loading]);
+    fetchDashboard();
+    const interval = setInterval(fetchDashboard, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (tab !== "settings" && tab !== "profile") return;
+    fetch("/api/auth/me", { credentials: "include" })
+      .then(r => r.json())
+      .then(d => {
+        if (!d.success || d.data?.role !== "HOSPITAL_ADMIN") return;
+        setUser(d.data);
+        setProfileFormData({ name: d.data.name || "", email: d.data.email || "", phone: "" });
+        if (d.data.profilePhoto) setProfilePhoto(d.data.profilePhoto);
+      })
+      .catch(() => {});
+  }, [tab]);
 
   const logout = async () => { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); router.push("/login"); };
 
@@ -227,23 +201,26 @@ function DashboardContent() {
   const initials = (n: string) => n.split(" ").map(x => x[0]).join("").slice(0, 2).toUpperCase();
 
 
-  const todayAppts = dashboardData?.appointments?.today ?? apptStats?.today ?? 0;
-  const totalPatients = dashboardData?.patients?.total ?? patientStats?.total ?? 0;
-  const newPatientsToday = dashboardData?.patients?.newToday ?? patientStats?.newToday ?? 0;
-  const completedAppts = dashboardData?.appointments?.completed ?? apptStats?.completed ?? 0;
+  const todayAppts = dashboardData?.appointments?.today ?? 0;
+  const totalPatients = dashboardData?.patients?.total ?? 0;
+  const newPatientsToday = dashboardData?.patients?.newToday ?? 0;
+  const completedAppts = dashboardData?.appointments?.completed ?? 0;
   const totalStaffCount = (dashboardData?.staff?.total ?? 0) + (dashboardData?.staff?.doctors ?? 0);
   const revenueToday = dashboardData?.finance?.revenueToday ?? 0;
   const revenueMonth = dashboardData?.finance?.revenueMonth ?? 0;
 
   const stats = [
-    { label: "Staff & Doctors", val: dashboardData ? totalStaffCount : "–", sub: `${dashboardData?.staff?.activeDoctors ?? 0} active doctors`, icon: <Users size={20} color="#fff" />, bg: "#E6F4F4", iconBg: "#0E898F" },
-    { label: "Total Patients", val: dashboardData ? totalPatients : "–", sub: newPatientsToday > 0 ? `+${newPatientsToday} new today` : `+${dashboardData?.patients?.newThisMonth ?? 0} this month`, icon: <UserRound size={20} color="#fff" />, bg: "#f0fdf4", iconBg: "#10b981" },
-    { label: "Today Appointments", val: dashboardData ? todayAppts : "–", sub: `${completedAppts} completed`, icon: <CalendarDays size={20} color="#fff" />, bg: "#fdf4ff", iconBg: "#a855f7" },
-    { label: "Revenue Today", val: dashboardData ? `₹${revenueToday >= 1000 ? (revenueToday / 1000).toFixed(1) + "K" : revenueToday}` : "–", sub: `₹${revenueMonth >= 1000 ? (revenueMonth / 1000).toFixed(1) + "K" : revenueMonth} this month`, icon: <IndianRupee size={20} color="#fff" />, bg: "#fff7ed", iconBg: "#f59e0b" },
+    { label: "Staff & Doctors", val: totalStaffCount, sub: `${dashboardData?.staff?.activeDoctors ?? 0} active doctors`, icon: <Users size={20} color="#fff" />, bg: "#E6F4F4", iconBg: "#0E898F" },
+    { label: "Total Patients", val: totalPatients, sub: newPatientsToday > 0 ? `+${newPatientsToday} new today` : `+${dashboardData?.patients?.newThisMonth ?? 0} this month`, icon: <UserRound size={20} color="#fff" />, bg: "#f0fdf4", iconBg: "#10b981" },
+    { label: "Today Appointments", val: todayAppts, sub: `${completedAppts} completed`, icon: <CalendarDays size={20} color="#fff" />, bg: "#fdf4ff", iconBg: "#a855f7" },
+    { label: "Revenue Today", val: `₹${revenueToday >= 1000 ? (revenueToday / 1000).toFixed(1) + "K" : revenueToday}`, sub: `₹${revenueMonth >= 1000 ? (revenueMonth / 1000).toFixed(1) + "K" : revenueMonth} this month`, icon: <IndianRupee size={20} color="#fff" />, bg: "#fff7ed", iconBg: "#f59e0b" },
   ];
 
   return (
     <>
+      <Suspense fallback={null}>
+        <DashboardTabSync onTab={onTab} />
+      </Suspense>
 
       {showAddStaff && (
         <div className="hd-modal-bg" onClick={e => { if (e.target === e.currentTarget) setShowAddStaff(false) }}>
@@ -292,6 +269,13 @@ function DashboardContent() {
           </button>
         </div>
 
+        {!dashboardData && (
+          <div className="hd-page-loader" data-ui="hospitaladmin.dashboard.loading" style={{ minHeight: 56, marginBottom: 14 }}>
+            <span className="hd-spin-block" />
+            Loading dashboard data...
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="hd-stats">
           {stats.map((s, i) => (
@@ -299,8 +283,8 @@ function DashboardContent() {
               <div className="hd-sc-icon" style={{ background: s.iconBg }}>{s.icon}</div>
               <div>
                 <div className="hd-sc-lbl">{s.label}</div>
-                <div className="hd-sc-val">{s.val}</div>
-                <div className="hd-sc-sub">{s.sub}</div>
+                <div className="hd-sc-val">{dashboardData ? s.val : <span className="hd-skel" />}</div>
+                <div className="hd-sc-sub">{dashboardData ? s.sub : <span className="hd-skel" style={{ width: 72, height: 8 }} />}</div>
               </div>
             </div>
           ))}
@@ -352,29 +336,7 @@ function DashboardContent() {
                   <Loader2 size={18} className="hd-spin" style={{ marginRight: 8, borderColor: "#0E898F" }} /> Loading chart...
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={160}>
-                  <AreaChart data={dashboardData?.monthlyTrends ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="apptGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0E898F" stopOpacity={0.18} />
-                        <stop offset="95%" stopColor="#0E898F" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="patGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.18} />
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fontSize:10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize:10, fill: "#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                    <Tooltip
-                      contentStyle={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, fontSize:11, boxShadow: "0 4px 16px rgba(0,0,0,0.08)" }}
-                      labelStyle={{ fontWeight: 700, color: "#1e293b" }}
-                    />
-                    <Area type="monotone" dataKey="appointments" stroke="#0E898F" strokeWidth={2} fill="url(#apptGrad)" name="Appointments" dot={{ r: 3, fill: "#0E898F", strokeWidth: 0 }} activeDot={{ r: 5 }} />
-                    <Area type="monotone" dataKey="patients" stroke="#10b981" strokeWidth={2} fill="url(#patGrad)" name="New Patients" dot={{ r: 3, fill: "#10b981", strokeWidth: 0 }} activeDot={{ r: 5 }} />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <MonthlyTrendChart data={dashboardData?.monthlyTrends ?? []} />
               )}
             </div>
           </div>

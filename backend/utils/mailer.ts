@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { logger } from "./logger";
 import { recordExternalCall } from "../../src/lib/observability/metrics";
+import { isEmailEnabled } from "./email-enabled";
 const log_backend_utils_mailer = logger.child("backend/utils/mailer");
 
 export const sendLabReport = async (opts: {
@@ -64,6 +65,10 @@ const transporter = nodemailer.createTransport({
 
 const baseSendMail = transporter.sendMail.bind(transporter);
 transporter.sendMail = async (...args: Parameters<typeof baseSendMail>) => {
+  if (!isEmailEnabled()) {
+    log_backend_utils_mailer.info({}, "[Mailer] skipped (EMAIL_ENABLED=0)");
+    return { messageId: "disabled" } as Awaited<ReturnType<typeof baseSendMail>>;
+  }
   const start = Date.now();
   try {
     return await baseSendMail(...args);
@@ -72,7 +77,11 @@ transporter.sendMail = async (...args: Parameters<typeof baseSendMail>) => {
   }
 };
 
-transporter.verify().then(() => log_backend_utils_mailer.info({}, "[Mailer] Gmail connected ✓")).catch((err) => log_backend_utils_mailer.error("[Mailer] Gmail FAILED:", err.message));
+if (isEmailEnabled()) {
+  transporter.verify().then(() => log_backend_utils_mailer.info({}, "[Mailer] Gmail connected ✓")).catch((err) => log_backend_utils_mailer.error("[Mailer] Gmail FAILED:", err.message));
+} else {
+  log_backend_utils_mailer.info({}, "[Mailer] SMTP disabled (EMAIL_ENABLED=0)");
+}
 
 export const sendDoctorCredentials = async (opts: {
   to: string;

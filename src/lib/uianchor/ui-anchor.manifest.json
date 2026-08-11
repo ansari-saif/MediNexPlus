@@ -1,7 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-10T21:56:27.465Z",
+  "generatedAt": "2026-08-11T07:38:52.688Z",
   "components": {
+    "administrative.dashboard": {
+      "type": "landmark"
+    },
     "administrative.logout": {
       "type": "button"
     },
@@ -185,6 +188,12 @@
     "auth.superadmin.login.submit": {
       "type": "button"
     },
+    "clinical.dashboard": {
+      "type": "landmark"
+    },
+    "clinical.dashboard.loading": {
+      "type": "landmark"
+    },
     "clinical.logout": {
       "type": "button"
     },
@@ -205,6 +214,9 @@
     },
     "clinical.nav.subdepts": {
       "type": "button"
+    },
+    "diagnostic.dashboard": {
+      "type": "landmark"
     },
     "diagnostic.logout": {
       "type": "button"
@@ -231,6 +243,9 @@
       "type": "button"
     },
     "doctor.dashboard": {
+      "type": "landmark"
+    },
+    "doctor.dashboard.loading": {
       "type": "landmark"
     },
     "doctor.inventory.create": {
@@ -323,6 +338,9 @@
     "finance.dashboard": {
       "type": "landmark"
     },
+    "finance.dashboard.loading": {
+      "type": "landmark"
+    },
     "finance.expenses.create": {
       "type": "button"
     },
@@ -359,7 +377,13 @@
     "finance.payments.submit": {
       "type": "button"
     },
+    "hospitaladmin.appointments": {
+      "type": "landmark"
+    },
     "hospitaladmin.billing": {
+      "type": "landmark"
+    },
+    "hospitaladmin.configure": {
       "type": "landmark"
     },
     "hospitaladmin.configure.departments.create": {
@@ -370,6 +394,9 @@
     },
     "hospitaladmin.configure.departments.search": {
       "type": "input"
+    },
+    "hospitaladmin.configure.loading": {
+      "type": "landmark"
     },
     "hospitaladmin.configure.services.create": {
       "type": "button"
@@ -449,6 +476,9 @@
     "hospitaladmin.dashboard": {
       "type": "landmark"
     },
+    "hospitaladmin.dashboard.loading": {
+      "type": "landmark"
+    },
     "hospitaladmin.dashboard.tab.appointments": {
       "type": "landmark"
     },
@@ -476,8 +506,14 @@
     "hospitaladmin.dashboard.tab.staff": {
       "type": "landmark"
     },
+    "hospitaladmin.doctors": {
+      "type": "landmark"
+    },
     "hospitaladmin.doctors.create": {
       "type": "button"
+    },
+    "hospitaladmin.doctors.loading": {
+      "type": "landmark"
     },
     "hospitaladmin.doctors.save": {
       "type": "button"
@@ -485,8 +521,14 @@
     "hospitaladmin.doctors.search": {
       "type": "input"
     },
+    "hospitaladmin.finance": {
+      "type": "landmark"
+    },
     "hospitaladmin.finance.expense.submit": {
       "type": "button"
+    },
+    "hospitaladmin.finance.loading": {
+      "type": "landmark"
     },
     "hospitaladmin.finance.revenue.submit": {
       "type": "button"
@@ -551,6 +593,9 @@
     "hospitaladmin.patients.search": {
       "type": "input"
     },
+    "hospitaladmin.profile": {
+      "type": "landmark"
+    },
     "hospitaladmin.profile.change-password.submit": {
       "type": "button"
     },
@@ -563,6 +608,9 @@
     "hospitaladmin.profile.email": {
       "type": "input"
     },
+    "hospitaladmin.profile.loading": {
+      "type": "landmark"
+    },
     "hospitaladmin.profile.name": {
       "type": "input"
     },
@@ -572,8 +620,14 @@
     "hospitaladmin.profile.save": {
       "type": "button"
     },
+    "hospitaladmin.staff": {
+      "type": "landmark"
+    },
     "hospitaladmin.staff.create": {
       "type": "button"
+    },
+    "hospitaladmin.staff.loading": {
+      "type": "landmark"
     },
     "hospitaladmin.staff.save": {
       "type": "button"
@@ -582,6 +636,9 @@
       "type": "input"
     },
     "parentdept.dashboard": {
+      "type": "landmark"
+    },
+    "parentdept.dashboard.loading": {
       "type": "landmark"
     },
     "parentdept.dashboard.tab.completed": {
@@ -683,6 +740,9 @@
     "receptionist.dashboard": {
       "type": "landmark"
     },
+    "receptionist.dashboard.loading": {
+      "type": "landmark"
+    },
     "receptionist.logout": {
       "type": "button"
     },
@@ -699,6 +759,9 @@
       "type": "input"
     },
     "staff.dashboard": {
+      "type": "landmark"
+    },
+    "staff.dashboard.loading": {
       "type": "landmark"
     },
     "staff.inventory.create": {
@@ -780,6 +843,9 @@
       "type": "button"
     },
     "subdept.dashboard": {
+      "type": "landmark"
+    },
+    "subdept.dashboard.loading": {
       "type": "landmark"
     },
     "subdept.hr.manage-doctors": {
@@ -965,6 +1031,9 @@
     "superadmin.dashboard": {
       "type": "landmark"
     },
+    "superadmin.dashboard.loading": {
+      "type": "landmark"
+    },
     "superadmin.hospitals.create.submit": {
       "type": "button"
     },
@@ -982,6 +1051,9 @@
     },
     "superadmin.nav.settings": {
       "type": "button"
+    },
+    "support.dashboard": {
+      "type": "landmark"
     },
     "support.logout": {
       "type": "button"

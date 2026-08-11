@@ -98,17 +98,21 @@ export default function NotificationBell({
 
     es.onmessage = onMessage;
 
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
     es.onerror = () => {
       es.close();
-      // Retry after 10s
-      setTimeout(() => {
+      retryTimer = setTimeout(() => {
         const es2 = new EventSource(sseUrl, { withCredentials: true });
         esRef.current = es2;
         es2.onmessage = onMessage;
       }, 10000);
     };
 
-    return () => { es.close(); esRef.current = null; };
+    return () => {
+      if (retryTimer) clearTimeout(retryTimer);
+      es.close();
+      esRef.current = null;
+    };
   }, [typesQuery]);
 
   // Fetch notifications list

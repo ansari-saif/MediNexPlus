@@ -41,6 +41,7 @@ services:
     restart: "no"
 
   web:
+    image: medinexplus-web
     build:
       context: .
       dockerfile: Dockerfile

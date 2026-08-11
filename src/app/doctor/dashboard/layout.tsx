@@ -17,7 +17,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const [supportOpen, setSupportOpen] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { doctor, loading, logout, accent, doctorName, deptName, initials } = useDoctorDashboard();
+  const { doctor, logout, accent, doctorName, deptName, initials } = useDoctorDashboard();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
@@ -37,15 +37,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     { id: "schedule-mgmt", path: "/doctor/dashboard?tab=schedule-mgmt", label: "Schedule Setup", icon: <Clock size={16} /> },
     { id: "reports", path: "/doctor/dashboard?tab=reports", label: "Reports", icon: <BarChart2 size={16} /> },
   ];
-
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 32, height: 32, border: "3px solid #E6F4F4", borderTop: "3px solid #0E898F", borderRadius: "50%", animation: "sp .8s linear infinite" }} />
-        <style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -295,12 +286,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 export default function DoctorDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <DoctorDashboardProvider>
-      <Suspense fallback={
-        <div style={{ minHeight: "100vh", background: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ width: 32, height: 32, border: "3px solid #E6F4F4", borderTop: "3px solid #0E898F", borderRadius: "50%", animation: "sp .8s linear infinite" }} />
-          <style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style>
-        </div>
-      }>
+      <Suspense fallback={null}>
         <DashboardLayoutContent>{children}</DashboardLayoutContent>
       </Suspense>
     </DoctorDashboardProvider>

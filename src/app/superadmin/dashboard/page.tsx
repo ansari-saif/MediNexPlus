@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Anchor } from "@/lib/uianchor";
 import SupportModal from "@/components/SupportModal";
+import { PageDataLoader } from "@/components/PageDataLoader";
 import {
   LayoutDashboard, Building2, Activity, Settings, HelpCircle,
   LogOut, Search, Bell, CheckCircle2, AlertTriangle, Plus, ChevronRight,
@@ -414,14 +415,6 @@ export default function SuperAdminDashboard() {
 
   const filtered = hospitals.filter(h => h.name.toLowerCase().includes(search.toLowerCase()) || h.email.toLowerCase().includes(search.toLowerCase()));
 
-  if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", flexDirection: "column", gap: 16 }}>
-      <style>{`@keyframes sa-spin{to{transform:rotate(360deg)}}.sa-spin-dark{display:inline-block;width:28px;height:28px;border:2.5px solid #e2e8f0;border-top-color:#dc2626;border-radius:50%;animation:sa-spin .65s linear infinite}`}</style>
-      <div className="sa-spin-dark" />
-      <span style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500 }}>Verifying access...</span>
-    </div>
-  );
-
   const NAV: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: "overview", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
     { id: "hospitals", label: "Hospitals", icon: <Building2 size={16} /> },
@@ -795,8 +788,11 @@ export default function SuperAdminDashboard() {
 
           {/* Content */}
           <div data-ui="superadmin.dashboard" className="sa-content">
+            {tab === "overview" && (loading || dataLoading) && (
+              <PageDataLoader ui="superadmin.dashboard.loading" label="Loading dashboard..." />
+            )}
             {/* ─── Overview ─── */}
-            {tab === "overview" && (
+            {tab === "overview" && !loading && !dataLoading && (
               <>
                 <div className="sa-page-header">
                   <div className="sa-page-title">Dashboard</div>

@@ -49,22 +49,12 @@ function getActiveId(pathname: string, tab: string | null): string {
   return "overview";
 }
 
-function LoadingScreen() {
-  return (
-    <div style={{ minHeight: "100vh", background: "#E6F4F4", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", gap: 14, color: "#64748b", fontSize: 13 }}>
-      <div style={{ width: 32, height: 32, border: "3px solid #B3E0E0", borderTop: "3px solid #0E898F", borderRadius: "50%", animation: "sp 0.8s linear infinite" }} />
-      <style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style>
-      Loading...
-    </div>
-  );
-}
-
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [deptProfile, setDeptProfile] = useState<any>(null);
@@ -126,8 +116,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const navigate = (item: typeof NAV_ITEMS[0]) => { router.push(item.route); setSidebarOpen(false); };
-
-  if (loading) return <LoadingScreen />
 
   return (
     <>
@@ -399,7 +387,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function ParentDeptLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<LoadingScreen />}>
+    <Suspense fallback={null}>
       <LayoutContent>{children}</LayoutContent>
     </Suspense>
   );

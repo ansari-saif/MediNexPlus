@@ -39,22 +39,12 @@ const NAV_SECTIONS = [
 const ALL_IDS = NAV_SECTIONS.flatMap(s => s.items.map(i => i.id));
 function getActiveId(tab: string | null) { return (tab && ALL_IDS.includes(tab)) ? tab : "overview"; }
 
-function Spinner() {
-  return (
-    <div style={{ minHeight: "100vh", background: ACCENT_LIGHT, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", gap: 14, color: "#64748b", fontSize: 13 }}>
-      <div style={{ width: 30, height: 30, border: `3px solid ${ACCENT_BDR}`, borderTop: `3px solid ${ACCENT}`, borderRadius: "50%", animation: "dgspin 0.8s linear infinite" }} />
-      <style>{`@keyframes dgspin{to{transform:rotate(360deg)}}`}</style>
-      Loading Diagnostic Dashboard…
-    </div>
-  );
-}
-
 function DiagnosticLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [deptProfile, setDeptProfile] = useState<any>(null);
   const [hospitalLogo, setHospitalLogo] = useState<string | null>(null);
   const [hospitalName, setHospitalName] = useState("Hospital");
@@ -108,8 +98,6 @@ function DiagnosticLayoutContent({ children }: { children: React.ReactNode }) {
     router.push(id === "overview" ? base : `${base}?tab=${id}`);
     setSidebarOpen(false);
   };
-
-  if (loading) return <Spinner />;
 
   return (
     <>
@@ -304,7 +292,7 @@ function DiagnosticLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function DiagnosticLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={null}>
       <DiagnosticLayoutContent>{children}</DiagnosticLayoutContent>
     </Suspense>
   );

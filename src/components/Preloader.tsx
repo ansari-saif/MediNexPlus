@@ -16,16 +16,19 @@ export default function Preloader({ loading: externalLoading }: PreloaderProps) 
     // Only use internal loading if externalLoading is not provided
     if (externalLoading !== undefined) return;
 
-    const handleLoad = () => {
-      setTimeout(() => setInternalLoading(false), 800);
-    };
+    const hide = () => setInternalLoading(false);
+    const maxWait = setTimeout(hide, 400);
 
     if (document.readyState === "complete") {
-      handleLoad();
+      hide();
     } else {
-      window.addEventListener("load", handleLoad);
-      return () => window.removeEventListener("load", handleLoad);
+      window.addEventListener("load", hide);
+      return () => {
+        clearTimeout(maxWait);
+        window.removeEventListener("load", hide);
+      };
     }
+    return () => clearTimeout(maxWait);
   }, [externalLoading]);
 
   const isLoading = externalLoading !== undefined ? externalLoading : internalLoading;

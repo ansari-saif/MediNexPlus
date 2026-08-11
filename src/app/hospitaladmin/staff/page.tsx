@@ -75,7 +75,7 @@ export default function StaffPage() {
   };
 
   return (
-    <div className="hd-center">
+    <div className="hd-center" data-ui="hospitaladmin.staff">
       <div style={{ display: "flex", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
         {TABS.map(t => {
           const Icon = t.icon;
@@ -1003,7 +1003,7 @@ function StaffOverviewPanel({ onManageStaff }: { onManageStaff: () => void }) {
   }, []);
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "80px 0", color: "#94a3b8" }}>
+    <div data-ui="hospitaladmin.staff.loading" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "80px 0", color: "#94a3b8" }}>
       <Loader2 size={22} style={{ animation: "spin .7s linear infinite" }} />Loading overview...
     </div>
   );

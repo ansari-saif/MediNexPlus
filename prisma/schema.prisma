@@ -895,6 +895,7 @@ model Appointment {
   @@index([patientId])
   @@index([doctorId])
   @@index([hospitalId, appointmentDate])
+  @@index([hospitalId, createdAt])
   @@index([hospitalId, status])
   @@index([doctorId, appointmentDate, timeSlot])
   @@index([subDepartmentId])

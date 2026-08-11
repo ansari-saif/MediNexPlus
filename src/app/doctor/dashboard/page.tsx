@@ -28,6 +28,7 @@ import PrescriptionSettingsPanel from "@/components/PrescriptionSettingsPanel";
 import ScheduleBuilder from "@/components/ScheduleBuilder";
 import { DoctorAttendancePanel } from "@/components/DoctorAttendancePanel";
 import { useDoctorDashboard } from "./DoctorDashboardContext";
+import { PageDataLoader } from "@/components/PageDataLoader";
 import dynamic from "next/dynamic";
 
 const PatientsManagementPanelLazy = dynamic(() => import("@/app/subdept/dashboard/PatientsManagementPanel").then(mod => mod.PatientsManagementPanel), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Patient Management...</span></div> });
@@ -1438,7 +1439,9 @@ function DoctorDashboardContent() {
 
       <div style={{ display: "grid", gridTemplateColumns: tab === "schedule" ? "1fr 260px" : "1fr", gap: 0 }}>
         <div data-ui="doctor.dashboard">
-          {selectedPatientId ? (
+          {!doctor ? (
+            <PageDataLoader ui="doctor.dashboard.loading" label="Loading dashboard..." />
+          ) : selectedPatientId ? (
             <PatientProfilePanel
               patientId={selectedPatientId}
               onBack={() => setSelectedPatientId(null)}
@@ -2448,12 +2451,7 @@ function DoctorDashboardContent() {
 
 export default function DoctorDashboard() {
   return (
-    <Suspense fallback={
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", color: "#64748b", fontSize:13, gap: 14 }}>
-        <Loader2 size={24} style={{ animation: "spin .7s linear infinite" }} />
-        Loading dashboard...
-      </div>
-    }>
+    <Suspense fallback={<PageDataLoader ui="doctor.dashboard.loading" label="Loading dashboard..." />}>
       <DoctorDashboardContent />
     </Suspense>
   );

@@ -8,6 +8,7 @@ import {
   Lock, Eye, EyeOff,
 } from "lucide-react";
 import { Anchor } from "@/lib/uianchor";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 interface UserData {
   id: string;
@@ -148,18 +149,14 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "100vh", background: "#f0f4f8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', sans-serif" }}>
-        <style suppressHydrationWarning>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#64748b" }}>
-          <Loader2 size={24} style={{ animation: "spin 1s linear infinite" }} />
-          <span>Loading...</span>
-        </div>
-      </div>
+      <main className="hd-center" data-ui="hospitaladmin.profile">
+        <PageDataLoader ui="hospitaladmin.profile.loading" label="Loading..." />
+      </main>
     );
   }
 
   return (
-    <main className="hd-center">
+    <main className="hd-center" data-ui="hospitaladmin.profile">
             <div style={{ maxWidth: 700, margin: "0 auto" }}>
               {/* Page Header */}
               <div style={{ marginBottom: 24 }}>

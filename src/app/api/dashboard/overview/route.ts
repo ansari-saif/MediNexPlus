@@ -35,6 +35,9 @@ export const GET = withApiRoute("dashboard.overview.get", async (req: NextReques
       });
     }
 
+    const DAY_NAMES = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
+    const todayDayName = DAY_NAMES[now.getDay()];
+
     // Parallel queries
     const [
       // Patient stats
@@ -74,6 +77,10 @@ export const GET = withApiRoute("dashboard.overview.get", async (req: NextReques
       activeTreatmentPlans,
       completedTreatmentPlans,
       treatmentRevenue,
+
+      monthlyTrends,
+      availableDoctors,
+      followUpStats,
     ] = await Promise.all([
       // Patient stats
       prisma.patient.count({ where: { hospitalId } }),
@@ -140,18 +147,29 @@ export const GET = withApiRoute("dashboard.overview.get", async (req: NextReques
       px.treatmentPlan.count({ where: { hospitalId, status: "ACTIVE" } }).catch(() => 0),
       px.treatmentPlan.count({ where: { hospitalId, status: "COMPLETED" } }).catch(() => 0),
       px.treatmentPlan.aggregate({ where: { hospitalId }, _sum: { paidAmount: true } }).catch(() => ({ _sum: { paidAmount: 0 } })),
-    ]);
 
-    // Monthly appointment trends (last 9 months)
-    const monthlyTrends = await Promise.all(
-      monthlyData.map(async (m) => {
-        const [appts, patients] = await Promise.all([
-          px.appointment.count({ where: { hospitalId, appointmentDate: { gte: m.start, lte: m.end } } }).catch(() => 0),
-          prisma.patient.count({ where: { hospitalId, createdAt: { gte: m.start, lte: m.end } } }).catch(() => 0),
-        ]);
-        return { month: m.month, label: m.label, appointments: appts, patients };
-      })
-    );
+      Promise.all(
+        monthlyData.map(async (m) => {
+          const [appts, patients] = await Promise.all([
+            px.appointment.count({ where: { hospitalId, appointmentDate: { gte: m.start, lte: m.end } } }).catch(() => 0),
+            prisma.patient.count({ where: { hospitalId, createdAt: { gte: m.start, lte: m.end } } }).catch(() => 0),
+          ]);
+          return { month: m.month, label: m.label, appointments: appts, patients };
+        })
+      ),
+      px.doctorAvailability.findMany({
+        where: { isActive: true, day: todayDayName, doctor: { hospitalId, isActive: true } },
+        select: {
+          startTime: true,
+          endTime: true,
+          doctor: { select: { id: true, name: true, specialization: true, department: { select: { name: true } } } },
+        },
+      }).catch(() => []),
+      px.followUp.findMany({
+        where: { hospitalId, followUpDate: { gte: todayStart, lte: todayEnd } },
+        select: { status: true },
+      }).catch(() => []),
+    ]);
 
     // Build "doctors on duty today" — unique doctors with appts today
     const doctorMap = new Map<string, any>();
@@ -176,18 +194,6 @@ export const GET = withApiRoute("dashboard.overview.get", async (req: NextReques
       }
     }
 
-    // Also include doctors with scheduled availability for today's day-of-week
-    const DAY_NAMES = ["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"];
-    const todayDayName = DAY_NAMES[now.getDay()];
-    const availableDoctors = await px.doctorAvailability.findMany({
-      where: { isActive: true, day: todayDayName, doctor: { hospitalId, isActive: true } },
-      select: {
-        startTime: true,
-        endTime: true,
-        doctor: { select: { id: true, name: true, specialization: true, department: { select: { name: true } } } },
-      },
-    }).catch(() => []);
-
     for (const av of availableDoctors) {
       if (!av.doctor) continue;
       if (!doctorMap.has(av.doctor.id)) {
@@ -205,12 +211,6 @@ export const GET = withApiRoute("dashboard.overview.get", async (req: NextReques
     }
 
     const doctorsOnDuty = Array.from(doctorMap.values()).slice(0, 10);
-
-    // Follow-up stats
-    const followUpStats = await px.followUp.findMany({
-      where: { hospitalId, followUpDate: { gte: todayStart, lte: todayEnd } },
-      select: { status: true },
-    }).catch(() => []);
 
     const todayFollowUps = followUpStats.length;
     const pendingFollowUps = followUpStats.filter((f: any) => f.status === "PENDING").length;

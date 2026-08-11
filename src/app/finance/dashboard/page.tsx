@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { Anchor } from "@/lib/uianchor";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 const api = async (url: string, method = "GET", body?: any) => {
   const opts: any = { method, credentials: "include", headers: { "Content-Type": "application/json" } };
@@ -392,7 +393,7 @@ export default function FinanceDashboard() {
   const [user,        setUser]        = useState<any>(null);
   const [profile,     setProfile]     = useState<any>(null);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [tab, setTab]         = useState<DashTab>("overview");
 
   // Overview
@@ -505,18 +506,6 @@ export default function FinanceDashboard() {
 
   const logout = async () => { await api("/api/auth/logout", "POST"); router.push("/login"); };
   const initials = (n: string) => (n || "FH").split(" ").map(x => x[0]).join("").slice(0, 2).toUpperCase();
-
-  if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#f0f4f8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif" }}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg,#f59e0b,#b45309)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", boxShadow: "0 8px 24px rgba(245,158,11,.3)" }}>
-          <Loader2 size={24} color="#fff" style={{ animation: "spin .7s linear infinite" }} />
-        </div>
-        <div style={{ fontSize:13, fontWeight: 600, color: "#475569" }}>Loading Finance Portal…</div>
-      </div>
-    </div>
-  );
 
   const navItems: { id: DashTab; label: string; icon: any }[] = [
     { id: "overview",  label: "Overview",       icon: BarChart3 },
@@ -747,6 +736,9 @@ export default function FinanceDashboard() {
           <div className="fin-body" data-ui="finance.dashboard">
 
             {/* ═══ OVERVIEW ═══ */}
+            {tab === "overview" && !stats && (
+              <PageDataLoader ui="finance.dashboard.loading" label="Loading Finance Portal…" />
+            )}
             {tab === "overview" && stats && (<>
               {/* Hero */}
               <div style={{ background: "linear-gradient(135deg,#f59e0b,#b45309)", borderRadius: 18, padding: "24px 28px", marginBottom: 20, color: "#fff", position: "relative", overflow: "hidden" }}>

@@ -11,6 +11,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { PageDataLoader } from "@/components/PageDataLoader";
 
 const ReportsPanel = dynamic(() => import("@/components/ReportsPanel"), { ssr: false });
 const PharmacyDashboard = dynamic(() => import("@/components/PharmacyDashboard"), { ssr: false });
@@ -111,7 +112,15 @@ function DashboardContent() {
     router.push("/parentdept/dashboard?tab=subdepts", { scroll: false });
   };
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="hd-body" data-ui="parentdept.dashboard">
+        <div className="hd-center">
+          <PageDataLoader ui="parentdept.dashboard.loading" label="Loading dashboard..." />
+        </div>
+      </div>
+    );
+  }
 
   /* If viewing a sub-dept dashboard */
   if (viewingSubDept && tab === "subdepts") {

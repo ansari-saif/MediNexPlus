@@ -25,6 +25,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   web:
+    image: medinexplus-web-dev
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -42,6 +43,7 @@ services:
     volumes:
       - .:/app
       - web_node_modules:/app/node_modules
+      - web_next_dev:/app/.next-dev
     depends_on:
       mysql:
         condition: service_healthy
@@ -50,3 +52,4 @@ services:
 volumes:
   mysql_data_dev:
   web_node_modules:
+  web_next_dev:

@@ -3,6 +3,7 @@ import { logger } from "../../../../../backend/utils/logger";
 import { authMiddleware } from "../../../../../backend/middlewares/auth.middleware";
 import prisma from "../../../../../backend/config/db";
 import { withApiRoute } from "../../../../../backend/utils/api-route";
+import { startSsePoll } from "../../../../../backend/utils/sse-poll";
 const log_src_app_api_appointments_stream_route = logger.child("src/app/api/appointments/stream/route");
 
 export const dynamic = "force-dynamic";
@@ -51,77 +52,69 @@ export const GET = withApiRoute("appointments.stream.get", async (req: NextReque
       // Send initial connection confirmation
       send({ connected: true, role: user.role });
 
-      // Poll every 3 seconds for new appointments
-      const interval = setInterval(async () => {
-        if (closed) { clearInterval(interval); return; }
+      const stopPoll = startSsePoll(async () => {
+        const checkTime = lastCheckTime;
+        let newAppointments;
         try {
-          const checkTime = lastCheckTime;
-
-          const newAppointments = await prisma.appointment.findMany({
-            where: {
-              hospitalId,
-              createdAt: { gte: checkTime },
+          newAppointments = await prisma.appointment.findMany({
+          where: {
+            hospitalId,
+            createdAt: { gt: checkTime },
+          },
+          select: {
+            id: true,
+            tokenNumber: true,
+            appointmentDate: true,
+            timeSlot: true,
+            type: true,
+            status: true,
+            consultationFee: true,
+            notes: true,
+            createdAt: true,
+            patient: {
+              select: { id: true, name: true, patientId: true, phone: true, email: true, gender: true },
             },
-            include: {
-              patient: {
-                select: {
-                  id: true,
-                  name: true,
-                  patientId: true,
-                  phone: true,
-                  email: true,
-                  gender: true,
-                },
-              },
-              doctor: {
-                select: {
-                  id: true,
-                  name: true,
-                  specialization: true,
-                },
-              },
-              department: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
+            doctor: {
+              select: { id: true, name: true, specialization: true },
             },
-            orderBy: { createdAt: "desc" },
-            take: 10,
-          });
+            department: {
+              select: { id: true, name: true },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        });
 
-          for (const appt of newAppointments) {
-            if (!notifiedIds.has(appt.id)) {
-              notifiedIds.add(appt.id);
-              send({
-                type: "NEW_APPOINTMENT",
-                appointment: {
-                  id: appt.id,
-                  tokenNumber: appt.tokenNumber,
-                  patient: appt.patient,
-                  doctor: appt.doctor,
-                  department: appt.department,
-                  appointmentDate: appt.appointmentDate,
-                  timeSlot: appt.timeSlot,
-                  type: appt.type,
-                  status: appt.status,
-                  consultationFee: appt.consultationFee,
-                  notes: appt.notes,
-                  createdAt: appt.createdAt,
-                },
-                timestamp: new Date().toISOString(),
-              });
-            }
+        for (const appt of newAppointments) {
+          if (!notifiedIds.has(appt.id)) {
+            notifiedIds.add(appt.id);
+            send({
+              type: "NEW_APPOINTMENT",
+              appointment: {
+                id: appt.id,
+                tokenNumber: appt.tokenNumber,
+                patient: appt.patient,
+                doctor: appt.doctor,
+                department: appt.department,
+                appointmentDate: appt.appointmentDate,
+                timeSlot: appt.timeSlot,
+                type: appt.type,
+                status: appt.status,
+                consultationFee: appt.consultationFee,
+                notes: appt.notes,
+                createdAt: appt.createdAt,
+              },
+              timestamp: new Date().toISOString(),
+            });
           }
+        }
 
-          lastCheckTime = new Date();
+        lastCheckTime = new Date();
         } catch (err) {
           log_src_app_api_appointments_stream_route.error("Appointment stream error:", err);
         }
-      }, 3000);
+      }, 10_000, () => closed);
 
-      // Heartbeat every 25 seconds
       const heartbeat = setInterval(() => {
         if (closed) { clearInterval(heartbeat); return; }
         try {
@@ -129,13 +122,13 @@ export const GET = withApiRoute("appointments.stream.get", async (req: NextReque
         } catch {
           closed = true;
           clearInterval(heartbeat);
-          clearInterval(interval);
+          stopPoll();
         }
       }, 25000);
 
       req.signal.addEventListener("abort", () => {
         closed = true;
-        clearInterval(interval);
+        stopPoll();
         clearInterval(heartbeat);
         try { controller.close(); } catch {}
       });

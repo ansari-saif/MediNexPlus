@@ -16,6 +16,8 @@ import {
   Tooltip, Legend, PieChart, Pie, Cell, AreaChart, Area,
 } from "recharts";
 
+import { PageDataLoader } from "@/components/PageDataLoader";
+
 const ReportsPanel = dynamic(() => import("@/components/ReportsPanel"), { ssr: false });
 const PatientsManagementPanel = dynamic(() => import("@/app/subdept/dashboard/PatientsManagementPanel").then(mod => mod.PatientsManagementPanel), { ssr: false, loading: () => <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",width:"100%"}}><span style={{fontSize:13,color:"#94a3b8",display:"flex",alignItems:"center",gap:8}}><Loader2 size={16} style={{animation:"spin .7s linear infinite"}}/>Loading Patient Management...</span></div> });
 
@@ -348,7 +350,7 @@ function OverviewTab({ deptProfile, onNavTo }: { deptProfile: any; onNavTo: (t: 
       <div className="cl-dept-banner" style={{ marginBottom: 24 }}>
         <div className="cl-dept-banner-ic"><Stethoscope size={26} color="#fff" /></div>
         <div style={{ position: "relative", flex: 1, minWidth: 0 }}>
-          <div className="cl-dept-banner-name">{deptProfile?.name || "Clinical Department"}</div>
+          <div className="cl-dept-banner-name" data-ui="clinical.dashboard">{deptProfile?.name || "Clinical Department"}</div>
           <div className="cl-dept-banner-sub">{deptProfile?.description || "Clinical Department Head Dashboard"}</div>
           <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
             <div className="cl-dept-badge"><Activity size={10} />CLINICAL</div>
@@ -363,6 +365,7 @@ function OverviewTab({ deptProfile, onNavTo }: { deptProfile: any; onNavTo: (t: 
           {loading ? "Loading…" : "Refresh"}
         </button>
       </div>
+      {loading && <PageDataLoader ui="clinical.dashboard.loading" label="Loading overview..." minHeight={80} />}
 
       {/* Stats */}
       <div className="cl-stats">

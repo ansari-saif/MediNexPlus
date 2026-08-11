@@ -49,7 +49,7 @@ export default function DoctorsPage() {
   ];
 
   return (
-    <div className="hd-center">
+    <div className="hd-center" data-ui="hospitaladmin.doctors">
       <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
         {TABS.map(t => {
           const Icon = t.icon;
@@ -130,7 +130,7 @@ function DoctorsOverviewPanel({ onManageDoctors }: { onManageDoctors: () => void
   }, []);
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "80px 0", color: "#94a3b8" }}>
+    <div data-ui="hospitaladmin.doctors.loading" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "80px 0", color: "#94a3b8" }}>
       <Loader2 size={22} style={{ animation: "spin .7s linear infinite" }} />Loading overview...
     </div>
   );

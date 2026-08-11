@@ -44,23 +44,13 @@ function getActiveId(tab: string | null): string {
   return "overview";
 }
 
-function Spinner() {
-  return (
-    <div style={{ minHeight: "100vh", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", gap: 14, color: "#64748b", fontSize: 13 }}>
-      <div style={{ width: 30, height: 30, border: `3px solid ${ACCENT_BDR}`, borderTop: `3px solid ${ACCENT}`, borderRadius: "50%", animation: "aspin 0.8s linear infinite" }} />
-      <style>{`@keyframes aspin{to{transform:rotate(360deg)}}`}</style>
-      Loading Administrative Dashboard…
-    </div>
-  );
-}
-
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [deptProfile, setDeptProfile] = useState<any>(null);
   const [hospitalLogo, setHospitalLogo] = useState<string | null>(null);
   const [hospitalName, setHospitalName] = useState("Hospital");
@@ -114,8 +104,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     router.push(id === "overview" ? base : `${base}?tab=${id}`);
     setSidebarOpen(false);
   };
-
-  if (loading) return <Spinner />;
 
   return (
     <>
@@ -315,7 +303,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<Spinner />}>
+    <Suspense fallback={null}>
       <AdminLayoutContent>{children}</AdminLayoutContent>
     </Suspense>
   );

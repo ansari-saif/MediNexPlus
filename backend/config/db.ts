@@ -4,8 +4,17 @@ import { recordDbQueryMetrics } from "../../src/lib/observability/metrics";
 
 const SLOW_QUERY_MS = 500;
 
+function datasourceUrl() {
+  const raw = process.env.DATABASE_URL || "";
+  if (!raw || /connection_limit=/i.test(raw)) return raw;
+  return `${raw}${raw.includes("?") ? "&" : "?"}connection_limit=10&pool_timeout=5`;
+}
+
 const prismaClientSingleton = () => {
-  const base = new PrismaClient();
+  logger.info({ module: "prisma" }, "Prisma instance initialized");
+  const base = new PrismaClient({
+    datasources: { db: { url: datasourceUrl() } },
+  });
 
   return base.$extends({
     query: {
@@ -43,8 +52,6 @@ declare const globalThis: {
 } & typeof global;
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
-
-logger.info({ module: "prisma" }, "Prisma instance initialized");
 
 export default prisma;
 
