@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+# Runtime-only image. Compile with scripts/build-next.sh first (writes deploy-out/).
+FROM node:20-bookworm-slim
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+WORKDIR /app
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd --system --gid 1001 nodejs \
+  && useradd --system --uid 1001 --gid nodejs nextjs
+
+COPY --chown=nextjs:nodejs deploy-out/standalone ./
+COPY --chown=nextjs:nodejs deploy-out/static ./.next/static
+COPY --chown=nextjs:nodejs public ./public
+COPY --chown=nextjs:nodejs prisma ./prisma
+COPY --chown=nextjs:nodejs scripts/docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --chown=nextjs:nodejs scripts/otel-preload.cjs ./scripts/otel-preload.cjs
+RUN chmod +x ./docker-entrypoint.sh
+
+USER nextjs
+EXPOSE 3000
+CMD ["./docker-entrypoint.sh"]
