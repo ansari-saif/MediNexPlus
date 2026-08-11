@@ -182,6 +182,12 @@ export type UIAnchorId =
   | "hospitaladmin.inventory.search"
   | "hospitaladmin.ipd.admit"
   | "hospitaladmin.ipd.search"
+  | "hospitaladmin.lab.inventory.create"
+  | "hospitaladmin.lab.inventory.search"
+  | "hospitaladmin.lab.ipd.admit"
+  | "hospitaladmin.lab.ipd.search"
+  | "hospitaladmin.lab.patients.create"
+  | "hospitaladmin.lab.patients.search"
   | "hospitaladmin.logout"
   | "hospitaladmin.nav.appointments"
   | "hospitaladmin.nav.billing"
@@ -196,8 +202,23 @@ export type UIAnchorId =
   | "hospitaladmin.nav.patients"
   | "hospitaladmin.nav.reports"
   | "hospitaladmin.nav.staff"
+  | "hospitaladmin.nav.subdepartments"
+  | "hospitaladmin.nav.subdepartments.menu"
+  | "hospitaladmin.nav.subdept-item"
+  | "hospitaladmin.pathology.inventory.create"
+  | "hospitaladmin.pathology.inventory.search"
+  | "hospitaladmin.pathology.ipd.admit"
+  | "hospitaladmin.pathology.ipd.search"
+  | "hospitaladmin.pathology.patients.create"
+  | "hospitaladmin.pathology.patients.search"
   | "hospitaladmin.patients.create"
   | "hospitaladmin.patients.search"
+  | "hospitaladmin.pharmacy.inventory.create"
+  | "hospitaladmin.pharmacy.inventory.search"
+  | "hospitaladmin.pharmacy.ipd.admit"
+  | "hospitaladmin.pharmacy.ipd.search"
+  | "hospitaladmin.pharmacy.patients.create"
+  | "hospitaladmin.pharmacy.patients.search"
   | "hospitaladmin.profile"
   | "hospitaladmin.profile.change-password.submit"
   | "hospitaladmin.profile.confirm-password"
@@ -212,6 +233,7 @@ export type UIAnchorId =
   | "hospitaladmin.staff.loading"
   | "hospitaladmin.staff.save"
   | "hospitaladmin.staff.search"
+  | "hospitaladmin.subdept"
   | "parentdept.dashboard"
   | "parentdept.dashboard.loading"
   | "parentdept.dashboard.tab.completed"
@@ -345,7 +367,16 @@ export type UIAnchorId =
   | "subdept.specialty.start"
   | "superadmin.dashboard"
   | "superadmin.dashboard.loading"
+  | "superadmin.hospitals.create.admin-name"
+  | "superadmin.hospitals.create.confirm-password"
+  | "superadmin.hospitals.create.email"
+  | "superadmin.hospitals.create.error"
+  | "superadmin.hospitals.create.mobile"
+  | "superadmin.hospitals.create.name"
+  | "superadmin.hospitals.create.open"
+  | "superadmin.hospitals.create.password"
   | "superadmin.hospitals.create.submit"
+  | "superadmin.hospitals.create.success"
   | "superadmin.logout"
   | "superadmin.nav.activity"
   | "superadmin.nav.hospitals"
@@ -542,6 +573,12 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.inventory.search",
   "hospitaladmin.ipd.admit",
   "hospitaladmin.ipd.search",
+  "hospitaladmin.lab.inventory.create",
+  "hospitaladmin.lab.inventory.search",
+  "hospitaladmin.lab.ipd.admit",
+  "hospitaladmin.lab.ipd.search",
+  "hospitaladmin.lab.patients.create",
+  "hospitaladmin.lab.patients.search",
   "hospitaladmin.logout",
   "hospitaladmin.nav.appointments",
   "hospitaladmin.nav.billing",
@@ -556,8 +593,23 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.nav.patients",
   "hospitaladmin.nav.reports",
   "hospitaladmin.nav.staff",
+  "hospitaladmin.nav.subdepartments",
+  "hospitaladmin.nav.subdepartments.menu",
+  "hospitaladmin.nav.subdept-item",
+  "hospitaladmin.pathology.inventory.create",
+  "hospitaladmin.pathology.inventory.search",
+  "hospitaladmin.pathology.ipd.admit",
+  "hospitaladmin.pathology.ipd.search",
+  "hospitaladmin.pathology.patients.create",
+  "hospitaladmin.pathology.patients.search",
   "hospitaladmin.patients.create",
   "hospitaladmin.patients.search",
+  "hospitaladmin.pharmacy.inventory.create",
+  "hospitaladmin.pharmacy.inventory.search",
+  "hospitaladmin.pharmacy.ipd.admit",
+  "hospitaladmin.pharmacy.ipd.search",
+  "hospitaladmin.pharmacy.patients.create",
+  "hospitaladmin.pharmacy.patients.search",
   "hospitaladmin.profile",
   "hospitaladmin.profile.change-password.submit",
   "hospitaladmin.profile.confirm-password",
@@ -572,6 +624,7 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.staff.loading",
   "hospitaladmin.staff.save",
   "hospitaladmin.staff.search",
+  "hospitaladmin.subdept",
   "parentdept.dashboard",
   "parentdept.dashboard.loading",
   "parentdept.dashboard.tab.completed",
@@ -705,7 +758,16 @@ export const UI_ANCHOR_IDS = [
   "subdept.specialty.start",
   "superadmin.dashboard",
   "superadmin.dashboard.loading",
+  "superadmin.hospitals.create.admin-name",
+  "superadmin.hospitals.create.confirm-password",
+  "superadmin.hospitals.create.email",
+  "superadmin.hospitals.create.error",
+  "superadmin.hospitals.create.mobile",
+  "superadmin.hospitals.create.name",
+  "superadmin.hospitals.create.open",
+  "superadmin.hospitals.create.password",
   "superadmin.hospitals.create.submit",
+  "superadmin.hospitals.create.success",
   "superadmin.logout",
   "superadmin.nav.activity",
   "superadmin.nav.hospitals",

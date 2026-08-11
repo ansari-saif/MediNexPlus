@@ -11,6 +11,8 @@ const ACCENT = "#b91c1c";
 const LIGHT_BG = "#fff5f5";
 const BORDER = "#fecaca";
 
+const WIP_MSG = "Work in progress — this feature is coming soon.";
+
 const api = async (url: string, method = "GET", body?: any) => {
   const opts: RequestInit = { method, credentials: "include", headers: { "Content-Type": "application/json" } };
   if (body) opts.body = JSON.stringify(body);
@@ -19,6 +21,15 @@ const api = async (url: string, method = "GET", body?: any) => {
 };
 
 const fmtCurrency = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
+
+function WipBanner() {
+  return (
+    <div className="amb-wip" role="status">
+      <AlertCircle size={14} />
+      <span>Work in progress — booking, fleet, and trip tools are being built.</span>
+    </div>
+  );
+}
 
 export default function AmbulanceDashboard({ profile, user }: { profile: any; user: any }) {
   const [tab, setTab] = useState<"overview" | "bookings" | "vehicles" | "drivers" | "trips" | "billing" | "reports">("overview");
@@ -33,6 +44,8 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
   // Trips
   const [trips, setTrips] = useState<any[]>([]);
 
+  const showWip = () => window.alert(WIP_MSG);
+
   const loadBookings = useCallback(async () => {
     setBookingsLoading(true);
     const res = await api("/api/subdept/queue");
@@ -45,6 +58,7 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
   return (
     <>
       <style>{ambStyles}</style>
+      <WipBanner />
 
       <div className="amb-nav">
         {([
@@ -97,10 +111,10 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
           </div>
 
           <div className="amb-quick-grid">
-            <button className="amb-quick-btn" onClick={() => setTab("bookings")}><ClipboardList size={20} color={ACCENT} /><span>New Booking</span></button>
-            <button className="amb-quick-btn" onClick={() => setTab("vehicles")}><Truck size={20} color="#16a34a" /><span>Vehicle Status</span></button>
-            <button className="amb-quick-btn" onClick={() => setTab("trips")}><Navigation size={20} color="#ea580c" /><span>Active Trips</span></button>
-            <button className="amb-quick-btn" onClick={() => setTab("reports")}><BarChart2 size={20} color="#4338ca" /><span>Trip Reports</span></button>
+            <button type="button" className="amb-quick-btn" onClick={showWip}><ClipboardList size={20} color={ACCENT} /><span>New Booking</span><em className="amb-wip-chip">WIP</em></button>
+            <button type="button" className="amb-quick-btn" onClick={() => setTab("vehicles")}><Truck size={20} color="#16a34a" /><span>Vehicle Status</span></button>
+            <button type="button" className="amb-quick-btn" onClick={() => setTab("trips")}><Navigation size={20} color="#ea580c" /><span>Active Trips</span></button>
+            <button type="button" className="amb-quick-btn" onClick={() => setTab("reports")}><BarChart2 size={20} color="#4338ca" /><span>Trip Reports</span></button>
           </div>
         </div>
       )}
@@ -110,15 +124,17 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
         <div className="amb-section">
           <div className="amb-toolbar">
             <div className="amb-chart-title">Booking Management</div>
-            <button className="amb-btn-primary"><Plus size={13} /> New Booking</button>
+            <button type="button" className="amb-btn-primary amb-btn-wip" onClick={showWip}><Plus size={13} /> New Booking</button>
           </div>
           {bookingsLoading ? (
             <div className="amb-loading"><Loader2 size={20} className="amb-spin" /> Loading bookings...</div>
           ) : bookings.length === 0 ? (
             <div className="amb-empty">
               <ClipboardList size={32} color="#cbd5e1" />
-              <div style={{ marginTop: 8 }}>No ambulance bookings</div>
-              <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Emergency and scheduled ambulance requests will appear here</div>
+              <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+              <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>
+                Ambulance booking is being built. This screen will list emergency and scheduled requests soon.
+              </div>
             </div>
           ) : (
             <div className="amb-booking-list">
@@ -143,12 +159,12 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
         <div className="amb-section">
           <div className="amb-toolbar">
             <div className="amb-chart-title">Vehicle Tracking</div>
-            <button className="amb-btn-primary"><Plus size={13} /> Add Vehicle</button>
+            <button type="button" className="amb-btn-primary amb-btn-wip" onClick={showWip}><Plus size={13} /> Add Vehicle</button>
           </div>
           <div className="amb-empty">
             <Truck size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Vehicle fleet management</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Track vehicle status (Available / Busy / Maintenance) and GPS location</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Fleet status and GPS tracking will be available here soon.</div>
           </div>
         </div>
       )}
@@ -158,12 +174,12 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
         <div className="amb-section">
           <div className="amb-toolbar">
             <div className="amb-chart-title">Driver Assignment</div>
-            <button className="amb-btn-primary"><Plus size={13} /> Add Driver</button>
+            <button type="button" className="amb-btn-primary amb-btn-wip" onClick={showWip}><Plus size={13} /> Add Driver</button>
           </div>
           <div className="amb-empty">
             <Users size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Driver management</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Assign drivers to vehicles, manage contact details and availability</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Driver assignment tools are coming soon.</div>
           </div>
         </div>
       )}
@@ -174,8 +190,8 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
           <div className="amb-toolbar"><div className="amb-chart-title">Trip Management</div></div>
           <div className="amb-empty">
             <Navigation size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Trip tracking</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Pickup & drop details, distance & time tracking for all ambulance trips</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Trip tracking will be available here soon.</div>
           </div>
         </div>
       )}
@@ -186,8 +202,8 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
           <div className="amb-toolbar"><div className="amb-chart-title">Ambulance Billing</div></div>
           <div className="amb-empty">
             <IndianRupee size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Distance-based fare calculation</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Distance-based fare, emergency charges, and billing integration</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Distance-based fare and billing integration is being built.</div>
           </div>
         </div>
       )}
@@ -198,7 +214,8 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
           <div className="amb-toolbar"><div className="amb-chart-title">History & Reports</div></div>
           <div className="amb-empty">
             <FileText size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Trip logs and revenue tracking reports</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Trip logs and revenue reports are coming soon.</div>
           </div>
         </div>
       )}
@@ -207,6 +224,9 @@ export default function AmbulanceDashboard({ profile, user }: { profile: any; us
 }
 
 const ambStyles = `
+  .amb-wip{display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:14px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-size:12px;font-weight:600}
+  .amb-wip-chip{margin-left:auto;font-size:9px;font-style:normal;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:100px;background:#ffedd5;color:#c2410c}
+  .amb-btn-wip{opacity:.92}
   .amb-nav{display:flex;gap:0;padding:6px 0;margin-bottom:20px;border-bottom:2px solid #f1f5f9;flex-wrap:wrap}
   .amb-nav-btn{padding:9px 16px;border:none;background:none;color:#64748b;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
   .amb-nav-btn:hover{color:#334155;background:#f8fafc}

@@ -96,10 +96,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Find if the current path is a protected route
-  const matchedBase = Object.keys(PROTECTED_ROUTES).find((base) =>
-    pathname.startsWith(base)
-  );
+  // Longest prefix wins so /hospitaladmin/sub-departments is not
+  // accidentally matched by a shorter unrelated base.
+  const matchedBase = Object.keys(PROTECTED_ROUTES)
+    .filter((base) => pathname === base || pathname.startsWith(`${base}/`))
+    .sort((a, b) => b.length - a.length)[0];
 
   if (!matchedBase) {
     return NextResponse.next();

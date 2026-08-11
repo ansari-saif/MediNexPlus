@@ -205,6 +205,21 @@ function scanFile(file, source, components, uiPrefixes) {
   }
 }
 
+/** ISO-8601 timestamp in India Standard Time (+05:30). */
+function formatGeneratedAtIst(date = new Date()) {
+  const local = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
+  return `${local.replace(" ", "T")}+05:30`;
+}
+
 function main() {
   const files = walkTsx(SRC).filter((f) => !f.includes(`${path.sep}uianchor${path.sep}`));
   const uiPrefixes = collectUiPrefixes(files);
@@ -225,7 +240,7 @@ function main() {
 
   const manifest = {
     schemaVersion: 1,
-    generatedAt: new Date().toISOString(),
+    generatedAt: formatGeneratedAtIst(),
     components: manifestComponents,
   };
 

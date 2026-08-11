@@ -5,9 +5,10 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, Users, UserRound, HelpCircle,
   LogOut, Building2, Stethoscope, ClipboardList,
-  IndianRupee, CreditCard, ChevronDown, User, BedDouble, BarChart2, Menu, X
+  IndianRupee, CreditCard, ChevronDown, ChevronRight, User, BedDouble, BarChart2, Menu, X, Layers
 } from "lucide-react";
 import { Anchor } from "@/lib/uianchor";
+import { sortSubDepts, subDeptLabel } from "@/lib/subdept-catalog";
 import dynamic from "next/dynamic";
 
 const NotificationBell = dynamic(() => import("@/components/NotificationBell"), { ssr: false });
@@ -31,7 +32,10 @@ const NAV_ITEMS = [
   { id: "finance", label: "Finance", Icon: IndianRupee, section: "System", route: "/hospitaladmin/finance" },
 ];
 
+type SubDeptNavItem = { id: string; name: string; type: string; customName?: string | null };
+
 function getActiveId(pathname: string, tab: string | null): string {
+  if (pathname.startsWith("/hospitaladmin/sub-departments")) return "subdepartments";
   if (pathname.startsWith("/hospitaladmin/appointments")) return "appointments";
   if (pathname.startsWith("/hospitaladmin/consultation")) return "consultation";
   if (pathname.startsWith("/hospitaladmin/finance")) return "finance";
@@ -72,9 +76,15 @@ export default function HospitalAdminShell({ children }: { children: React.React
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
   const [tab, setTab] = useState<string | null>(null);
+  const [subDepts, setSubDepts] = useState<SubDeptNavItem[]>([]);
+  const [subDeptsOpen, setSubDeptsOpen] = useState(false);
+  const [subDeptsLoaded, setSubDeptsLoaded] = useState(false);
   const onTab = useCallback((next: string | null) => setTab(next), []);
 
   const activeId = getActiveId(pathname, tab);
+  const activeSubDeptId = pathname.startsWith("/hospitaladmin/sub-departments/")
+    ? pathname.split("/")[3] || null
+    : null;
 
   const fetchUser = () => {
     fetch("/api/auth/me", { credentials: "include" })
@@ -107,6 +117,26 @@ export default function HospitalAdminShell({ children }: { children: React.React
     const handleProfileUpdate = () => fetchUser();
     window.addEventListener("profileUpdated", handleProfileUpdate);
     return () => window.removeEventListener("profileUpdated", handleProfileUpdate);
+  }, []);
+
+  useEffect(() => {
+    if (activeId === "subdepartments") setSubDeptsOpen(true);
+  }, [activeId]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/config/subdepartments?isActive=true&limit=100", { credentials: "include" })
+      .then(r => r.json())
+      .then(d => {
+        if (cancelled) return;
+        const rows = Array.isArray(d.data?.data) ? d.data.data : Array.isArray(d.data) ? d.data : [];
+        setSubDepts(sortSubDepts(rows));
+        setSubDeptsLoaded(true);
+      })
+      .catch(() => {
+        if (!cancelled) setSubDeptsLoaded(true);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const logout = async () => {
@@ -161,6 +191,56 @@ export default function HospitalAdminShell({ children }: { children: React.React
                 {n.label}
               </Anchor.Button>
             ))}
+
+            <Anchor.Button
+              ui="hospitaladmin.nav.subdepartments"
+              className={`hd-nb${activeId === "subdepartments" ? " on" : ""}`}
+              onClick={() => setSubDeptsOpen(o => !o)}
+              style={{ position: "relative" }}
+            >
+              {activeId === "subdepartments" && <div className="hd-nb-dot" />}
+              <span style={{ color: activeId === "subdepartments" ? "#0A6B70" : "#94a3b8", display: "flex" }}>
+                <Layers size={16} />
+              </span>
+              <span style={{ flex: 1, textAlign: "left" }}>Sub Departments</span>
+              <span style={{ color: "#94a3b8", display: "flex" }}>
+                {subDeptsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              </span>
+            </Anchor.Button>
+
+            {subDeptsOpen && (
+              <div data-ui="hospitaladmin.nav.subdepartments.menu" className="hd-subnav">
+                {!subDeptsLoaded ? (
+                  <div className="hd-subnav-empty">Loading…</div>
+                ) : subDepts.length === 0 ? (
+                  <div className="hd-subnav-empty">
+                    No sub-departments yet — create in Configure
+                  </div>
+                ) : (
+                  subDepts.map(sd => {
+                    const on = activeSubDeptId === sd.id;
+                    return (
+                      <Anchor.Button
+                        key={sd.id}
+                        ui="hospitaladmin.nav.subdept-item"
+                        data-ui-instance={sd.id}
+                        className={`hd-nb hd-nb-sub${on ? " on" : ""}`}
+                        onClick={() => {
+                          router.push(`/hospitaladmin/sub-departments/${sd.id}`);
+                          setSidebarOpen(false);
+                        }}
+                        title={sd.type?.replace(/_/g, " ")}
+                      >
+                        {on && <div className="hd-nb-dot" />}
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {subDeptLabel(sd)}
+                        </span>
+                      </Anchor.Button>
+                    );
+                  })
+                )}
+              </div>
+            )}
 
             <div className="hd-nav-sec">System</div>
             {systemItems.map(n => (

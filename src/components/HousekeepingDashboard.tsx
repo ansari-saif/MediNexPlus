@@ -11,12 +11,23 @@ const ACCENT = "#c2410c";
 const LIGHT_BG = "#fff7ed";
 const BORDER = "#fed7aa";
 
+const WIP_MSG = "Work in progress — this feature is coming soon.";
+
 const api = async (url: string, method = "GET", body?: any) => {
   const opts: RequestInit = { method, credentials: "include", headers: { "Content-Type": "application/json" } };
   if (body) opts.body = JSON.stringify(body);
   const r = await fetch(url, opts);
   return r.json();
 };
+
+function WipBanner() {
+  return (
+    <div className="hk-wip" role="status">
+      <AlertCircle size={14} />
+      <span>Work in progress — task assignment and related tools are being built.</span>
+    </div>
+  );
+}
 
 export default function HousekeepingDashboard({ profile, user }: { profile: any; user: any }) {
   const [tab, setTab] = useState<"overview" | "rooms" | "tasks" | "schedule" | "complaints" | "audit" | "reports">("overview");
@@ -31,6 +42,8 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
   const [rooms, setRooms] = useState<any[]>([]);
   const [roomsLoading, setRoomsLoading] = useState(false);
 
+  const showWip = () => window.alert(WIP_MSG);
+
   const loadRooms = useCallback(async () => {
     setRoomsLoading(true);
     const res = await api("/api/config/inventory?search=room&limit=50");
@@ -43,6 +56,7 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
   return (
     <>
       <style>{hkStyles}</style>
+      <WipBanner />
 
       <div className="hk-nav">
         {([
@@ -95,10 +109,10 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
           </div>
 
           <div className="hk-quick-grid">
-            <button className="hk-quick-btn" onClick={() => setTab("rooms")}><BedDouble size={20} color={ACCENT} /><span>Room Status Board</span></button>
-            <button className="hk-quick-btn" onClick={() => setTab("tasks")}><ClipboardList size={20} color="#6366f1" /><span>Assign Cleaning Task</span></button>
-            <button className="hk-quick-btn" onClick={() => setTab("schedule")}><Calendar size={20} color="#16a34a" /><span>Daily Schedule</span></button>
-            <button className="hk-quick-btn" onClick={() => setTab("audit")}><ShieldCheck size={20} color="#0E898F" /><span>Audit Checklist</span></button>
+            <button type="button" className="hk-quick-btn" onClick={() => setTab("rooms")}><BedDouble size={20} color={ACCENT} /><span>Room Status Board</span></button>
+            <button type="button" className="hk-quick-btn" onClick={showWip}><ClipboardList size={20} color="#6366f1" /><span>Assign Cleaning Task</span><em className="hk-wip-chip">WIP</em></button>
+            <button type="button" className="hk-quick-btn" onClick={() => setTab("schedule")}><Calendar size={20} color="#16a34a" /><span>Daily Schedule</span></button>
+            <button type="button" className="hk-quick-btn" onClick={() => setTab("audit")}><ShieldCheck size={20} color="#0E898F" /><span>Audit Checklist</span></button>
           </div>
         </div>
       )}
@@ -108,15 +122,17 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
         <div className="hk-section">
           <div className="hk-toolbar">
             <div className="hk-chart-title">Room / Bed Status</div>
-            <button className="hk-btn-ghost" onClick={loadRooms}><RefreshCw size={13} /> Refresh</button>
+            <button type="button" className="hk-btn-ghost" onClick={loadRooms}><RefreshCw size={13} /> Refresh</button>
           </div>
           {roomsLoading ? (
             <div className="hk-loading"><Loader2 size={20} className="hk-spin" /> Loading rooms...</div>
           ) : (
             <div className="hk-empty">
               <BedDouble size={32} color="#cbd5e1" />
-              <div style={{ marginTop: 8 }}>Room status board</div>
-              <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Room status tracking (Clean / Dirty / Occupied / Ready) will be managed here. Connect with the ward/bed management module for real-time updates.</div>
+              <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+              <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 380 }}>
+                Room status tracking (Clean / Dirty / Occupied / Ready) will connect with wards/beds soon.
+              </div>
             </div>
           )}
         </div>
@@ -127,12 +143,14 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
         <div className="hk-section">
           <div className="hk-toolbar">
             <div className="hk-chart-title">Cleaning Task Assignment</div>
-            <button className="hk-btn-primary"><Plus size={13} /> Assign Task</button>
+            <button type="button" className="hk-btn-primary hk-btn-wip" onClick={showWip}><Plus size={13} /> Assign Task</button>
           </div>
           <div className="hk-empty">
             <ClipboardList size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Cleaning task management</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Assign staff to rooms, track task status (Pending / In Progress / Completed)</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>
+              Assigning staff to rooms and tracking task status is being built.
+            </div>
           </div>
         </div>
       )}
@@ -143,8 +161,8 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
           <div className="hk-toolbar"><div className="hk-chart-title">Daily Cleaning Schedule</div></div>
           <div className="hk-empty">
             <Calendar size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Schedule management</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Daily cleaning schedules with ICU / OT priority cleaning support</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Daily cleaning schedules are coming soon.</div>
           </div>
         </div>
       )}
@@ -155,8 +173,8 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
           <div className="hk-toolbar"><div className="hk-chart-title">Complaint Management</div></div>
           <div className="hk-empty">
             <AlertCircle size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>No complaints</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Patient complaints about room cleanliness will appear here</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Complaint tracking will appear here soon.</div>
           </div>
         </div>
       )}
@@ -167,8 +185,8 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
           <div className="hk-toolbar"><div className="hk-chart-title">Hygiene Audit Checklist</div></div>
           <div className="hk-empty">
             <ShieldCheck size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Audit compliance tracking</div>
-            <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>Hygiene checklist compliance and inspection records</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Hygiene audit checklist is being built.</div>
           </div>
         </div>
       )}
@@ -179,7 +197,8 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
           <div className="hk-toolbar"><div className="hk-chart-title">Reports</div></div>
           <div className="hk-empty">
             <FileText size={32} color="#cbd5e1" />
-            <div style={{ marginTop: 8 }}>Cleaning logs and staff performance reports</div>
+            <div style={{ marginTop: 8, fontWeight: 600, color: "#64748b" }}>Work in progress</div>
+            <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 6, maxWidth: 360 }}>Cleaning logs and staff performance reports are coming soon.</div>
           </div>
         </div>
       )}
@@ -188,6 +207,9 @@ export default function HousekeepingDashboard({ profile, user }: { profile: any;
 }
 
 const hkStyles = `
+  .hk-wip{display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:14px;border-radius:10px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-size:12px;font-weight:600}
+  .hk-wip-chip{margin-left:auto;font-size:9px;font-style:normal;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:100px;background:#ffedd5;color:#c2410c}
+  .hk-btn-wip{opacity:.92}
   .hk-nav{display:flex;gap:0;padding:6px 0;margin-bottom:20px;border-bottom:2px solid #f1f5f9;flex-wrap:wrap}
   .hk-nav-btn{padding:9px 16px;border:none;background:none;color:#64748b;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
   .hk-nav-btn:hover{color:#334155;background:#f8fafc}

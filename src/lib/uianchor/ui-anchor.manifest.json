@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-11T23:05:44.159Z",
+  "generatedAt": "2026-08-12T05:05:29+05:30",
   "components": {
     "administrative.dashboard": {
       "type": "landmark"
@@ -545,6 +545,24 @@
     "hospitaladmin.ipd.search": {
       "type": "input"
     },
+    "hospitaladmin.lab.inventory.create": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.inventory.search": {
+      "type": "input"
+    },
+    "hospitaladmin.lab.ipd.admit": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.ipd.search": {
+      "type": "input"
+    },
+    "hospitaladmin.lab.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.patients.search": {
+      "type": "input"
+    },
     "hospitaladmin.logout": {
       "type": "button"
     },
@@ -587,10 +605,55 @@
     "hospitaladmin.nav.staff": {
       "type": "button"
     },
+    "hospitaladmin.nav.subdepartments": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.subdepartments.menu": {
+      "type": "button"
+    },
+    "hospitaladmin.nav.subdept-item": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.inventory.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.inventory.search": {
+      "type": "input"
+    },
+    "hospitaladmin.pathology.ipd.admit": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.ipd.search": {
+      "type": "input"
+    },
+    "hospitaladmin.pathology.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.patients.search": {
+      "type": "input"
+    },
     "hospitaladmin.patients.create": {
       "type": "button"
     },
     "hospitaladmin.patients.search": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.inventory.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.inventory.search": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.ipd.admit": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.ipd.search": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.patients.search": {
       "type": "input"
     },
     "hospitaladmin.profile": {
@@ -634,6 +697,9 @@
     },
     "hospitaladmin.staff.search": {
       "type": "input"
+    },
+    "hospitaladmin.subdept": {
+      "type": "landmark"
     },
     "parentdept.dashboard": {
       "type": "landmark"
@@ -1034,8 +1100,35 @@
     "superadmin.dashboard.loading": {
       "type": "landmark"
     },
+    "superadmin.hospitals.create.admin-name": {
+      "type": "input"
+    },
+    "superadmin.hospitals.create.confirm-password": {
+      "type": "input"
+    },
+    "superadmin.hospitals.create.email": {
+      "type": "input"
+    },
+    "superadmin.hospitals.create.error": {
+      "type": "landmark"
+    },
+    "superadmin.hospitals.create.mobile": {
+      "type": "input"
+    },
+    "superadmin.hospitals.create.name": {
+      "type": "input"
+    },
+    "superadmin.hospitals.create.open": {
+      "type": "button"
+    },
+    "superadmin.hospitals.create.password": {
+      "type": "input"
+    },
     "superadmin.hospitals.create.submit": {
       "type": "button"
+    },
+    "superadmin.hospitals.create.success": {
+      "type": "landmark"
     },
     "superadmin.logout": {
       "type": "button"
