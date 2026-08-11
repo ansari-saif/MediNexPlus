@@ -22,10 +22,8 @@ jobs:
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEPLOY_SSH_USER }}
+          username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          fingerprint: SHA256:oqbU3auDi9XHoMT8KEdD639A3loqnH+FlpaYAJI5GTE
-          script_stop: true
           command_timeout: 30m
           script: |
             set -euo pipefail
