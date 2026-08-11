@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FileText, Calendar, ArrowRight } from "lucide-react";
+import BrandWordmark from "@/components/BrandWordmark";
 import styles from "../policy.module.css";
 
 const PURPLE = "#7C3AED";
@@ -80,8 +81,8 @@ export default function TermsOfServicePage() {
       {/* NAVBAR */}
       <nav className={`mn-nav${scrolled ? " scrolled" : ""}`}>
         <div className="mn-nav-inner">
-          <Link href="/" className="mn-logo">
-            <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" className="mn-logo-img" style={{ height: 38, width: "auto", objectFit: "contain" }} />
+          <Link href="/" className="mn-logo" aria-label="curify home">
+            <BrandWordmark />
           </Link>
 
           <div className="mn-nav-links">
@@ -234,8 +235,8 @@ export default function TermsOfServicePage() {
         <div className="mn-footer-inner">
           <div className="mn-footer-top">
             <div className="mn-footer-brand">
-              <Link href="/" className="mn-logo">
-                <img src="/logo/medinexplus-logo-white.png" alt="MediNexPlus" style={{ height: 36, width: "auto", objectFit: "contain" }} />
+              <Link href="/" className="mn-logo" aria-label="curify home">
+                <BrandWordmark variant="light" />
               </Link>
               <p>Smarter healthcare connecting doctors and patients. The multi-tenant HMS SaaS platform for modern healthcare providers.</p>
             </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import BrandWordmark from "@/components/BrandWordmark";
 import styles from "./Preloader.module.css";
 
 interface PreloaderProps {
@@ -56,14 +56,7 @@ export default function Preloader({ loading: externalLoading }: PreloaderProps) 
                 repeatType: "reverse",
               }}
             >
-              <Image
-                src="/logo/favicon-icon.png"
-                alt="MediNex+ Logo"
-                width={100}
-                height={100}
-                className={styles.logo}
-                priority
-              />
+              <BrandWordmark />
             </motion.div>
             
             <motion.div 
@@ -72,8 +65,6 @@ export default function Preloader({ loading: externalLoading }: PreloaderProps) 
               animate={{ width: "100%" }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
             />
-            
-            <p className={styles.loadingText}>MediNex+</p>
           </div>
         </motion.div>
       )}

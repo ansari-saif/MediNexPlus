@@ -241,6 +241,7 @@ export type UIAnchorId =
   | "public.booking.name"
   | "public.booking.phone"
   | "public.booking.submit"
+  | "public.brand.wordmark"
   | "public.landing.cta-book-demo"
   | "public.landing.cta-signup"
   | "public.nav.book"
@@ -601,6 +602,7 @@ export const UI_ANCHOR_IDS = [
   "public.booking.name",
   "public.booking.phone",
   "public.booking.submit",
+  "public.brand.wordmark",
   "public.landing.cta-book-demo",
   "public.landing.cta-signup",
   "public.nav.book",

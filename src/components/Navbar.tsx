@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import BrandWordmark from "@/components/BrandWordmark";
 import { usePathname } from "next/navigation";
 import { useAppointment } from "./AppointmentProvider";
 import { Anchor } from "@/lib/uianchor";
@@ -104,15 +105,8 @@ export default function Navbar() {
       >
         <div className={`container ${styles.navInner}`}>
           {/* Logo */}
-          <Link href="/" className={styles.logo} aria-label="MediNex AI home">
-            <Image
-              src="/logo/medinexplus-logo-normal.png"
-              alt="MediNex AI"
-              width={180}
-              height={58}
-              className={styles.logoImage}
-              priority
-            />
+          <Link href="/" className={styles.logo} aria-label="curify home">
+            <BrandWordmark />
           </Link>
 
           {/* Desktop Nav */}

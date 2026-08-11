@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Anchor } from "@/lib/uianchor";
+import BrandWordmark from "@/components/BrandWordmark";
 
 type FpStep = "email" | "otp" | "password" | "done";
 
@@ -263,8 +264,8 @@ export default function LoginPage() {
         <div className="mn-auth-bg1" />
         <div className="mn-auth-bg2" />
 
-        <Link href="/" className="mn-auth-logo">
-          <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" style={{ height: 32, width: "auto", objectFit: "contain" }} />
+        <Link href="/" className="mn-auth-logo" aria-label="curify home">
+          <BrandWordmark />
         </Link>
 
         <div className="mn-auth-card">

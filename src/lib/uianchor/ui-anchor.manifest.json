@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-11T07:38:52.688Z",
+  "generatedAt": "2026-08-11T20:21:43.255Z",
   "components": {
     "administrative.dashboard": {
       "type": "landmark"
@@ -721,6 +721,9 @@
     },
     "public.booking.submit": {
       "type": "button"
+    },
+    "public.brand.wordmark": {
+      "type": "landmark"
     },
     "public.landing.cta-book-demo": {
       "type": "button"

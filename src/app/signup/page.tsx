@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Anchor } from "@/lib/uianchor";
+import BrandWordmark from "@/components/BrandWordmark";
 
 type Step = "form" | "otp" | "success";
 
@@ -235,8 +236,8 @@ export default function HospitalSignupPage() {
         <div className="mn-sp-bg1" />
         <div className="mn-sp-bg2" />
 
-        <Link href="/" className="mn-sp-logo">
-          <img src="/logo/medinexplus-logo-normal.png" alt="MediNexPlus" style={{ height: 32, width: "auto", objectFit: "contain" }} />
+        <Link href="/" className="mn-sp-logo" aria-label="curify home">
+          <BrandWordmark />
         </Link>
 
         {/* Step indicator */}

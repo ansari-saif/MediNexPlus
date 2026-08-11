@@ -12,6 +12,7 @@ import {
   Linkedin,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import BrandWordmark from "@/components/BrandWordmark";
 import styles from "./Footer.module.css";
 
 const quickLinks = [
@@ -52,8 +53,8 @@ export default function Footer() {
       <div className={`container ${styles.footerContent} ${!isHomePage ? styles.footerNoNewsletter : ""}`}>
         {/* About Column */}
         <div className={styles.footerCol}>
-          <Link href="/" className={styles.footerLogo} style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <img src="/logo/medinexplus-logo-white.png" alt="MediNexPlus" style={{ height: 40, width: "auto", objectFit: "contain" }} />
+          <Link href="/" className={styles.footerLogo} style={{ display: "flex", alignItems: "center", textDecoration: "none" }} aria-label="curify home">
+            <BrandWordmark variant="light" />
           </Link>
           <h5 className={styles.footerTagline}>Smarter Healthcare Platform</h5>
           <p className={styles.footerAbout}>
