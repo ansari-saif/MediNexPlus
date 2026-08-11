@@ -5,12 +5,8 @@ import Link from "next/link";
 import { Home, ArrowLeft, Search, Heart } from "lucide-react";
 
 const SUGGESTIONS = [
-  { label: "Home", href: "/" },
-  { label: "Book Appointment", href: "/#services" },
-  { label: "Our Doctors", href: "/doctors" },
-  { label: "Treatments", href: "/treatments" },
-  { label: "About Us", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Sign in", href: "/login" },
+  { label: "Sign up", href: "/signup" },
 ];
 
 export default function NotFound() {
@@ -168,7 +164,7 @@ export default function NotFound() {
           justifyContent: "center",
           gap: 4,
         }}>
-          Need help? <Search size={12} /> Visit our <Link href="/contact" style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 600 }}>contact page</Link>
+          Need help? <Search size={12} /> <Link href="/login" style={{ color: "var(--primary)", textDecoration: "none", fontWeight: 600 }}>Sign in</Link>
           <Heart size={10} style={{ marginLeft: 4 }} />
         </p>
       </div>

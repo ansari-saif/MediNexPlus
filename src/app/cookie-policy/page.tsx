@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Cookie, Calendar } from "lucide-react";
 import styles from "../policy.module.css";
 
@@ -13,7 +11,6 @@ export const metadata: Metadata = {
 export default function CookiePolicyPage() {
   return (
     <>
-      <Navbar />
       <main className={styles.page}>
         {/* Hero */}
         <section className={styles.hero}>
@@ -284,7 +281,6 @@ export default function CookiePolicyPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }
