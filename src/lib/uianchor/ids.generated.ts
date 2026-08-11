@@ -234,6 +234,7 @@ export type UIAnchorId =
   | "parentdept.nav.subdepts"
   | "parentdept.patients.create"
   | "parentdept.patients.search"
+  | "public.appointment.provider"
   | "public.booking.date"
   | "public.booking.department"
   | "public.booking.doctor"
@@ -591,6 +592,7 @@ export const UI_ANCHOR_IDS = [
   "parentdept.nav.subdepts",
   "parentdept.patients.create",
   "parentdept.patients.search",
+  "public.appointment.provider",
   "public.booking.date",
   "public.booking.department",
   "public.booking.doctor",

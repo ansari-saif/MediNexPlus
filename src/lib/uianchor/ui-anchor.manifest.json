@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-11T22:13:59.041Z",
+  "generatedAt": "2026-08-11T22:17:14.870Z",
   "components": {
     "administrative.dashboard": {
       "type": "landmark"
@@ -700,6 +700,9 @@
     },
     "parentdept.patients.search": {
       "type": "input"
+    },
+    "public.appointment.provider": {
+      "type": "landmark"
     },
     "public.booking.date": {
       "type": "input"
