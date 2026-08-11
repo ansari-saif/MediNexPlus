@@ -166,7 +166,7 @@ export default function AIChatbot() {
   const [input, setInput]       = useState("");
   const [messages, setMessages] = useState<Message[]>([{
     role: "bot",
-    content: "Hello! 👋 I'm your **AI Health Assistant** for MediNex+.\n\nI can help you with:\n• Appointment bookings\n• Navigate to any page\n• Doctor & department info\n• Platform support\n\nHow can I assist you today?",
+    content: "Hello! 👋 I'm your **AI Health Assistant** for Curify.\n\nI can help you with:\n• Appointment bookings\n• Navigate to any page\n• Doctor & department info\n• Platform support\n\nHow can I assist you today?",
     time: fmt(),
   }]);
   const [loading, setLoading]     = useState(false);
@@ -534,7 +534,7 @@ export default function AIChatbot() {
                 `• **Doctor:** ${bd.doctorName}\n` +
                 `• **Date:** ${bd.date}\n` +
                 `• **Time:** ${fmt12(bd.timeSlot!)}\n\n` +
-                `A confirmation has been sent to **${bd.email}**.\n\nSee you soon at MediNex+! 🏥`
+                `A confirmation has been sent to **${bd.email}**.\n\nSee you soon at Curify! 🏥`
               );
             } else {
               addBot(`❌ Booking failed: ${data.message || "Please try again."}\n\nOr call us at **+91 90590 53938**.`);
@@ -685,7 +685,7 @@ export default function AIChatbot() {
                         : <span style={{ color: "#fbbf24", fontWeight: 700 }}>🎤 Voice Mode · Ready</span>
                     : bStep !== "idle"
                       ? <span style={{ color: "#86efac", fontWeight: 700 }}>Booking · {STEP_LABELS[bStep]}</span>
-                      : "Online · MediNex+"}
+                      : "Online · Curify"}
                 </div>
               </div>
             </div>
