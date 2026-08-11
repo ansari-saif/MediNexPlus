@@ -80,7 +80,8 @@ Cursor rule: `.cursor/rules/server-deploy.mdc` tells the agent to read these var
 
 ```bash
 cd /root/MediNexPlus
-git pull --ff-only origin main
+git pull --ff-only origin work
+# App deploys are web-only via CI (`scripts/deploy-web.sh`). Full stack only when asked:
 OTEL_ENABLED=1 BUILDX_NO_DEFAULT_ATTESTATIONS=1 \
   docker compose --profile observability up -d --build
 ```
