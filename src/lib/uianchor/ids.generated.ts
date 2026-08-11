@@ -242,10 +242,6 @@ export type UIAnchorId =
   | "public.booking.phone"
   | "public.booking.submit"
   | "public.brand.wordmark"
-  | "public.landing.cta-book-demo"
-  | "public.landing.cta-signup"
-  | "public.nav.book"
-  | "public.nav.login"
   | "receptionist.appointments.create"
   | "receptionist.dashboard"
   | "receptionist.dashboard.loading"
@@ -603,10 +599,6 @@ export const UI_ANCHOR_IDS = [
   "public.booking.phone",
   "public.booking.submit",
   "public.brand.wordmark",
-  "public.landing.cta-book-demo",
-  "public.landing.cta-signup",
-  "public.nav.book",
-  "public.nav.login",
   "receptionist.appointments.create",
   "receptionist.dashboard",
   "receptionist.dashboard.loading",

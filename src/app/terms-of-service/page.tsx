@@ -255,7 +255,7 @@ export default function TermsOfServicePage() {
                 <Link href="/#">About Us</Link>
                 <Link href="/#">Blog</Link>
                 <Link href="/#">Careers</Link>
-                <Link href="/contact">Contact</Link>
+                <Link href="/login">Sign in</Link>
               </div>
             </div>
             <div>

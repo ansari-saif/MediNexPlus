@@ -1,5 +1,5 @@
-import MediNexLanding from "@/components/MediNexLanding";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <MediNexLanding />;
+  redirect("/login");
 }
