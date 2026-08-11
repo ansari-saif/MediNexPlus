@@ -5,10 +5,24 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+IMAGE_PATHS='^(src/|backend/|prisma/|public/|package.json|package-lock.json|Dockerfile|Dockerfile.dev|\.dockerignore|next.config|postcss.config|tailwind.config|tsconfig|src/middleware\.ts|scripts/docker-entrypoint\.sh|scripts/otel-preload\.cjs|scripts/db-init\.sh)'
+
 echo "==> updating ${ROOT} from origin/work"
+before="$(git rev-parse HEAD)"
 git fetch origin work
 git checkout work
 git pull --ff-only origin work
+after="$(git rev-parse HEAD)"
+
+if [ "${FORCE_WEB_BUILD:-0}" != "1" ] && [ "$before" != "$after" ]; then
+  changed="$(git diff --name-only "$before" "$after" || true)"
+  if [ -n "$changed" ] && ! echo "$changed" | grep -qE "$IMAGE_PATHS"; then
+    echo "==> skipping web rebuild (no image-relevant files)"
+    echo "$changed"
+    docker compose ps web
+    exit 0
+  fi
+fi
 
 echo "==> building web"
 BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose build web

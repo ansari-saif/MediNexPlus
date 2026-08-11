@@ -8,16 +8,20 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: skipDockerTypecheck },
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "framer-motion"],
-    outputFileTracingIncludes: {
-      "/**": [
-        "./node_modules/sharp/**/*",
-        "./node_modules/@img/**/*",
-        "./node_modules/@opentelemetry/**/*",
-        "./node_modules/@pyroscope/**/*",
-        "./node_modules/pino/**/*",
-        "./node_modules/prom-client/**/*",
-      ],
-    },
+    // Externalize native/OTel pkgs instead of NFT-including them on every
+    // route (`outputFileTracingIncludes: { "/**": ... }` made prod builds ~12m).
+    serverComponentsExternalPackages: [
+      "@opentelemetry/sdk-node",
+      "@opentelemetry/auto-instrumentations-node",
+      "@opentelemetry/instrumentation",
+      "@pyroscope/nodejs",
+      "@datadog/pprof",
+      "require-in-the-middle",
+      "import-in-the-middle",
+      "pino",
+      "prom-client",
+      "sharp",
+    ],
   },
   images: {
     // Docker prod builds set NEXT_UNOPTIMIZED_IMAGES=1 — avoids sharp on Alpine.
