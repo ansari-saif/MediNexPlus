@@ -25,9 +25,25 @@ ENV NODE_ENV=production
 ENV SKIP_DOCKER_TYPECHECK=1
 ENV NEXT_UNOPTIMIZED_IMAGES=1
 ENV NODE_OPTIONS="--max-old-space-size=8192"
+# Persist webpack cache + previous .next/server so a one-file change does not
+# cold-compile the whole app. Cache mounts are not in the image; copy out after.
 RUN --mount=type=cache,target=/app/.next/cache \
+    --mount=type=cache,id=medinexplus-next-server,target=/opt/next-server \
     --mount=type=cache,target=/app/node_modules/.cache \
-    npx next build
+    set -e; \
+    mkdir -p .next; \
+    if [ -d /opt/next-server/server ]; then \
+      echo "==> restoring incremental .next/server"; \
+      cp -a /opt/next-server/server .next/server; \
+      find /opt/next-server -maxdepth 1 -name '*.json' -exec cp -a {} .next/ \;; \
+    else \
+      echo "==> cold Next.js build (no server cache yet)"; \
+    fi; \
+    npx next build; \
+    rm -rf /opt/next-server/server; \
+    mkdir -p /opt/next-server; \
+    cp -a .next/server /opt/next-server/server; \
+    find .next -maxdepth 1 -name '*.json' -exec cp -a {} /opt/next-server/ \;
 
 # Generate Prisma Client on Debian (same libc/OpenSSL as the runtime container).
 FROM node:20-bookworm-slim AS prisma-runner

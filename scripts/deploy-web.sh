@@ -24,7 +24,7 @@ if [ "${FORCE_WEB_BUILD:-0}" != "1" ] && [ "$before" != "$after" ]; then
   fi
 fi
 
-echo "==> building web"
+echo "==> building web (incremental Next cache; not a cold rebuild of the whole app)"
 BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose build web
 
 echo "==> recreating web (no deps)"

@@ -19,4 +19,4 @@ Do not push straight to `work` or `main`. Do not open PRs against `main` unless 
 
 ## Deploy
 
-CI runs `scripts/deploy-web.sh` on the server (`git pull` + `docker compose build web` + `up -d --no-deps web`). Manual: `workflow_dispatch` on **Deploy web**, or SSH and run that script.
+CI runs `scripts/deploy-web.sh` (`git pull` + rebuild **web** only). Docs/CI-only diffs skip the image. App diffs reuse the Next.js incremental cache (not a cold compile of the whole app). Manual: `workflow_dispatch`, or SSH and run that script.
