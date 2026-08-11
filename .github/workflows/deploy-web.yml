@@ -1,0 +1,36 @@
+name: Deploy web
+
+on:
+  push:
+    branches: [work]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web-work
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: SSH and deploy web
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Deploy web on server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          fingerprint: SHA256:oqbU3auDi9XHoMT8KEdD639A3loqnH+FlpaYAJI5GTE
+          script_stop: true
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            cd /root/MediNexPlus
+            git fetch origin work
+            git checkout work
+            git pull --ff-only origin work
+            bash scripts/deploy-web.sh

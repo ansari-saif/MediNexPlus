@@ -1,0 +1,22 @@
+---
+description: Branch from work, PR into work, merge deploys web via CI
+alwaysApply: true
+---
+
+# Git workflow
+
+Integration branch is **`work`** (not `main`). Merges to `work` trigger GitHub Actions: SSH to production and rebuild **only** the `web` service.
+
+## Every change
+
+1. `git fetch origin && git checkout work && git pull --ff-only origin work`
+2. Branch from `work`: `feat/…`, `fix/…`, or `chore/…`
+3. Test-first, then implement
+4. Push the branch, open a PR **targeting `work`**, merge it
+5. Confirm the **Deploy web** workflow succeeds
+
+Do not push straight to `work` or `main`. Do not open PRs against `main` unless asked.
+
+## Deploy
+
+CI runs `scripts/deploy-web.sh` on the server (`git pull` + `docker compose build web` + `up -d --no-deps web`). Manual: `workflow_dispatch` on **Deploy web**, or SSH and run that script.
