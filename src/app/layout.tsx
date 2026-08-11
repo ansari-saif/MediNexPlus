@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { AppointmentProvider } from "@/components/AppointmentProvider";
+import PublicFooter from "@/components/PublicFooter";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -27,7 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppointmentProvider>{children}</AppointmentProvider>
+        <AppointmentProvider>
+          {children}
+          <PublicFooter />
+        </AppointmentProvider>
       </body>
     </html>
   );
