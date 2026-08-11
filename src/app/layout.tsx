@@ -9,9 +9,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MediNex+ | Smarter Healthcare Connecting Doctors and Patients",
+  title: "Curify | Smarter Healthcare Connecting Doctors and Patients",
   description:
-    "MediNex+ is a multi-tenant hospital management SaaS platform connecting doctors and patients. Manage appointments, staff, billing, and analytics — all in one secure platform.",
+    "Curify is a multi-tenant hospital management SaaS platform connecting doctors and patients. Manage appointments, staff, billing, and analytics — all in one secure platform.",
   keywords: [
     "hospital management",
     "healthcare saas",
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "MediNex+ | Smarter Healthcare Connecting Doctors and Patients",
+    title: "Curify | Smarter Healthcare Connecting Doctors and Patients",
     description:
-      "MediNex+ is a multi-tenant hospital management SaaS platform connecting doctors and patients.",
+      "Curify is a multi-tenant hospital management SaaS platform connecting doctors and patients.",
     type: "website",
   },
 };

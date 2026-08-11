@@ -82,11 +82,11 @@ export default function MediNexLanding() {
   }, []);
 
   const faqs = [
-    { q: "What is MediNex+ and who is it for?", a: "MediNex+ is a multi-tenant Hospital Management SaaS platform designed for hospitals, clinics, diagnostic labs, and pharmacies of any size. It connects doctors, patients, admins, and staff in one unified platform." },
+    { q: "What is Curify and who is it for?", a: "Curify is a multi-tenant Hospital Management SaaS platform designed for hospitals, clinics, diagnostic labs, and pharmacies of any size. It connects doctors, patients, admins, and staff in one unified platform." },
     { q: "How do I onboard my hospital?", a: "Simply sign up, verify your email via OTP, and your hospital workspace is live in minutes. You can then invite doctors, staff, and configure your departments from the admin dashboard." },
-    { q: "Is patient data secure and isolated per hospital?", a: "Absolutely. MediNex+ enforces strict multi-tenant data isolation — each hospital's data is completely separate. We use encrypted storage, secure JWT authentication, and role-based access control." },
+    { q: "Is patient data secure and isolated per hospital?", a: "Absolutely. Curify enforces strict multi-tenant data isolation — each hospital's data is completely separate. We use encrypted storage, secure JWT authentication, and role-based access control." },
     { q: "Can I manage multiple hospitals under one account?", a: "Yes. The Super Admin panel allows you to oversee multiple hospital tenants, monitor usage, manage subscriptions, and access consolidated analytics from a single dashboard." },
-    { q: "Does MediNex+ support billing and pharmacy management?", a: "Yes — billing, pharmacy inventory, counter sales, IPD/OPD billing, lab reports, and finance dashboards are all built-in. No third-party integrations needed." },
+    { q: "Does Curify support billing and pharmacy management?", a: "Yes — billing, pharmacy inventory, counter sales, IPD/OPD billing, lab reports, and finance dashboards are all built-in. No third-party integrations needed." },
     { q: "What support is included in all plans?", a: "All plans include email support and access to our knowledge base. Pro and Enterprise plans include priority support with dedicated account managers." },
   ];
 
@@ -193,7 +193,7 @@ export default function MediNexLanding() {
   ];
 
   const testimonials = [
-    { name: "Dr. Priya Sharma", role: "Cardiologist, Apollo Hospitals", avatar: "PS", rating: 5, text: "MediNex+ transformed how we manage patient flow. The appointment system and billing module saved us hours every day. Our staff productivity increased by 40%." },
+    { name: "Dr. Priya Sharma", role: "Cardiologist, Apollo Hospitals", avatar: "PS", rating: 5, text: "Curify transformed how we manage patient flow. The appointment system and billing module saved us hours every day. Our staff productivity increased by 40%." },
     { name: "Rajesh Nair", role: "Hospital Administrator, Fortis Healthcare", avatar: "RN", rating: 5, text: "The multi-tenant architecture means all our branches run on one platform. Real-time analytics and the department management system are outstanding." },
     { name: "Dr. Amina Patel", role: "General Physician, City Clinic", avatar: "AP", rating: 5, text: "As a small clinic, the Starter plan gave us enterprise-level features at an affordable price. The OPD dashboard is intuitive and our patients love the experience." },
     { name: "Sanjay Mehta", role: "CEO, MedGroup Chain", avatar: "SM", rating: 5, text: "Managing 12 hospitals from a single Super Admin panel is a game-changer. Data isolation, role-based access, and consolidated reports — exactly what we needed." },
@@ -1201,7 +1201,7 @@ export default function MediNexLanding() {
               <div className="mn-dash-topbar">
                 <div className="mn-dash-topbar-logo">
                   <div className="mn-dash-topbar-logo-icon"><Activity size={13} color="#fff" /></div>
-                  <span className="mn-dash-topbar-logo-text">MediNex+</span>
+                  <span className="mn-dash-topbar-logo-text">Curify</span>
                 </div>
                 <div className="mn-dash-search">
                   <Search size={10} color="#94A3B8" />
@@ -1584,7 +1584,7 @@ export default function MediNexLanding() {
                 <div className="mn-ai-info-label smart">Smart Prescription</div>
                 <h3 className="mn-ai-info-h">AI drafts prescriptions.<br />Doctors just review.</h3>
                 <p className="mn-ai-info-p">
-                  MediNex+ analyses patient history, vitals, and diagnosis in real-time to auto-generate accurate prescriptions — reducing the doctor&apos;s writing load by up to 80% while maintaining clinical precision.
+                  Curify analyses patient history, vitals, and diagnosis in real-time to auto-generate accurate prescriptions — reducing the doctor&apos;s writing load by up to 80% while maintaining clinical precision.
                 </p>
 
                 <div className="mn-ai-benefits">
@@ -1624,7 +1624,7 @@ export default function MediNexLanding() {
                   <div className="mn-ai-mock-dot" style={{ background: "#FF5F57" }} />
                   <div className="mn-ai-mock-dot" style={{ background: "#FEBC2E" }} />
                   <div className="mn-ai-mock-dot" style={{ background: "#28C840" }} />
-                  <div className="mn-ai-mock-title">MediNex+ · Smart Prescription</div>
+                  <div className="mn-ai-mock-title">Curify · Smart Prescription</div>
                   <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5, padding: "2px 9px", background: "rgba(124,58,237,0.2)", borderRadius: 20, border: "1px solid rgba(124,58,237,0.35)" }}>
                     <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#A78BFA" }} />
                     <span style={{ fontSize: 10, fontWeight: 700, color: "#A78BFA" }}>AI Active</span>
@@ -1711,7 +1711,7 @@ export default function MediNexLanding() {
                 <div className="mn-ai-info-label voice">Voice Prescription</div>
                 <h3 className="mn-ai-info-h">Speak once.<br />AI writes it all.</h3>
                 <p className="mn-ai-info-p">
-                  Doctors dictate prescriptions naturally — just like talking to a colleague. MediNex+ transcribes speech in real-time, extracts medicines, dosage & instructions, and structures a complete digital Rx without typing a single character.
+                  Doctors dictate prescriptions naturally — just like talking to a colleague. Curify transcribes speech in real-time, extracts medicines, dosage & instructions, and structures a complete digital Rx without typing a single character.
                 </p>
 
                 <div className="mn-ai-benefits">
@@ -1738,7 +1738,7 @@ export default function MediNexLanding() {
                   <div className="mn-ai-mock-dot" style={{ background: "#FF5F57" }} />
                   <div className="mn-ai-mock-dot" style={{ background: "#FEBC2E" }} />
                   <div className="mn-ai-mock-dot" style={{ background: "#28C840" }} />
-                  <div className="mn-ai-mock-title">MediNex+ · Voice Prescription</div>
+                  <div className="mn-ai-mock-title">Curify · Voice Prescription</div>
                   <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5, padding: "2px 9px", background: "rgba(14,165,233,0.15)", borderRadius: 20, border: "1px solid rgba(14,165,233,0.3)" }}>
                     <div className="mn-vr-live-dot" />
                     <span style={{ fontSize: 10, fontWeight: 700, color: "#38BDF8" }}>Recording</span>
@@ -1875,7 +1875,7 @@ export default function MediNexLanding() {
             Testimonials
           </div>
           <h2 className="mn-section-title">Trusted by doctors and patients</h2>
-          <p className="mn-section-sub" style={{ margin: "0 auto 0" }}>See what healthcare professionals say about managing their hospitals with MediNex+.</p>
+          <p className="mn-section-sub" style={{ margin: "0 auto 0" }}>See what healthcare professionals say about managing their hospitals with Curify.</p>
           <div className="mn-testi-grid">
             {testimonials.map(t => (
               <div key={t.name} className="mn-testi-card">
@@ -1993,7 +1993,7 @@ export default function MediNexLanding() {
             FAQ
           </div>
           <h2 className="mn-section-title">Frequently asked questions</h2>
-          <p className="mn-section-sub" style={{ margin: "0 auto 0" }}>Everything you need to know about MediNex+.</p>
+          <p className="mn-section-sub" style={{ margin: "0 auto 0" }}>Everything you need to know about Curify.</p>
           <div className="mn-faq-list">
             {faqs.map((f, i) => (
               <div key={i} className={`mn-faq-item${openFaq === i ? " open" : ""}`}>
@@ -2071,7 +2071,7 @@ export default function MediNexLanding() {
           </div>
           <div className="mn-footer-divider" />
           <div className="mn-footer-bottom">
-            <p className="mn-footer-copy">© {new Date().getFullYear()} MediNex+. All rights reserved. | Product By <a href="https://theblueintellect.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#A78BFA', textDecoration: 'none', fontWeight: 600 }}>The Blue Intellect</a></p>
+            <p className="mn-footer-copy">© {new Date().getFullYear()} Curify. All rights reserved. | Product By <a href="https://theblueintellect.com/" target="_blank" rel="noopener noreferrer" style={{ color: '#A78BFA', textDecoration: 'none', fontWeight: 600 }}>The Blue Intellect</a></p>
             <div className="mn-footer-legal">
               <Link href="/privacy-policy">Privacy</Link>
               <Link href="/terms-of-service">Terms</Link>
@@ -2097,7 +2097,7 @@ export default function MediNexLanding() {
           ) : (
             <>
               <h3>Book a Personalized Demo</h3>
-              <p>See how MediNex+ can transform your hospital's operations. Fill out the form below and our experts will reach out to confirm your slot.</p>
+              <p>See how Curify can transform your hospital's operations. Fill out the form below and our experts will reach out to confirm your slot.</p>
               <form className="mn-demo-form" onSubmit={handleDemoSubmit}>
                 <div className="mn-demo-form-row">
                   <div className="mn-demo-form-group">
