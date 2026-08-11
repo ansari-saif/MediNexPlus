@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-IMAGE_PATHS='^(src/|backend/|prisma/|public/|package.json|package-lock.json|Dockerfile|Dockerfile.dev|\.dockerignore|next.config|postcss.config|tailwind.config|tsconfig|src/middleware\.ts|scripts/docker-entrypoint\.sh|scripts/otel-preload\.cjs|scripts/db-init\.sh)'
+IMAGE_PATHS='^(src/|backend/|prisma/|public/|package.json|package-lock.json|Dockerfile|Dockerfile.web|Dockerfile.dev|\.dockerignore|next.config|postcss.config|tailwind.config|tsconfig|src/middleware\.ts|scripts/docker-entrypoint\.sh|scripts/otel-preload\.cjs|scripts/db-init\.sh|scripts/build-next\.sh)'
 
 echo "==> updating ${ROOT} from origin/work"
 before="$(git rev-parse HEAD)"
@@ -24,11 +24,14 @@ if [ "${FORCE_WEB_BUILD:-0}" != "1" ] && [ "$before" != "$after" ]; then
   fi
 fi
 
-echo "==> building web (incremental Next cache; not a cold rebuild of the whole app)"
-BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker compose build web
+echo "==> compiling Next (persistent .next on disk)"
+bash "$ROOT/scripts/build-next.sh"
 
-echo "==> recreating web (no deps)"
-docker compose up -d --no-deps --force-recreate web
+echo "==> packing runtime image (no next compile)"
+BUILDX_NO_DEFAULT_ATTESTATIONS=1 docker build -f Dockerfile.web -t medinexplus-web .
+
+echo "==> recreating web (no deps, no compose rebuild)"
+docker compose up -d --no-deps --force-recreate --no-build web
 
 echo "==> waiting for HTTP health"
 for i in $(seq 1 30); do

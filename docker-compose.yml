@@ -62,12 +62,15 @@ services:
       OTEL_TRACES_SAMPLER_ARG: ${OTEL_TRACES_SAMPLER_ARG:-0.2}
       PYROSCOPE_SERVER_ADDRESS: ${PYROSCOPE_SERVER_ADDRESS:-http://pyroscope:4040}
       PYROSCOPE_APPLICATION_NAME: ${PYROSCOPE_APPLICATION_NAME:-medinexplus-web}
+      NODE_PATH: /app/host_modules
     depends_on:
       db-init:
         condition: service_completed_successfully
       mysql:
         condition: service_healthy
     restart: unless-stopped
+    volumes:
+      - web_nm:/app/host_modules:ro
     healthcheck:
       test:
         [
@@ -189,6 +192,8 @@ services:
       - observability
 
 volumes:
+  web_nm:
+    name: medinexplus-web-nm
   mysql_data:
   loki_data:
   tempo_data:
