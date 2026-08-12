@@ -5,6 +5,7 @@ import { generateToken } from "../utils/jwt";
 import { Role } from "@prisma/client";
 import prisma from "../config/db";
 import { recordAuthLogin } from "../utils/auth-metrics";
+import { seedHospitalDefaults } from "./hospital-seed.service";
 
 export const onboardHospitalBySuperAdmin = async (data: {
   hospitalName: string;
@@ -61,6 +62,8 @@ export const onboardHospitalBySuperAdmin = async (data: {
         phone: mobile,
       },
     });
+
+    await seedHospitalDefaults(tx, hospital.id);
 
     return { hospital, user };
   });
@@ -119,6 +122,8 @@ export const signupHospitalService = async (data: any) => {
     role: Role.HOSPITAL_ADMIN,
     hospital: { connect: { id: newHospital.id } },
   });
+
+  await seedHospitalDefaults(prisma, newHospital.id);
 
   return { hospital: newHospital, user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role } };
 };

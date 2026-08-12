@@ -4,9 +4,11 @@ import { roleMiddleware } from "../../../../../backend/middlewares/role.middlewa
 import { Role } from "@prisma/client";
 import { createHospital } from "../../../../../backend/repositories/hospital.repo";
 import { onboardHospitalBySuperAdmin } from "../../../../../backend/services/auth.service";
+import { seedHospitalDefaults } from "../../../../../backend/services/hospital-seed.service";
 import { successResponse, errorResponse } from "../../../../../backend/utils/response";
 import { z } from "zod";
 import { withApiRoute } from "../../../../../backend/utils/api-route";
+import prisma from "../../../../../backend/config/db";
 
 const simpleCreateSchema = z.object({
   name: z.string().min(2),
@@ -73,6 +75,8 @@ export const POST = withApiRoute("hospital.create.post", async (req: NextRequest
       trialEndDate: trialEnd,
       subscriptionStatus: "TRIAL",
     });
+
+    await seedHospitalDefaults(prisma, hospital.id);
 
     return successResponse(hospital, "Hospital created successfully", 201);
   } catch (error: any) {
