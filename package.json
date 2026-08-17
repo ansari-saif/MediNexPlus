@@ -23,7 +23,11 @@
     "docker:db:reset": "sh scripts/db-reset.sh",
     "test:e2e": "playwright test",
     "test:e2e:login": "playwright test e2e/login.spec.ts",
-    "test:e2e:superadmin-flow": "playwright test --project=superadmin-onboard --headed"
+    "test:e2e:superadmin-flow": "playwright test --project=superadmin-onboard",
+    "test:e2e:superadmin-flow:headed": "playwright test --project=superadmin-onboard --headed",
+    "test:e2e:runs": "node scripts/e2e-run-artifacts.mjs runs",
+    "test:e2e:artifacts": "node scripts/e2e-run-artifacts.mjs list",
+    "test:e2e:trace": "node scripts/e2e-run-artifacts.mjs trace"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

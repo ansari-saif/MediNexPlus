@@ -6,6 +6,7 @@ import {
   Coffee, CalendarDays, LayoutGrid, CheckCircle2, ArrowRight, ArrowLeft,
   Eye, Pencil, FileText, ChevronDown, ChevronUp
 } from "lucide-react";
+import { Anchor } from "@/lib/uianchor";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -16,7 +17,7 @@ interface DaySchedule { enabled: boolean; startTime: string; endTime: string; sl
 interface WeekSchedule { [key: string]: DaySchedule }
 interface DateOverride { id?: string; date: string; isOff: boolean; startTime?: string | null; endTime?: string | null; slotDuration?: number | null; bufferTime?: number | null; maxPatientsPerSlot?: number | null; breaks?: string | null; note?: string | null }
 interface Template { id: string; name: string; description?: string; scheduleData: any }
-interface ScheduleBuilderProps { doctorId: string; doctorName: string; accent?: string; apiBase: string; onSuccess?: () => void }
+interface ScheduleBuilderProps { doctorId: string; doctorName: string; accent?: string; apiBase: string; uiPrefix?: string; onSuccess?: () => void }
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -82,7 +83,7 @@ function parseBreaks(b: any): Break[] {
 // ═══════════════════════════════════════════════════════════════════════════════
 type Step = 1 | 2 | 3;
 
-export default function ScheduleBuilder({ doctorId, doctorName, accent = "#0E898F", apiBase, onSuccess }: ScheduleBuilderProps) {
+export default function ScheduleBuilder({ doctorId, doctorName, accent = "#0E898F", apiBase, uiPrefix, onSuccess }: ScheduleBuilderProps) {
   const [step, setStep] = useState<Step>(1);
   const [schedule, setSchedule] = useState<WeekSchedule>({});
   const [overrides, setOverrides] = useState<DateOverride[]>([]);
@@ -349,7 +350,10 @@ export default function ScheduleBuilder({ doctorId, doctorName, accent = "#0E898
       <style>{scheduleBuilderStyles(accent)}</style>
 
       {toast && (
-        <div className={`sb-toast sb-toast-${toast.type}`}>
+        <div
+          data-ui={uiPrefix && toast.type === "success" ? `${uiPrefix}.success` : undefined}
+          className={`sb-toast sb-toast-${toast.type}`}
+        >
           {toast.type === "success" ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}
           {toast.msg}
           <button className="sb-toast-close" onClick={() => setToast(null)}><X size={12} /></button>
@@ -414,9 +418,15 @@ export default function ScheduleBuilder({ doctorId, doctorName, accent = "#0E898
             <div className="sb-section">
               <div className="sb-section-head"><Zap size={14} /> Quick Setup</div>
               <div className="sb-presets">
-                <button className="sb-preset-btn sb-preset-highlight" onClick={quickFullWeek}>
-                  <Zap size={15} /><div><strong>Full Week</strong><span>Mon–Fri: 9–5, Sat–Sun: 9–1</span></div>
-                </button>
+                {uiPrefix ? (
+                  <Anchor.Button ui="hospitaladmin.doctors.schedule.full-week" className="sb-preset-btn sb-preset-highlight" onClick={quickFullWeek}>
+                    <Zap size={15} /><div><strong>Full Week</strong><span>Mon–Fri: 9–5, Sat–Sun: 9–1</span></div>
+                  </Anchor.Button>
+                ) : (
+                  <Anchor.Button ui="doctor.schedule.full-week" className="sb-preset-btn sb-preset-highlight" onClick={quickFullWeek}>
+                    <Zap size={15} /><div><strong>Full Week</strong><span>Mon–Fri: 9–5, Sat–Sun: 9–1</span></div>
+                  </Anchor.Button>
+                )}
                 {Object.entries(PRESETS).map(([k, p]) => (
                   <button key={k} className="sb-preset-btn" onClick={() => applyPreset(k, "all")}>
                     <p.icon size={15} /><div><strong>{p.label}</strong><span>{p.desc}</span></div>
@@ -568,9 +578,15 @@ export default function ScheduleBuilder({ doctorId, doctorName, accent = "#0E898
 
             <div className="sb-footer">
               <button className="sb-btn sb-btn-ghost" onClick={() => setShowSaveTemplate(true)}><Save size={13} /> Save as Template</button>
-              <button className="sb-btn sb-btn-primary" disabled={saving} onClick={() => saveWeekly(false)}>
-                {saving ? <><Loader2 size={13} className="sb-spin" /> Saving...</> : <>Save Weekly Schedule</>}
-              </button>
+              {uiPrefix ? (
+                <Anchor.Button ui="hospitaladmin.doctors.schedule.save" className="sb-btn sb-btn-primary" disabled={saving} onClick={() => saveWeekly(false)}>
+                  {saving ? <><Loader2 size={13} className="sb-spin" /> Saving...</> : <>Save Weekly Schedule</>}
+                </Anchor.Button>
+              ) : (
+                <Anchor.Button ui="doctor.schedule.save" className="sb-btn sb-btn-primary" disabled={saving} onClick={() => saveWeekly(false)}>
+                  {saving ? <><Loader2 size={13} className="sb-spin" /> Saving...</> : <>Save Weekly Schedule</>}
+                </Anchor.Button>
+              )}
               <button className="sb-btn sb-btn-primary" disabled={saving} onClick={() => saveWeekly(true)}>
                 {saving ? <><Loader2 size={13} className="sb-spin" /></> : <>Save & Apply to Months <ArrowRight size={13} /></>}
               </button>

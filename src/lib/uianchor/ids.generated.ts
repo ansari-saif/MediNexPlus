@@ -80,6 +80,14 @@ export type UIAnchorId =
   | "diagnostic.nav.patients"
   | "diagnostic.nav.queue"
   | "diagnostic.nav.subdepts"
+  | "doctor.appointments.booking.confirm"
+  | "doctor.appointments.booking.date"
+  | "doctor.appointments.booking.doctor"
+  | "doctor.appointments.booking.patient-result"
+  | "doctor.appointments.booking.patient-search"
+  | "doctor.appointments.booking.slot"
+  | "doctor.appointments.create"
+  | "doctor.appointments.search"
   | "doctor.attendance.checkout"
   | "doctor.dashboard"
   | "doctor.dashboard.loading"
@@ -98,8 +106,14 @@ export type UIAnchorId =
   | "doctor.nav.schedule"
   | "doctor.nav.schedule-mgmt"
   | "doctor.nav.treatment-plans"
+  | "doctor.patients.appointment.complete"
   | "doctor.patients.create"
+  | "doctor.patients.form.gender"
+  | "doctor.patients.form.name"
+  | "doctor.patients.form.phone"
+  | "doctor.patients.form.submit"
   | "doctor.patients.search"
+  | "doctor.patients.view"
   | "doctor.profile.save"
   | "doctor.rx.add-medication"
   | "doctor.rx.save"
@@ -107,6 +121,8 @@ export type UIAnchorId =
   | "doctor.rx.voice.start"
   | "doctor.schedule.consult"
   | "doctor.schedule.edit-rx"
+  | "doctor.schedule.full-week"
+  | "doctor.schedule.save"
   | "doctor.schedule.view-rx"
   | "finance.bills.create"
   | "finance.bills.create-alt"
@@ -127,6 +143,14 @@ export type UIAnchorId =
   | "finance.payments.initiate-modal"
   | "finance.payments.submit"
   | "hospitaladmin.appointments"
+  | "hospitaladmin.appointments.booking.confirm"
+  | "hospitaladmin.appointments.booking.date"
+  | "hospitaladmin.appointments.booking.doctor"
+  | "hospitaladmin.appointments.booking.patient-result"
+  | "hospitaladmin.appointments.booking.patient-search"
+  | "hospitaladmin.appointments.booking.slot"
+  | "hospitaladmin.appointments.create"
+  | "hospitaladmin.appointments.search"
   | "hospitaladmin.billing"
   | "hospitaladmin.configure"
   | "hospitaladmin.configure.departments.create"
@@ -171,8 +195,36 @@ export type UIAnchorId =
   | "hospitaladmin.dashboard.tab.staff"
   | "hospitaladmin.doctors"
   | "hospitaladmin.doctors.create"
+  | "hospitaladmin.doctors.form.consultation-fee"
+  | "hospitaladmin.doctors.form.email"
+  | "hospitaladmin.doctors.form.name"
+  | "hospitaladmin.doctors.form.phone"
+  | "hospitaladmin.doctors.form.specialization"
   | "hospitaladmin.doctors.loading"
   | "hospitaladmin.doctors.save"
+  | "hospitaladmin.doctors.schedule"
+  | "hospitaladmin.doctors.schedule.appointments.booking.confirm"
+  | "hospitaladmin.doctors.schedule.appointments.booking.date"
+  | "hospitaladmin.doctors.schedule.appointments.booking.doctor"
+  | "hospitaladmin.doctors.schedule.appointments.booking.patient-result"
+  | "hospitaladmin.doctors.schedule.appointments.booking.patient-search"
+  | "hospitaladmin.doctors.schedule.appointments.booking.slot"
+  | "hospitaladmin.doctors.schedule.appointments.create"
+  | "hospitaladmin.doctors.schedule.appointments.search"
+  | "hospitaladmin.doctors.schedule.full-week"
+  | "hospitaladmin.doctors.schedule.inventory.create"
+  | "hospitaladmin.doctors.schedule.inventory.search"
+  | "hospitaladmin.doctors.schedule.ipd.admit"
+  | "hospitaladmin.doctors.schedule.ipd.search"
+  | "hospitaladmin.doctors.schedule.patients.appointment.complete"
+  | "hospitaladmin.doctors.schedule.patients.create"
+  | "hospitaladmin.doctors.schedule.patients.form.gender"
+  | "hospitaladmin.doctors.schedule.patients.form.name"
+  | "hospitaladmin.doctors.schedule.patients.form.phone"
+  | "hospitaladmin.doctors.schedule.patients.form.submit"
+  | "hospitaladmin.doctors.schedule.patients.search"
+  | "hospitaladmin.doctors.schedule.patients.view"
+  | "hospitaladmin.doctors.schedule.save"
   | "hospitaladmin.doctors.search"
   | "hospitaladmin.finance"
   | "hospitaladmin.finance.expense.submit"
@@ -182,12 +234,26 @@ export type UIAnchorId =
   | "hospitaladmin.inventory.search"
   | "hospitaladmin.ipd.admit"
   | "hospitaladmin.ipd.search"
+  | "hospitaladmin.lab.appointments.booking.confirm"
+  | "hospitaladmin.lab.appointments.booking.date"
+  | "hospitaladmin.lab.appointments.booking.doctor"
+  | "hospitaladmin.lab.appointments.booking.patient-result"
+  | "hospitaladmin.lab.appointments.booking.patient-search"
+  | "hospitaladmin.lab.appointments.booking.slot"
+  | "hospitaladmin.lab.appointments.create"
+  | "hospitaladmin.lab.appointments.search"
   | "hospitaladmin.lab.inventory.create"
   | "hospitaladmin.lab.inventory.search"
   | "hospitaladmin.lab.ipd.admit"
   | "hospitaladmin.lab.ipd.search"
+  | "hospitaladmin.lab.patients.appointment.complete"
   | "hospitaladmin.lab.patients.create"
+  | "hospitaladmin.lab.patients.form.gender"
+  | "hospitaladmin.lab.patients.form.name"
+  | "hospitaladmin.lab.patients.form.phone"
+  | "hospitaladmin.lab.patients.form.submit"
   | "hospitaladmin.lab.patients.search"
+  | "hospitaladmin.lab.patients.view"
   | "hospitaladmin.logout"
   | "hospitaladmin.nav.appointments"
   | "hospitaladmin.nav.billing"
@@ -205,20 +271,55 @@ export type UIAnchorId =
   | "hospitaladmin.nav.subdepartments"
   | "hospitaladmin.nav.subdepartments.menu"
   | "hospitaladmin.nav.subdept-item"
+  | "hospitaladmin.pathology.appointments.booking.confirm"
+  | "hospitaladmin.pathology.appointments.booking.date"
+  | "hospitaladmin.pathology.appointments.booking.doctor"
+  | "hospitaladmin.pathology.appointments.booking.patient-result"
+  | "hospitaladmin.pathology.appointments.booking.patient-search"
+  | "hospitaladmin.pathology.appointments.booking.slot"
+  | "hospitaladmin.pathology.appointments.create"
+  | "hospitaladmin.pathology.appointments.search"
   | "hospitaladmin.pathology.inventory.create"
   | "hospitaladmin.pathology.inventory.search"
   | "hospitaladmin.pathology.ipd.admit"
   | "hospitaladmin.pathology.ipd.search"
+  | "hospitaladmin.pathology.patients.appointment.complete"
   | "hospitaladmin.pathology.patients.create"
+  | "hospitaladmin.pathology.patients.form.gender"
+  | "hospitaladmin.pathology.patients.form.name"
+  | "hospitaladmin.pathology.patients.form.phone"
+  | "hospitaladmin.pathology.patients.form.submit"
   | "hospitaladmin.pathology.patients.search"
+  | "hospitaladmin.pathology.patients.view"
+  | "hospitaladmin.patients.appointment.complete"
   | "hospitaladmin.patients.create"
+  | "hospitaladmin.patients.details.appointments"
+  | "hospitaladmin.patients.form.gender"
+  | "hospitaladmin.patients.form.name"
+  | "hospitaladmin.patients.form.phone"
+  | "hospitaladmin.patients.form.submit"
   | "hospitaladmin.patients.search"
+  | "hospitaladmin.patients.view"
+  | "hospitaladmin.pharmacy.appointments.booking.confirm"
+  | "hospitaladmin.pharmacy.appointments.booking.date"
+  | "hospitaladmin.pharmacy.appointments.booking.doctor"
+  | "hospitaladmin.pharmacy.appointments.booking.patient-result"
+  | "hospitaladmin.pharmacy.appointments.booking.patient-search"
+  | "hospitaladmin.pharmacy.appointments.booking.slot"
+  | "hospitaladmin.pharmacy.appointments.create"
+  | "hospitaladmin.pharmacy.appointments.search"
   | "hospitaladmin.pharmacy.inventory.create"
   | "hospitaladmin.pharmacy.inventory.search"
   | "hospitaladmin.pharmacy.ipd.admit"
   | "hospitaladmin.pharmacy.ipd.search"
+  | "hospitaladmin.pharmacy.patients.appointment.complete"
   | "hospitaladmin.pharmacy.patients.create"
+  | "hospitaladmin.pharmacy.patients.form.gender"
+  | "hospitaladmin.pharmacy.patients.form.name"
+  | "hospitaladmin.pharmacy.patients.form.phone"
+  | "hospitaladmin.pharmacy.patients.form.submit"
   | "hospitaladmin.pharmacy.patients.search"
+  | "hospitaladmin.pharmacy.patients.view"
   | "hospitaladmin.profile"
   | "hospitaladmin.profile.change-password.submit"
   | "hospitaladmin.profile.confirm-password"
@@ -228,12 +329,25 @@ export type UIAnchorId =
   | "hospitaladmin.profile.name"
   | "hospitaladmin.profile.new-password"
   | "hospitaladmin.profile.save"
+  | "hospitaladmin.reports"
+  | "hospitaladmin.reports.active-doctors"
+  | "hospitaladmin.reports.completed-appointments"
+  | "hospitaladmin.reports.total-appointments"
+  | "hospitaladmin.reports.total-patients"
   | "hospitaladmin.staff"
   | "hospitaladmin.staff.create"
   | "hospitaladmin.staff.loading"
   | "hospitaladmin.staff.save"
   | "hospitaladmin.staff.search"
   | "hospitaladmin.subdept"
+  | "parentdept.appointments.booking.confirm"
+  | "parentdept.appointments.booking.date"
+  | "parentdept.appointments.booking.doctor"
+  | "parentdept.appointments.booking.patient-result"
+  | "parentdept.appointments.booking.patient-search"
+  | "parentdept.appointments.booking.slot"
+  | "parentdept.appointments.create"
+  | "parentdept.appointments.search"
   | "parentdept.dashboard"
   | "parentdept.dashboard.loading"
   | "parentdept.dashboard.tab.completed"
@@ -254,8 +368,14 @@ export type UIAnchorId =
   | "parentdept.nav.queue"
   | "parentdept.nav.reports"
   | "parentdept.nav.subdepts"
+  | "parentdept.patients.appointment.complete"
   | "parentdept.patients.create"
+  | "parentdept.patients.form.gender"
+  | "parentdept.patients.form.name"
+  | "parentdept.patients.form.phone"
+  | "parentdept.patients.form.submit"
   | "parentdept.patients.search"
+  | "parentdept.patients.view"
   | "public.appointment.provider"
   | "public.booking.date"
   | "public.booking.department"
@@ -274,7 +394,29 @@ export type UIAnchorId =
   | "receptionist.nav.book"
   | "receptionist.nav.patients"
   | "receptionist.nav.queue"
+  | "shared.appointments.booking.confirm"
+  | "shared.appointments.booking.date"
+  | "shared.appointments.booking.doctor"
+  | "shared.appointments.booking.patient-result"
+  | "shared.appointments.booking.patient-search"
+  | "shared.appointments.booking.slot"
+  | "shared.appointments.create"
+  | "shared.appointments.search"
+  | "shared.patients.appointment.complete"
+  | "shared.patients.form.gender"
+  | "shared.patients.form.name"
+  | "shared.patients.form.phone"
+  | "shared.patients.form.submit"
   | "shared.patients.search"
+  | "shared.patients.view"
+  | "staff.appointments.booking.confirm"
+  | "staff.appointments.booking.date"
+  | "staff.appointments.booking.doctor"
+  | "staff.appointments.booking.patient-result"
+  | "staff.appointments.booking.patient-search"
+  | "staff.appointments.booking.slot"
+  | "staff.appointments.create"
+  | "staff.appointments.search"
   | "staff.dashboard"
   | "staff.dashboard.loading"
   | "staff.inventory.create"
@@ -289,16 +431,36 @@ export type UIAnchorId =
   | "staff.nav.overview"
   | "staff.nav.patients"
   | "staff.nav.queue"
+  | "staff.patients.appointment.complete"
   | "staff.patients.create"
+  | "staff.patients.form.gender"
+  | "staff.patients.form.name"
+  | "staff.patients.form.phone"
+  | "staff.patients.form.submit"
   | "staff.patients.search"
+  | "staff.patients.view"
+  | "subdept.billing-dept.appointments.booking.confirm"
+  | "subdept.billing-dept.appointments.booking.date"
+  | "subdept.billing-dept.appointments.booking.doctor"
+  | "subdept.billing-dept.appointments.booking.patient-result"
+  | "subdept.billing-dept.appointments.booking.patient-search"
+  | "subdept.billing-dept.appointments.booking.slot"
+  | "subdept.billing-dept.appointments.create"
+  | "subdept.billing-dept.appointments.search"
   | "subdept.billing-dept.billing-queue"
   | "subdept.billing-dept.inventory.create"
   | "subdept.billing-dept.inventory.search"
   | "subdept.billing-dept.ipd.admit"
   | "subdept.billing-dept.ipd.search"
   | "subdept.billing-dept.open-queue"
+  | "subdept.billing-dept.patients.appointment.complete"
   | "subdept.billing-dept.patients.create"
+  | "subdept.billing-dept.patients.form.gender"
+  | "subdept.billing-dept.patients.form.name"
+  | "subdept.billing-dept.patients.form.phone"
+  | "subdept.billing-dept.patients.form.submit"
   | "subdept.billing-dept.patients.search"
+  | "subdept.billing-dept.patients.view"
   | "subdept.billing-dept.view-finance"
   | "subdept.critical-care.admit"
   | "subdept.critical-care.discharge"
@@ -316,24 +478,66 @@ export type UIAnchorId =
   | "subdept.modal.transfer-patient.cancel"
   | "subdept.modal.transfer-patient.submit"
   | "subdept.modal.view-prescription.download"
+  | "subdept.pathology.appointments.booking.confirm"
+  | "subdept.pathology.appointments.booking.date"
+  | "subdept.pathology.appointments.booking.doctor"
+  | "subdept.pathology.appointments.booking.patient-result"
+  | "subdept.pathology.appointments.booking.patient-search"
+  | "subdept.pathology.appointments.booking.slot"
+  | "subdept.pathology.appointments.create"
+  | "subdept.pathology.appointments.search"
   | "subdept.pathology.inventory.create"
   | "subdept.pathology.inventory.search"
   | "subdept.pathology.ipd.admit"
   | "subdept.pathology.ipd.search"
+  | "subdept.pathology.patients.appointment.complete"
   | "subdept.pathology.patients.create"
+  | "subdept.pathology.patients.form.gender"
+  | "subdept.pathology.patients.form.name"
+  | "subdept.pathology.patients.form.phone"
+  | "subdept.pathology.patients.form.submit"
   | "subdept.pathology.patients.search"
+  | "subdept.pathology.patients.view"
+  | "subdept.patients.appointments.booking.confirm"
+  | "subdept.patients.appointments.booking.date"
+  | "subdept.patients.appointments.booking.doctor"
+  | "subdept.patients.appointments.booking.patient-result"
+  | "subdept.patients.appointments.booking.patient-search"
+  | "subdept.patients.appointments.booking.slot"
+  | "subdept.patients.appointments.create"
+  | "subdept.patients.appointments.search"
   | "subdept.patients.inventory.create"
   | "subdept.patients.inventory.search"
   | "subdept.patients.ipd.admit"
   | "subdept.patients.ipd.search"
+  | "subdept.patients.patients.appointment.complete"
   | "subdept.patients.patients.create"
+  | "subdept.patients.patients.form.gender"
+  | "subdept.patients.patients.form.name"
+  | "subdept.patients.patients.form.phone"
+  | "subdept.patients.patients.form.submit"
   | "subdept.patients.patients.search"
+  | "subdept.patients.patients.view"
+  | "subdept.pharmacy.appointments.booking.confirm"
+  | "subdept.pharmacy.appointments.booking.date"
+  | "subdept.pharmacy.appointments.booking.doctor"
+  | "subdept.pharmacy.appointments.booking.patient-result"
+  | "subdept.pharmacy.appointments.booking.patient-search"
+  | "subdept.pharmacy.appointments.booking.slot"
+  | "subdept.pharmacy.appointments.create"
+  | "subdept.pharmacy.appointments.search"
   | "subdept.pharmacy.inventory.create"
   | "subdept.pharmacy.inventory.search"
   | "subdept.pharmacy.ipd.admit"
   | "subdept.pharmacy.ipd.search"
+  | "subdept.pharmacy.patients.appointment.complete"
   | "subdept.pharmacy.patients.create"
+  | "subdept.pharmacy.patients.form.gender"
+  | "subdept.pharmacy.patients.form.name"
+  | "subdept.pharmacy.patients.form.phone"
+  | "subdept.pharmacy.patients.form.submit"
   | "subdept.pharmacy.patients.search"
+  | "subdept.pharmacy.patients.view"
   | "subdept.shell.logout"
   | "subdept.shell.nav.account-settings"
   | "subdept.shell.nav.analytics"
@@ -471,6 +675,14 @@ export const UI_ANCHOR_IDS = [
   "diagnostic.nav.patients",
   "diagnostic.nav.queue",
   "diagnostic.nav.subdepts",
+  "doctor.appointments.booking.confirm",
+  "doctor.appointments.booking.date",
+  "doctor.appointments.booking.doctor",
+  "doctor.appointments.booking.patient-result",
+  "doctor.appointments.booking.patient-search",
+  "doctor.appointments.booking.slot",
+  "doctor.appointments.create",
+  "doctor.appointments.search",
   "doctor.attendance.checkout",
   "doctor.dashboard",
   "doctor.dashboard.loading",
@@ -489,8 +701,14 @@ export const UI_ANCHOR_IDS = [
   "doctor.nav.schedule",
   "doctor.nav.schedule-mgmt",
   "doctor.nav.treatment-plans",
+  "doctor.patients.appointment.complete",
   "doctor.patients.create",
+  "doctor.patients.form.gender",
+  "doctor.patients.form.name",
+  "doctor.patients.form.phone",
+  "doctor.patients.form.submit",
   "doctor.patients.search",
+  "doctor.patients.view",
   "doctor.profile.save",
   "doctor.rx.add-medication",
   "doctor.rx.save",
@@ -498,6 +716,8 @@ export const UI_ANCHOR_IDS = [
   "doctor.rx.voice.start",
   "doctor.schedule.consult",
   "doctor.schedule.edit-rx",
+  "doctor.schedule.full-week",
+  "doctor.schedule.save",
   "doctor.schedule.view-rx",
   "finance.bills.create",
   "finance.bills.create-alt",
@@ -518,6 +738,14 @@ export const UI_ANCHOR_IDS = [
   "finance.payments.initiate-modal",
   "finance.payments.submit",
   "hospitaladmin.appointments",
+  "hospitaladmin.appointments.booking.confirm",
+  "hospitaladmin.appointments.booking.date",
+  "hospitaladmin.appointments.booking.doctor",
+  "hospitaladmin.appointments.booking.patient-result",
+  "hospitaladmin.appointments.booking.patient-search",
+  "hospitaladmin.appointments.booking.slot",
+  "hospitaladmin.appointments.create",
+  "hospitaladmin.appointments.search",
   "hospitaladmin.billing",
   "hospitaladmin.configure",
   "hospitaladmin.configure.departments.create",
@@ -562,8 +790,36 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.dashboard.tab.staff",
   "hospitaladmin.doctors",
   "hospitaladmin.doctors.create",
+  "hospitaladmin.doctors.form.consultation-fee",
+  "hospitaladmin.doctors.form.email",
+  "hospitaladmin.doctors.form.name",
+  "hospitaladmin.doctors.form.phone",
+  "hospitaladmin.doctors.form.specialization",
   "hospitaladmin.doctors.loading",
   "hospitaladmin.doctors.save",
+  "hospitaladmin.doctors.schedule",
+  "hospitaladmin.doctors.schedule.appointments.booking.confirm",
+  "hospitaladmin.doctors.schedule.appointments.booking.date",
+  "hospitaladmin.doctors.schedule.appointments.booking.doctor",
+  "hospitaladmin.doctors.schedule.appointments.booking.patient-result",
+  "hospitaladmin.doctors.schedule.appointments.booking.patient-search",
+  "hospitaladmin.doctors.schedule.appointments.booking.slot",
+  "hospitaladmin.doctors.schedule.appointments.create",
+  "hospitaladmin.doctors.schedule.appointments.search",
+  "hospitaladmin.doctors.schedule.full-week",
+  "hospitaladmin.doctors.schedule.inventory.create",
+  "hospitaladmin.doctors.schedule.inventory.search",
+  "hospitaladmin.doctors.schedule.ipd.admit",
+  "hospitaladmin.doctors.schedule.ipd.search",
+  "hospitaladmin.doctors.schedule.patients.appointment.complete",
+  "hospitaladmin.doctors.schedule.patients.create",
+  "hospitaladmin.doctors.schedule.patients.form.gender",
+  "hospitaladmin.doctors.schedule.patients.form.name",
+  "hospitaladmin.doctors.schedule.patients.form.phone",
+  "hospitaladmin.doctors.schedule.patients.form.submit",
+  "hospitaladmin.doctors.schedule.patients.search",
+  "hospitaladmin.doctors.schedule.patients.view",
+  "hospitaladmin.doctors.schedule.save",
   "hospitaladmin.doctors.search",
   "hospitaladmin.finance",
   "hospitaladmin.finance.expense.submit",
@@ -573,12 +829,26 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.inventory.search",
   "hospitaladmin.ipd.admit",
   "hospitaladmin.ipd.search",
+  "hospitaladmin.lab.appointments.booking.confirm",
+  "hospitaladmin.lab.appointments.booking.date",
+  "hospitaladmin.lab.appointments.booking.doctor",
+  "hospitaladmin.lab.appointments.booking.patient-result",
+  "hospitaladmin.lab.appointments.booking.patient-search",
+  "hospitaladmin.lab.appointments.booking.slot",
+  "hospitaladmin.lab.appointments.create",
+  "hospitaladmin.lab.appointments.search",
   "hospitaladmin.lab.inventory.create",
   "hospitaladmin.lab.inventory.search",
   "hospitaladmin.lab.ipd.admit",
   "hospitaladmin.lab.ipd.search",
+  "hospitaladmin.lab.patients.appointment.complete",
   "hospitaladmin.lab.patients.create",
+  "hospitaladmin.lab.patients.form.gender",
+  "hospitaladmin.lab.patients.form.name",
+  "hospitaladmin.lab.patients.form.phone",
+  "hospitaladmin.lab.patients.form.submit",
   "hospitaladmin.lab.patients.search",
+  "hospitaladmin.lab.patients.view",
   "hospitaladmin.logout",
   "hospitaladmin.nav.appointments",
   "hospitaladmin.nav.billing",
@@ -596,20 +866,55 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.nav.subdepartments",
   "hospitaladmin.nav.subdepartments.menu",
   "hospitaladmin.nav.subdept-item",
+  "hospitaladmin.pathology.appointments.booking.confirm",
+  "hospitaladmin.pathology.appointments.booking.date",
+  "hospitaladmin.pathology.appointments.booking.doctor",
+  "hospitaladmin.pathology.appointments.booking.patient-result",
+  "hospitaladmin.pathology.appointments.booking.patient-search",
+  "hospitaladmin.pathology.appointments.booking.slot",
+  "hospitaladmin.pathology.appointments.create",
+  "hospitaladmin.pathology.appointments.search",
   "hospitaladmin.pathology.inventory.create",
   "hospitaladmin.pathology.inventory.search",
   "hospitaladmin.pathology.ipd.admit",
   "hospitaladmin.pathology.ipd.search",
+  "hospitaladmin.pathology.patients.appointment.complete",
   "hospitaladmin.pathology.patients.create",
+  "hospitaladmin.pathology.patients.form.gender",
+  "hospitaladmin.pathology.patients.form.name",
+  "hospitaladmin.pathology.patients.form.phone",
+  "hospitaladmin.pathology.patients.form.submit",
   "hospitaladmin.pathology.patients.search",
+  "hospitaladmin.pathology.patients.view",
+  "hospitaladmin.patients.appointment.complete",
   "hospitaladmin.patients.create",
+  "hospitaladmin.patients.details.appointments",
+  "hospitaladmin.patients.form.gender",
+  "hospitaladmin.patients.form.name",
+  "hospitaladmin.patients.form.phone",
+  "hospitaladmin.patients.form.submit",
   "hospitaladmin.patients.search",
+  "hospitaladmin.patients.view",
+  "hospitaladmin.pharmacy.appointments.booking.confirm",
+  "hospitaladmin.pharmacy.appointments.booking.date",
+  "hospitaladmin.pharmacy.appointments.booking.doctor",
+  "hospitaladmin.pharmacy.appointments.booking.patient-result",
+  "hospitaladmin.pharmacy.appointments.booking.patient-search",
+  "hospitaladmin.pharmacy.appointments.booking.slot",
+  "hospitaladmin.pharmacy.appointments.create",
+  "hospitaladmin.pharmacy.appointments.search",
   "hospitaladmin.pharmacy.inventory.create",
   "hospitaladmin.pharmacy.inventory.search",
   "hospitaladmin.pharmacy.ipd.admit",
   "hospitaladmin.pharmacy.ipd.search",
+  "hospitaladmin.pharmacy.patients.appointment.complete",
   "hospitaladmin.pharmacy.patients.create",
+  "hospitaladmin.pharmacy.patients.form.gender",
+  "hospitaladmin.pharmacy.patients.form.name",
+  "hospitaladmin.pharmacy.patients.form.phone",
+  "hospitaladmin.pharmacy.patients.form.submit",
   "hospitaladmin.pharmacy.patients.search",
+  "hospitaladmin.pharmacy.patients.view",
   "hospitaladmin.profile",
   "hospitaladmin.profile.change-password.submit",
   "hospitaladmin.profile.confirm-password",
@@ -619,12 +924,25 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.profile.name",
   "hospitaladmin.profile.new-password",
   "hospitaladmin.profile.save",
+  "hospitaladmin.reports",
+  "hospitaladmin.reports.active-doctors",
+  "hospitaladmin.reports.completed-appointments",
+  "hospitaladmin.reports.total-appointments",
+  "hospitaladmin.reports.total-patients",
   "hospitaladmin.staff",
   "hospitaladmin.staff.create",
   "hospitaladmin.staff.loading",
   "hospitaladmin.staff.save",
   "hospitaladmin.staff.search",
   "hospitaladmin.subdept",
+  "parentdept.appointments.booking.confirm",
+  "parentdept.appointments.booking.date",
+  "parentdept.appointments.booking.doctor",
+  "parentdept.appointments.booking.patient-result",
+  "parentdept.appointments.booking.patient-search",
+  "parentdept.appointments.booking.slot",
+  "parentdept.appointments.create",
+  "parentdept.appointments.search",
   "parentdept.dashboard",
   "parentdept.dashboard.loading",
   "parentdept.dashboard.tab.completed",
@@ -645,8 +963,14 @@ export const UI_ANCHOR_IDS = [
   "parentdept.nav.queue",
   "parentdept.nav.reports",
   "parentdept.nav.subdepts",
+  "parentdept.patients.appointment.complete",
   "parentdept.patients.create",
+  "parentdept.patients.form.gender",
+  "parentdept.patients.form.name",
+  "parentdept.patients.form.phone",
+  "parentdept.patients.form.submit",
   "parentdept.patients.search",
+  "parentdept.patients.view",
   "public.appointment.provider",
   "public.booking.date",
   "public.booking.department",
@@ -665,7 +989,29 @@ export const UI_ANCHOR_IDS = [
   "receptionist.nav.book",
   "receptionist.nav.patients",
   "receptionist.nav.queue",
+  "shared.appointments.booking.confirm",
+  "shared.appointments.booking.date",
+  "shared.appointments.booking.doctor",
+  "shared.appointments.booking.patient-result",
+  "shared.appointments.booking.patient-search",
+  "shared.appointments.booking.slot",
+  "shared.appointments.create",
+  "shared.appointments.search",
+  "shared.patients.appointment.complete",
+  "shared.patients.form.gender",
+  "shared.patients.form.name",
+  "shared.patients.form.phone",
+  "shared.patients.form.submit",
   "shared.patients.search",
+  "shared.patients.view",
+  "staff.appointments.booking.confirm",
+  "staff.appointments.booking.date",
+  "staff.appointments.booking.doctor",
+  "staff.appointments.booking.patient-result",
+  "staff.appointments.booking.patient-search",
+  "staff.appointments.booking.slot",
+  "staff.appointments.create",
+  "staff.appointments.search",
   "staff.dashboard",
   "staff.dashboard.loading",
   "staff.inventory.create",
@@ -680,16 +1026,36 @@ export const UI_ANCHOR_IDS = [
   "staff.nav.overview",
   "staff.nav.patients",
   "staff.nav.queue",
+  "staff.patients.appointment.complete",
   "staff.patients.create",
+  "staff.patients.form.gender",
+  "staff.patients.form.name",
+  "staff.patients.form.phone",
+  "staff.patients.form.submit",
   "staff.patients.search",
+  "staff.patients.view",
+  "subdept.billing-dept.appointments.booking.confirm",
+  "subdept.billing-dept.appointments.booking.date",
+  "subdept.billing-dept.appointments.booking.doctor",
+  "subdept.billing-dept.appointments.booking.patient-result",
+  "subdept.billing-dept.appointments.booking.patient-search",
+  "subdept.billing-dept.appointments.booking.slot",
+  "subdept.billing-dept.appointments.create",
+  "subdept.billing-dept.appointments.search",
   "subdept.billing-dept.billing-queue",
   "subdept.billing-dept.inventory.create",
   "subdept.billing-dept.inventory.search",
   "subdept.billing-dept.ipd.admit",
   "subdept.billing-dept.ipd.search",
   "subdept.billing-dept.open-queue",
+  "subdept.billing-dept.patients.appointment.complete",
   "subdept.billing-dept.patients.create",
+  "subdept.billing-dept.patients.form.gender",
+  "subdept.billing-dept.patients.form.name",
+  "subdept.billing-dept.patients.form.phone",
+  "subdept.billing-dept.patients.form.submit",
   "subdept.billing-dept.patients.search",
+  "subdept.billing-dept.patients.view",
   "subdept.billing-dept.view-finance",
   "subdept.critical-care.admit",
   "subdept.critical-care.discharge",
@@ -707,24 +1073,66 @@ export const UI_ANCHOR_IDS = [
   "subdept.modal.transfer-patient.cancel",
   "subdept.modal.transfer-patient.submit",
   "subdept.modal.view-prescription.download",
+  "subdept.pathology.appointments.booking.confirm",
+  "subdept.pathology.appointments.booking.date",
+  "subdept.pathology.appointments.booking.doctor",
+  "subdept.pathology.appointments.booking.patient-result",
+  "subdept.pathology.appointments.booking.patient-search",
+  "subdept.pathology.appointments.booking.slot",
+  "subdept.pathology.appointments.create",
+  "subdept.pathology.appointments.search",
   "subdept.pathology.inventory.create",
   "subdept.pathology.inventory.search",
   "subdept.pathology.ipd.admit",
   "subdept.pathology.ipd.search",
+  "subdept.pathology.patients.appointment.complete",
   "subdept.pathology.patients.create",
+  "subdept.pathology.patients.form.gender",
+  "subdept.pathology.patients.form.name",
+  "subdept.pathology.patients.form.phone",
+  "subdept.pathology.patients.form.submit",
   "subdept.pathology.patients.search",
+  "subdept.pathology.patients.view",
+  "subdept.patients.appointments.booking.confirm",
+  "subdept.patients.appointments.booking.date",
+  "subdept.patients.appointments.booking.doctor",
+  "subdept.patients.appointments.booking.patient-result",
+  "subdept.patients.appointments.booking.patient-search",
+  "subdept.patients.appointments.booking.slot",
+  "subdept.patients.appointments.create",
+  "subdept.patients.appointments.search",
   "subdept.patients.inventory.create",
   "subdept.patients.inventory.search",
   "subdept.patients.ipd.admit",
   "subdept.patients.ipd.search",
+  "subdept.patients.patients.appointment.complete",
   "subdept.patients.patients.create",
+  "subdept.patients.patients.form.gender",
+  "subdept.patients.patients.form.name",
+  "subdept.patients.patients.form.phone",
+  "subdept.patients.patients.form.submit",
   "subdept.patients.patients.search",
+  "subdept.patients.patients.view",
+  "subdept.pharmacy.appointments.booking.confirm",
+  "subdept.pharmacy.appointments.booking.date",
+  "subdept.pharmacy.appointments.booking.doctor",
+  "subdept.pharmacy.appointments.booking.patient-result",
+  "subdept.pharmacy.appointments.booking.patient-search",
+  "subdept.pharmacy.appointments.booking.slot",
+  "subdept.pharmacy.appointments.create",
+  "subdept.pharmacy.appointments.search",
   "subdept.pharmacy.inventory.create",
   "subdept.pharmacy.inventory.search",
   "subdept.pharmacy.ipd.admit",
   "subdept.pharmacy.ipd.search",
+  "subdept.pharmacy.patients.appointment.complete",
   "subdept.pharmacy.patients.create",
+  "subdept.pharmacy.patients.form.gender",
+  "subdept.pharmacy.patients.form.name",
+  "subdept.pharmacy.patients.form.phone",
+  "subdept.pharmacy.patients.form.submit",
   "subdept.pharmacy.patients.search",
+  "subdept.pharmacy.patients.view",
   "subdept.shell.logout",
   "subdept.shell.nav.account-settings",
   "subdept.shell.nav.analytics",

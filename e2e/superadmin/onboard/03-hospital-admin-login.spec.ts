@@ -8,6 +8,7 @@ test.describe("superadmin onboard · hospital admin login", () => {
     createdHospital,
     ui,
   }) => {
+    test.setTimeout(90_000);
     await hospitalAdminLogin.login(createdHospital.adminEmail, createdHospital.adminPassword);
     await expect(ui("hospitaladmin.dashboard")).toBeVisible();
   });

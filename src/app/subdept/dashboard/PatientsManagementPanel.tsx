@@ -105,14 +105,17 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
 
   const loadPatients = async () => {
     setLoading(true);
-    const deptParam = departmentId ? `&departmentId=${departmentId}` : "";
-    const res = await api(`/api/patients?page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}${deptParam}`);
-    if (res.success) {
-      setPatients(res.data.data || []);
-      setTotalPages(Math.ceil((res.data.total || 0) / itemsPerPage));
-      setTotalCount(res.data.total || 0);
+    try {
+      const deptParam = departmentId ? `&departmentId=${departmentId}` : "";
+      const res = await api(`/api/patients?page=${currentPage}&limit=${itemsPerPage}&search=${encodeURIComponent(searchTerm)}${deptParam}`);
+      if (res.success) {
+        setPatients(res.data?.data || []);
+        setTotalPages(Math.ceil((res.data?.total || 0) / itemsPerPage));
+        setTotalCount(res.data?.total || 0);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -454,18 +457,33 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
                   { id: "medical", label: "Medical History", icon: <Stethoscope size={14} /> },
                   { id: "billing", label: "Billing & Payments", icon: <CreditCard size={14} /> },
                   { id: "plans", label: `Treatment Plans (${treatmentPlans.length})`, icon: <Activity size={14} /> },
-                ].map(t => (
-                  <button key={t.id} onClick={() => setDetailTab(t.id as any)} style={{
+                ].map(t => {
+                  const style = {
                     flex: 1, padding: "14px 16px", border: "none",
                     background: detailTab === t.id ? "#fff" : "transparent",
                     borderBottom: detailTab === t.id ? "2px solid #0E898F" : "2px solid transparent",
                     color: detailTab === t.id ? "#0E898F" : "#64748b",
                     fontWeight: 600, fontSize:12, cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "all 0.15s"
-                  }}>
-                    {t.icon} {t.label}
-                  </button>
-                ))}
+                  } as const;
+                  if (uiPrefix && t.id === "appointments") {
+                    return (
+                      <Anchor.Button
+                        key={t.id}
+                        ui="hospitaladmin.patients.details.appointments"
+                        onClick={() => setDetailTab("appointments")}
+                        style={style}
+                      >
+                        {t.icon} {t.label}
+                      </Anchor.Button>
+                    );
+                  }
+                  return (
+                    <button key={t.id} onClick={() => setDetailTab(t.id as any)} style={style}>
+                      {t.icon} {t.label}
+                    </button>
+                  );
+                })}
               </div>
 
               <div style={{ padding: 24 }}>
@@ -627,7 +645,15 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
                                 <td style={{ padding: "14px", fontSize:12, color: "#64748b" }}>{a.department?.name || "General"}</td>
                                 <td style={{ padding: "14px" }}><span style={{ background: "#f1f5f9", color: "#64748b", padding: "3px 8px", borderRadius: 6, fontSize:10, fontWeight: 600 }}>{a.type}</span></td>
                                 <td style={{ padding: "14px", fontSize:12, fontWeight: 700, color: "#1e293b" }}>₹{(a.consultationFee || 0).toLocaleString()}</td>
-                                <td style={{ padding: "14px" }}><span style={{ ...statusStyle(a.status), padding: "4px 10px", borderRadius: 6, fontSize:10, fontWeight: 600 }}>{a.status}</span></td>
+                                <td style={{ padding: "14px" }}>
+                                  <span
+                                    data-ui={uiPrefix ? `${uiPrefix}.patients.appointment.status` : undefined}
+                                    data-ui-instance={`${a.appointmentDate.slice(0, 10)}-${a.timeSlot}`}
+                                    style={{ ...statusStyle(a.status), padding: "4px 10px", borderRadius: 6, fontSize:10, fontWeight: 600 }}
+                                  >
+                                    {a.status}
+                                  </span>
+                                </td>
                                 <td style={{ padding: "10px 14px" }}>
                                   <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                                     {/* View Rx */}
@@ -640,7 +666,9 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
                                     </button>
                                     {/* Complete */}
                                     {a.status !== "COMPLETED" && a.status !== "CANCELLED" && (
-                                      <button
+                                      <Anchor.Button
+                                        ui={`${uiPrefix || "shared"}.patients.appointment.complete`}
+                                        data-ui-instance={`${a.appointmentDate.slice(0, 10)}-${a.timeSlot}`}
                                         onClick={() => completeAppointment(a.id, patientDetails.id)}
                                         disabled={completingApptId === a.id}
                                         title="Mark as Completed"
@@ -650,7 +678,7 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
                                           ? <Loader2 size={11} style={{ animation: "spin .7s linear infinite" }} />
                                           : <Check size={11} />}
                                         {completingApptId === a.id ? "..." : "Complete"}
-                                      </button>
+                                      </Anchor.Button>
                                     )}
                                   </div>
                                 </td>
@@ -945,7 +973,9 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
                     <td style={{ padding: "15px 16px", fontSize:11, color: "#94a3b8" }}>{new Date(p.createdAt).toLocaleDateString()}</td>
                     <td style={{ padding: "15px 16px" }}>
                       <div style={{ display: "flex", gap: 6 }}>
-                        <button
+                        <Anchor.Button
+                          ui={`${uiPrefix || "shared"}.patients.view`}
+                          data-ui-instance={p.phone}
                           onClick={() => handleViewProfile(p)}
                           disabled={loadingProfileId === p.id}
                           style={{ padding: "6px 12px", background: "#E6F4F4", color: "#0E898F", border: "none", borderRadius: 8, cursor: loadingProfileId === p.id ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 4, fontSize:11, fontWeight: 600, opacity: loadingProfileId === p.id ? 0.7 : 1 }}
@@ -956,7 +986,7 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
                           ) : (
                             <>View Profile <ChevronRight size={14} /></>
                           )}
-                        </button>
+                        </Anchor.Button>
                         <button
                           onClick={() => setBookingPatient(p)}
                           style={{ padding: "8px", background: "#f0fdf4", color: "#16a34a", border: "none", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
@@ -1058,6 +1088,7 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
       {/* Add Patient Modal */}
       {showAddPatient && (
         <AddPatientModal
+          uiPrefix={uiPrefix}
           onClose={() => setShowAddPatient(false)}
           onSuccess={() => { setShowAddPatient(false); loadPatients(); }}
         />
@@ -1066,6 +1097,7 @@ export function PatientsManagementPanel({ departmentId, uiPrefix }: { department
       {/* Book Appointment Modal */}
       {bookingPatient && (
         <BookingWizard
+          uiPrefix={uiPrefix}
           initialPatient={bookingPatient}
           onClose={() => setBookingPatient(null)}
           onSuccess={() => { setBookingPatient(null); loadPatients(); }}
@@ -1311,7 +1343,7 @@ function PatientEditModal({ patientId, onClose, onUpdate }: { patientId: string;
 }
 
 // ─── Add Patient Modal Component (3-Step Wizard) ───
-function AddPatientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+function AddPatientModal({ onClose, onSuccess, uiPrefix }: { onClose: () => void; onSuccess: () => void; uiPrefix?: string }) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [bookAppointmentNow, setBookAppointmentNow] = useState(false);
@@ -1411,20 +1443,20 @@ function AddPatientModal({ onClose, onSuccess }: { onClose: () => void; onSucces
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ gridColumn: "span 2" }}>
               <label style={LBL}>Full Name *</label>
-              <input style={INP} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Patient's full name" required />
+              <Anchor.Input ui={`${uiPrefix || "shared"}.patients.form.name`} style={INP} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Patient's full name" required />
             </div>
             <div>
               <label style={LBL}>Mobile Number *</label>
-              <input style={INP} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="9876543210" required />
+              <Anchor.Input ui={`${uiPrefix || "shared"}.patients.form.phone`} style={INP} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="9876543210" required />
             </div>
             <div>
               <label style={LBL}>Gender *</label>
-              <select style={SEL} value={form.gender} onChange={e => setForm({ ...form, gender: e.target.value })} required>
+              <Anchor.Select ui={`${uiPrefix || "shared"}.patients.form.gender`} style={SEL} value={form.gender} onChange={e => setForm({ ...form, gender: e.target.value })} required>
                 <option value="">Select Gender</option>
                 <option value="MALE">Male</option>
                 <option value="FEMALE">Female</option>
                 <option value="OTHER">Other</option>
-              </select>
+              </Anchor.Select>
             </div>
             <div>
               <label style={LBL}>Date of Birth</label>
@@ -1541,10 +1573,10 @@ function AddPatientModal({ onClose, onSuccess }: { onClose: () => void; onSucces
             style={{ padding: "10px 20px", borderRadius: 9, border: "1px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize:12, fontWeight: 600, cursor: "pointer" }}>
             Cancel
           </button>
-          <button onClick={handleFinalSubmit} disabled={saving || !canSave}
+          <Anchor.Button ui={`${uiPrefix || "shared"}.patients.form.submit`} onClick={handleFinalSubmit} disabled={saving || !canSave}
             style={{ padding: "10px 24px", borderRadius: 9, border: "none", background: canSave ? "#0E898F" : "#cbd5e1", color: "#fff", fontSize:12, fontWeight: 700, cursor: canSave ? "pointer" : "not-allowed", display: "flex", alignItems: "center", gap: 8 }}>
             {saving ? <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> : (bookAppointmentNow ? "Register & Book Appointment" : "Register Patient")}
-          </button>
+          </Anchor.Button>
         </div>
       </div>
     </div>

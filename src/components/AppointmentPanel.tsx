@@ -14,6 +14,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Document as DocxDocument, Packer, Paragraph, Table as DocxTable, TableRow, TableCell, WidthType, TextRun, HeadingLevel, BorderStyle, AlignmentType } from "docx";
 import AdminRescheduleModal from "./AdminRescheduleModal";
+import { Anchor } from "@/lib/uianchor";
 
 const toLocalDateStr = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -1154,7 +1155,7 @@ function AppointmentTable({ onRefresh, onViewPatient, uiPrefix }: { onRefresh: n
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "8px 14px", flex: 1, minWidth: 200 }}>
           <Search size={13} color="#94a3b8" />
-          <input data-ui={uiPrefix ? `${uiPrefix}.appointments.search` : undefined} style={{ background: "none", border: "none", outline: "none", fontSize: 13, color: "#334155", width: "100%" }}
+          <Anchor.Input ui={`${uiPrefix || "shared"}.appointments.search`} style={{ background: "none", border: "none", outline: "none", fontSize: 13, color: "#334155", width: "100%" }}
             placeholder="Search patient, doctor..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
         </div>
         <input type="date" data-ui={uiPrefix ? `${uiPrefix}.appointments.date-filter` : undefined}
@@ -1642,7 +1643,7 @@ function StatsBar() {
 // ─────────────────────────────────────────────────────────────────────────────
 type WizardStep = 1 | 2 | 3 | 4;
 
-export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSuccess: (name: string) => void; onClose: () => void; initialPatient?: { id: string; patientId: string; name: string; phone: string; email?: string; gender?: string } | null }) {
+export function BookingWizard({ onSuccess, onClose, initialPatient, uiPrefix }: { onSuccess: (name: string) => void; onClose: () => void; initialPatient?: { id: string; patientId: string; name: string; phone: string; email?: string; gender?: string } | null; uiPrefix?: string }) {
   const [step, setStep] = useState<WizardStep>(initialPatient ? 2 : 1);
   const [patient, setPatient] = useState<Patient | null>(initialPatient ? { id: initialPatient.id, patientId: initialPatient.patientId, name: initialPatient.name, phone: initialPatient.phone, email: initialPatient.email, gender: initialPatient.gender } : null);
   const [doctor, setDoctor] = useState<Doctor | null>(null);
@@ -1902,7 +1903,7 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                   <div style={{ position: "relative", flex: 1 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 9, padding: "8px 12px" }}>
                       <Search size={13} color="#94a3b8" />
-                      <input style={{ background: "none", border: "none", outline: "none", fontSize: 12, color: "#334155", flex: 1 }}
+                      <Anchor.Input ui={`${uiPrefix || "shared"}.appointments.booking.patient-search`} style={{ background: "none", border: "none", outline: "none", fontSize: 12, color: "#334155", flex: 1 }}
                         placeholder="Search by name, phone, or Patient ID..." autoFocus
                         value={searchQ} onChange={e => { setSearchQ(e.target.value); searchPatients(e.target.value); }} />
                       {searchLoading && <Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} color="#94a3b8" />}
@@ -1914,7 +1915,11 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                           {searchResults.length} found — click to select
                         </div>
                         {searchResults.map(p => (
-                          <button key={p.id} onClick={() => { selectPatient(p); setSearchResults([]); setSearchQ(""); }}
+                          <Anchor.Button
+                            key={p.id}
+                            ui={`${uiPrefix || "shared"}.appointments.booking.patient-result`}
+                            data-ui-instance={p.phone}
+                            onClick={() => { selectPatient(p); setSearchResults([]); setSearchQ(""); }}
                             style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", border: "none", background: "none", cursor: "pointer", textAlign: "left", borderBottom: "1px solid #f1f5f9" }}
                             onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")} onMouseLeave={e => (e.currentTarget.style.background = "none")}>
                             <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg,#0ea5e9,#0369a1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 700 }}>{p.name.charAt(0).toUpperCase()}</div>
@@ -1923,7 +1928,7 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                               <div style={{ fontSize: 11, color: "#94a3b8" }}>{p.patientId} · {p.phone}{p.email ? ` · ${p.email}` : ""}</div>
                             </div>
                             <ChevronRight size={13} color="#cbd5e1" />
-                          </button>
+                          </Anchor.Button>
                         ))}
                       </div>
                     )}
@@ -2068,7 +2073,11 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(230px,1fr))", gap: 12 }}>
               {doctors.map(d => (
-                <button key={d.id} onClick={() => selectDoctor(d)}
+                <Anchor.Button
+                  key={d.id}
+                  ui={`${uiPrefix || "shared"}.appointments.booking.doctor`}
+                  data-ui-instance={d.name}
+                  onClick={() => selectDoctor(d)}
                   style={{ textAlign: "left", padding: 12, borderRadius: 11, border: "1.5px solid #e2e8f0", background: "#fff", cursor: "pointer", transition: "all .15s", display: "flex", flexDirection: "column", gap: 6 }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = "#0E898F"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(14,137,143,.1)"; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.boxShadow = "none"; }}>
@@ -2082,7 +2091,7 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                   {d.consultationFee != null && (
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#0A6B70", background: "#E6F4F4", padding: "2px 8px", borderRadius: 5, width: "fit-content" }}>₹{d.consultationFee}</div>
                   )}
-                </button>
+                </Anchor.Button>
               ))}
               {doctors.length === 0 && (
                 <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "40px 20px", color: "#94a3b8" }}>
@@ -2127,7 +2136,7 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                   style={{ padding: "8px 20px", borderRadius: 9, border: `1.5px solid ${appointmentDate === today ? "#0E898F" : "#e2e8f0"}`, background: appointmentDate === today ? "#0E898F" : "#fff", color: appointmentDate === today ? "#fff" : "#64748b", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all .12s" }}>Today</button>
                 <button onClick={() => { setAppointmentDate(tmrw); setTimeSlot(""); }}
                   style={{ padding: "8px 20px", borderRadius: 9, border: `1.5px solid ${appointmentDate === tmrw ? "#0E898F" : "#e2e8f0"}`, background: appointmentDate === tmrw ? "#0E898F" : "#fff", color: appointmentDate === tmrw ? "#fff" : "#64748b", fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all .12s" }}>Tomorrow</button>
-                <input type="date" min={today} value={appointmentDate}
+                <Anchor.Input ui={`${uiPrefix || "shared"}.appointments.booking.date`} type="date" min={today} value={appointmentDate}
                   onChange={e => { setAppointmentDate(e.target.value); setTimeSlot(""); }}
                   style={{ padding: "8px 14px", borderRadius: 9, border: "1.5px solid #e2e8f0", background: "#f8fafc", fontSize: 13, color: "#334155", outline: "none" }} />
               </div>
@@ -2171,7 +2180,11 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                               const disabled = isBooked || isPast;
                               const selected = timeSlot === slot;
                               return (
-                                <button key={slot} disabled={disabled}
+                                <Anchor.Button
+                                  key={slot}
+                                  ui={`${uiPrefix || "shared"}.appointments.booking.slot`}
+                                  data-ui-instance={slot}
+                                  disabled={disabled}
                                   onClick={() => { setTimeSlot(slot); setStep(4); }}
                                   title={isPast ? "Time has passed" : isBooked ? "Already booked" : `Select ${fmt12(slot)}`}
                                   style={{
@@ -2185,7 +2198,7 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                                     transition: "all .12s",
                                   }}>
                                   {fmt12(slot)}
-                                </button>
+                                </Anchor.Button>
                               );
                             })}
                           </div>
@@ -2269,11 +2282,11 @@ export function BookingWizard({ onSuccess, onClose, initialPatient }: { onSucces
                 style={{ padding: "9px 20px", borderRadius: 9, border: "1.5px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
                 <ArrowLeft size={13} />Back
               </button>
-              <button onClick={handleBook} disabled={saving}
+              <Anchor.Button ui={`${uiPrefix || "shared"}.appointments.booking.confirm`} onClick={handleBook} disabled={saving}
                 style={{ padding: "9px 20px", borderRadius: 9, border: "none", background: saving ? "#94a3b8" : "linear-gradient(135deg,#0E898F,#0A6B70)", color: "#fff", fontSize: 12, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "all .15s" }}>
                 {saving ? <Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} /> : <CalendarCheck size={13} />}
                 {saving ? "Booking..." : "Confirm & Book Appointment"}
-              </button>
+              </Anchor.Button>
             </div>
           </div>
         )}
@@ -2312,7 +2325,7 @@ export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTr
       <StatsBar />
 
       {successMsg && (
-        <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 12, padding: "12px 18px", marginBottom: 16, animation: "fadeIn .3s ease" }}>
+        <div data-ui={uiPrefix ? `${uiPrefix}.appointments.booking.success` : undefined} style={{ display: "flex", alignItems: "center", gap: 10, background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 12, padding: "12px 18px", marginBottom: 16, animation: "fadeIn .3s ease" }}>
           <CheckCircle size={18} color="#059669" />
           <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#166534" }}>{successMsg}</div>
           <button onClick={() => setSuccessMsg("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#86efac", display: "flex" }}><X size={14} /></button>
@@ -2320,7 +2333,7 @@ export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTr
       )}
 
       {/* Book Appointment Trigger Button */}
-      <button data-ui={uiPrefix ? `${uiPrefix}.appointments.create` : undefined} id={uiPrefix ? `${uiPrefix}-appointments-create` : undefined} onClick={() => setShowModal(true)}
+      <Anchor.Button ui={`${uiPrefix || "shared"}.appointments.create`} id={uiPrefix ? `${uiPrefix}-appointments-create` : undefined} onClick={() => setShowModal(true)}
         style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "16px 24px", borderRadius: 14, border: "1.5px dashed #0E898F", background: "#E6F4F4", cursor: "pointer", transition: "all .15s", marginBottom: 24 }}
         onMouseEnter={e => { e.currentTarget.style.background = "#D4EDED"; e.currentTarget.style.borderColor = "#0A6B70"; }}
         onMouseLeave={e => { e.currentTarget.style.background = "#E6F4F4"; e.currentTarget.style.borderColor = "#0E898F"; }}>
@@ -2332,10 +2345,10 @@ export default function AppointmentPanel({ onViewPatient, openTrigger, onResetTr
           <div style={{ fontSize: 12, color: "#0E898F", opacity: .7 }}>Click to open the quick booking wizard</div>
         </div>
         <ChevronRight size={18} color="#0E898F" style={{ marginLeft: "auto", opacity: .5 }} />
-      </button>
+      </Anchor.Button>
 
       {/* Booking Modal */}
-      {showModal && <BookingWizard onSuccess={handleBookingSuccess} onClose={() => setShowModal(false)} />}
+      {showModal && <BookingWizard uiPrefix={uiPrefix} onSuccess={handleBookingSuccess} onClose={() => setShowModal(false)} />}
 
       <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 24, boxShadow: "0 1px 4px rgba(0,0,0,.04)" }}>
         <div style={{ fontSize: 16, fontWeight: 800, color: "#1e293b", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>

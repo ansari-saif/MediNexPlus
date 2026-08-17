@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-12T05:05:29+05:30",
+  "generatedAt": "2026-08-17T23:35:18+05:30",
   "components": {
     "administrative.dashboard": {
       "type": "landmark"
@@ -239,6 +239,30 @@
     "diagnostic.nav.subdepts": {
       "type": "button"
     },
+    "doctor.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "doctor.appointments.booking.date": {
+      "type": "input"
+    },
+    "doctor.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "doctor.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "doctor.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "doctor.appointments.booking.slot": {
+      "type": "button"
+    },
+    "doctor.appointments.create": {
+      "type": "button"
+    },
+    "doctor.appointments.search": {
+      "type": "input"
+    },
     "doctor.attendance.checkout": {
       "type": "button"
     },
@@ -293,11 +317,29 @@
     "doctor.nav.treatment-plans": {
       "type": "button"
     },
+    "doctor.patients.appointment.complete": {
+      "type": "button"
+    },
     "doctor.patients.create": {
+      "type": "button"
+    },
+    "doctor.patients.form.gender": {
+      "type": "select"
+    },
+    "doctor.patients.form.name": {
+      "type": "input"
+    },
+    "doctor.patients.form.phone": {
+      "type": "input"
+    },
+    "doctor.patients.form.submit": {
       "type": "button"
     },
     "doctor.patients.search": {
       "type": "input"
+    },
+    "doctor.patients.view": {
+      "type": "button"
     },
     "doctor.profile.save": {
       "type": "button"
@@ -318,6 +360,12 @@
       "type": "button"
     },
     "doctor.schedule.edit-rx": {
+      "type": "button"
+    },
+    "doctor.schedule.full-week": {
+      "type": "button"
+    },
+    "doctor.schedule.save": {
       "type": "button"
     },
     "doctor.schedule.view-rx": {
@@ -379,6 +427,30 @@
     },
     "hospitaladmin.appointments": {
       "type": "landmark"
+    },
+    "hospitaladmin.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "hospitaladmin.appointments.booking.date": {
+      "type": "input"
+    },
+    "hospitaladmin.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "hospitaladmin.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "hospitaladmin.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "hospitaladmin.appointments.booking.slot": {
+      "type": "button"
+    },
+    "hospitaladmin.appointments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.appointments.search": {
+      "type": "input"
     },
     "hospitaladmin.billing": {
       "type": "landmark"
@@ -512,10 +584,94 @@
     "hospitaladmin.doctors.create": {
       "type": "button"
     },
+    "hospitaladmin.doctors.form.consultation-fee": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.form.email": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.form.name": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.form.phone": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.form.specialization": {
+      "type": "input"
+    },
     "hospitaladmin.doctors.loading": {
       "type": "landmark"
     },
     "hospitaladmin.doctors.save": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.appointments.booking.date": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.appointments.booking.slot": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.appointments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.appointments.search": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.full-week": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.inventory.create": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.inventory.search": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.ipd.admit": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.ipd.search": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.patients.appointment.complete": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.patients.form.gender": {
+      "type": "select"
+    },
+    "hospitaladmin.doctors.schedule.patients.form.name": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.patients.form.phone": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.patients.form.submit": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.patients.search": {
+      "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.patients.view": {
+      "type": "button"
+    },
+    "hospitaladmin.doctors.schedule.save": {
       "type": "button"
     },
     "hospitaladmin.doctors.search": {
@@ -545,6 +701,30 @@
     "hospitaladmin.ipd.search": {
       "type": "input"
     },
+    "hospitaladmin.lab.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.appointments.booking.date": {
+      "type": "input"
+    },
+    "hospitaladmin.lab.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "hospitaladmin.lab.appointments.booking.slot": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.appointments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.appointments.search": {
+      "type": "input"
+    },
     "hospitaladmin.lab.inventory.create": {
       "type": "button"
     },
@@ -557,11 +737,29 @@
     "hospitaladmin.lab.ipd.search": {
       "type": "input"
     },
+    "hospitaladmin.lab.patients.appointment.complete": {
+      "type": "button"
+    },
     "hospitaladmin.lab.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.lab.patients.form.gender": {
+      "type": "select"
+    },
+    "hospitaladmin.lab.patients.form.name": {
+      "type": "input"
+    },
+    "hospitaladmin.lab.patients.form.phone": {
+      "type": "input"
+    },
+    "hospitaladmin.lab.patients.form.submit": {
       "type": "button"
     },
     "hospitaladmin.lab.patients.search": {
       "type": "input"
+    },
+    "hospitaladmin.lab.patients.view": {
+      "type": "button"
     },
     "hospitaladmin.logout": {
       "type": "button"
@@ -614,6 +812,30 @@
     "hospitaladmin.nav.subdept-item": {
       "type": "button"
     },
+    "hospitaladmin.pathology.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.appointments.booking.date": {
+      "type": "input"
+    },
+    "hospitaladmin.pathology.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "hospitaladmin.pathology.appointments.booking.slot": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.appointments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.appointments.search": {
+      "type": "input"
+    },
     "hospitaladmin.pathology.inventory.create": {
       "type": "button"
     },
@@ -626,16 +848,79 @@
     "hospitaladmin.pathology.ipd.search": {
       "type": "input"
     },
+    "hospitaladmin.pathology.patients.appointment.complete": {
+      "type": "button"
+    },
     "hospitaladmin.pathology.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pathology.patients.form.gender": {
+      "type": "select"
+    },
+    "hospitaladmin.pathology.patients.form.name": {
+      "type": "input"
+    },
+    "hospitaladmin.pathology.patients.form.phone": {
+      "type": "input"
+    },
+    "hospitaladmin.pathology.patients.form.submit": {
       "type": "button"
     },
     "hospitaladmin.pathology.patients.search": {
       "type": "input"
     },
+    "hospitaladmin.pathology.patients.view": {
+      "type": "button"
+    },
+    "hospitaladmin.patients.appointment.complete": {
+      "type": "button"
+    },
     "hospitaladmin.patients.create": {
       "type": "button"
     },
+    "hospitaladmin.patients.details.appointments": {
+      "type": "button"
+    },
+    "hospitaladmin.patients.form.gender": {
+      "type": "select"
+    },
+    "hospitaladmin.patients.form.name": {
+      "type": "input"
+    },
+    "hospitaladmin.patients.form.phone": {
+      "type": "input"
+    },
+    "hospitaladmin.patients.form.submit": {
+      "type": "button"
+    },
     "hospitaladmin.patients.search": {
+      "type": "input"
+    },
+    "hospitaladmin.patients.view": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.appointments.booking.date": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.appointments.booking.slot": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.appointments.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.appointments.search": {
       "type": "input"
     },
     "hospitaladmin.pharmacy.inventory.create": {
@@ -650,11 +935,29 @@
     "hospitaladmin.pharmacy.ipd.search": {
       "type": "input"
     },
+    "hospitaladmin.pharmacy.patients.appointment.complete": {
+      "type": "button"
+    },
     "hospitaladmin.pharmacy.patients.create": {
+      "type": "button"
+    },
+    "hospitaladmin.pharmacy.patients.form.gender": {
+      "type": "select"
+    },
+    "hospitaladmin.pharmacy.patients.form.name": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.patients.form.phone": {
+      "type": "input"
+    },
+    "hospitaladmin.pharmacy.patients.form.submit": {
       "type": "button"
     },
     "hospitaladmin.pharmacy.patients.search": {
       "type": "input"
+    },
+    "hospitaladmin.pharmacy.patients.view": {
+      "type": "button"
     },
     "hospitaladmin.profile": {
       "type": "landmark"
@@ -683,6 +986,21 @@
     "hospitaladmin.profile.save": {
       "type": "button"
     },
+    "hospitaladmin.reports": {
+      "type": "landmark"
+    },
+    "hospitaladmin.reports.active-doctors": {
+      "type": "landmark"
+    },
+    "hospitaladmin.reports.completed-appointments": {
+      "type": "landmark"
+    },
+    "hospitaladmin.reports.total-appointments": {
+      "type": "landmark"
+    },
+    "hospitaladmin.reports.total-patients": {
+      "type": "landmark"
+    },
     "hospitaladmin.staff": {
       "type": "landmark"
     },
@@ -700,6 +1018,30 @@
     },
     "hospitaladmin.subdept": {
       "type": "landmark"
+    },
+    "parentdept.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "parentdept.appointments.booking.date": {
+      "type": "input"
+    },
+    "parentdept.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "parentdept.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "parentdept.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "parentdept.appointments.booking.slot": {
+      "type": "button"
+    },
+    "parentdept.appointments.create": {
+      "type": "button"
+    },
+    "parentdept.appointments.search": {
+      "type": "input"
     },
     "parentdept.dashboard": {
       "type": "landmark"
@@ -761,11 +1103,29 @@
     "parentdept.nav.subdepts": {
       "type": "button"
     },
+    "parentdept.patients.appointment.complete": {
+      "type": "button"
+    },
     "parentdept.patients.create": {
+      "type": "button"
+    },
+    "parentdept.patients.form.gender": {
+      "type": "select"
+    },
+    "parentdept.patients.form.name": {
+      "type": "input"
+    },
+    "parentdept.patients.form.phone": {
+      "type": "input"
+    },
+    "parentdept.patients.form.submit": {
       "type": "button"
     },
     "parentdept.patients.search": {
       "type": "input"
+    },
+    "parentdept.patients.view": {
+      "type": "button"
     },
     "public.appointment.provider": {
       "type": "landmark"
@@ -821,7 +1181,73 @@
     "receptionist.nav.queue": {
       "type": "button"
     },
+    "shared.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "shared.appointments.booking.date": {
+      "type": "input"
+    },
+    "shared.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "shared.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "shared.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "shared.appointments.booking.slot": {
+      "type": "button"
+    },
+    "shared.appointments.create": {
+      "type": "button"
+    },
+    "shared.appointments.search": {
+      "type": "input"
+    },
+    "shared.patients.appointment.complete": {
+      "type": "button"
+    },
+    "shared.patients.form.gender": {
+      "type": "select"
+    },
+    "shared.patients.form.name": {
+      "type": "input"
+    },
+    "shared.patients.form.phone": {
+      "type": "input"
+    },
+    "shared.patients.form.submit": {
+      "type": "button"
+    },
     "shared.patients.search": {
+      "type": "input"
+    },
+    "shared.patients.view": {
+      "type": "button"
+    },
+    "staff.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "staff.appointments.booking.date": {
+      "type": "input"
+    },
+    "staff.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "staff.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "staff.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "staff.appointments.booking.slot": {
+      "type": "button"
+    },
+    "staff.appointments.create": {
+      "type": "button"
+    },
+    "staff.appointments.search": {
       "type": "input"
     },
     "staff.dashboard": {
@@ -866,10 +1292,52 @@
     "staff.nav.queue": {
       "type": "button"
     },
+    "staff.patients.appointment.complete": {
+      "type": "button"
+    },
     "staff.patients.create": {
       "type": "button"
     },
+    "staff.patients.form.gender": {
+      "type": "select"
+    },
+    "staff.patients.form.name": {
+      "type": "input"
+    },
+    "staff.patients.form.phone": {
+      "type": "input"
+    },
+    "staff.patients.form.submit": {
+      "type": "button"
+    },
     "staff.patients.search": {
+      "type": "input"
+    },
+    "staff.patients.view": {
+      "type": "button"
+    },
+    "subdept.billing-dept.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "subdept.billing-dept.appointments.booking.date": {
+      "type": "input"
+    },
+    "subdept.billing-dept.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "subdept.billing-dept.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "subdept.billing-dept.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "subdept.billing-dept.appointments.booking.slot": {
+      "type": "button"
+    },
+    "subdept.billing-dept.appointments.create": {
+      "type": "button"
+    },
+    "subdept.billing-dept.appointments.search": {
       "type": "input"
     },
     "subdept.billing-dept.billing-queue": {
@@ -890,11 +1358,29 @@
     "subdept.billing-dept.open-queue": {
       "type": "button"
     },
+    "subdept.billing-dept.patients.appointment.complete": {
+      "type": "button"
+    },
     "subdept.billing-dept.patients.create": {
+      "type": "button"
+    },
+    "subdept.billing-dept.patients.form.gender": {
+      "type": "select"
+    },
+    "subdept.billing-dept.patients.form.name": {
+      "type": "input"
+    },
+    "subdept.billing-dept.patients.form.phone": {
+      "type": "input"
+    },
+    "subdept.billing-dept.patients.form.submit": {
       "type": "button"
     },
     "subdept.billing-dept.patients.search": {
       "type": "input"
+    },
+    "subdept.billing-dept.patients.view": {
+      "type": "button"
     },
     "subdept.billing-dept.view-finance": {
       "type": "button"
@@ -947,6 +1433,30 @@
     "subdept.modal.view-prescription.download": {
       "type": "landmark"
     },
+    "subdept.pathology.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "subdept.pathology.appointments.booking.date": {
+      "type": "input"
+    },
+    "subdept.pathology.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "subdept.pathology.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "subdept.pathology.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "subdept.pathology.appointments.booking.slot": {
+      "type": "button"
+    },
+    "subdept.pathology.appointments.create": {
+      "type": "button"
+    },
+    "subdept.pathology.appointments.search": {
+      "type": "input"
+    },
     "subdept.pathology.inventory.create": {
       "type": "button"
     },
@@ -959,10 +1469,52 @@
     "subdept.pathology.ipd.search": {
       "type": "input"
     },
+    "subdept.pathology.patients.appointment.complete": {
+      "type": "button"
+    },
     "subdept.pathology.patients.create": {
       "type": "button"
     },
+    "subdept.pathology.patients.form.gender": {
+      "type": "select"
+    },
+    "subdept.pathology.patients.form.name": {
+      "type": "input"
+    },
+    "subdept.pathology.patients.form.phone": {
+      "type": "input"
+    },
+    "subdept.pathology.patients.form.submit": {
+      "type": "button"
+    },
     "subdept.pathology.patients.search": {
+      "type": "input"
+    },
+    "subdept.pathology.patients.view": {
+      "type": "button"
+    },
+    "subdept.patients.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "subdept.patients.appointments.booking.date": {
+      "type": "input"
+    },
+    "subdept.patients.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "subdept.patients.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "subdept.patients.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "subdept.patients.appointments.booking.slot": {
+      "type": "button"
+    },
+    "subdept.patients.appointments.create": {
+      "type": "button"
+    },
+    "subdept.patients.appointments.search": {
       "type": "input"
     },
     "subdept.patients.inventory.create": {
@@ -977,10 +1529,52 @@
     "subdept.patients.ipd.search": {
       "type": "input"
     },
+    "subdept.patients.patients.appointment.complete": {
+      "type": "button"
+    },
     "subdept.patients.patients.create": {
       "type": "button"
     },
+    "subdept.patients.patients.form.gender": {
+      "type": "select"
+    },
+    "subdept.patients.patients.form.name": {
+      "type": "input"
+    },
+    "subdept.patients.patients.form.phone": {
+      "type": "input"
+    },
+    "subdept.patients.patients.form.submit": {
+      "type": "button"
+    },
     "subdept.patients.patients.search": {
+      "type": "input"
+    },
+    "subdept.patients.patients.view": {
+      "type": "button"
+    },
+    "subdept.pharmacy.appointments.booking.confirm": {
+      "type": "button"
+    },
+    "subdept.pharmacy.appointments.booking.date": {
+      "type": "input"
+    },
+    "subdept.pharmacy.appointments.booking.doctor": {
+      "type": "button"
+    },
+    "subdept.pharmacy.appointments.booking.patient-result": {
+      "type": "button"
+    },
+    "subdept.pharmacy.appointments.booking.patient-search": {
+      "type": "input"
+    },
+    "subdept.pharmacy.appointments.booking.slot": {
+      "type": "button"
+    },
+    "subdept.pharmacy.appointments.create": {
+      "type": "button"
+    },
+    "subdept.pharmacy.appointments.search": {
       "type": "input"
     },
     "subdept.pharmacy.inventory.create": {
@@ -995,11 +1589,29 @@
     "subdept.pharmacy.ipd.search": {
       "type": "input"
     },
+    "subdept.pharmacy.patients.appointment.complete": {
+      "type": "button"
+    },
     "subdept.pharmacy.patients.create": {
+      "type": "button"
+    },
+    "subdept.pharmacy.patients.form.gender": {
+      "type": "select"
+    },
+    "subdept.pharmacy.patients.form.name": {
+      "type": "input"
+    },
+    "subdept.pharmacy.patients.form.phone": {
+      "type": "input"
+    },
+    "subdept.pharmacy.patients.form.submit": {
       "type": "button"
     },
     "subdept.pharmacy.patients.search": {
       "type": "input"
+    },
+    "subdept.pharmacy.patients.view": {
+      "type": "button"
     },
     "subdept.shell.logout": {
       "type": "button"

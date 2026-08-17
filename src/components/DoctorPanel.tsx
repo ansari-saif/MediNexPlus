@@ -340,17 +340,17 @@ function DoctorForm({ editItem, departments, onSuccess, onCancel, addToast }: {
           <div className="dp-grid-2">
             <div className="dp-field">
               <label className="dp-lbl">Full Name <span className="dp-req">*</span></label>
-              <input className={`dp-input${errors.name ? " err" : ""}`} placeholder="Dr. John Smith" value={form.name} onChange={e => sf("name", e.target.value)} />
+              <input data-ui="hospitaladmin.doctors.form.name" className={`dp-input${errors.name ? " err" : ""}`} placeholder="Dr. John Smith" value={form.name} onChange={e => sf("name", e.target.value)} />
               {errors.name && <span className="dp-error">{errors.name}</span>}
             </div>
             <div className="dp-field">
               <label className="dp-lbl">Email Address <span className="dp-req">*</span></label>
-              <input className={`dp-input${errors.email ? " err" : ""}`} type="email" placeholder="doctor@hospital.com" value={form.email} onChange={e => sf("email", e.target.value)} />
+              <input data-ui="hospitaladmin.doctors.form.email" className={`dp-input${errors.email ? " err" : ""}`} type="email" placeholder="doctor@hospital.com" value={form.email} onChange={e => sf("email", e.target.value)} />
               {errors.email && <span className="dp-error">{errors.email}</span>}
             </div>
             <div className="dp-field">
               <label className="dp-lbl">Phone Number</label>
-              <input className={`dp-input${errors.phone ? " err" : ""}`} placeholder="+91 9876543210" value={form.phone} onChange={e => sf("phone", e.target.value)} />
+              <input data-ui="hospitaladmin.doctors.form.phone" className={`dp-input${errors.phone ? " err" : ""}`} placeholder="+91 9876543210" value={form.phone} onChange={e => sf("phone", e.target.value)} />
               {errors.phone && <span className="dp-error">{errors.phone}</span>}
             </div>
             <div className="dp-field">
@@ -383,7 +383,7 @@ function DoctorForm({ editItem, departments, onSuccess, onCancel, addToast }: {
           <div className="dp-grid-2">
             <div className="dp-field">
               <label className="dp-lbl">Specialization</label>
-              <input className="dp-input" placeholder="e.g. Cardiology, Ortho" value={form.specialization} onChange={e => sf("specialization", e.target.value)} />
+              <input data-ui="hospitaladmin.doctors.form.specialization" className="dp-input" placeholder="e.g. Cardiology, Ortho" value={form.specialization} onChange={e => sf("specialization", e.target.value)} />
             </div>
             <div className="dp-field">
               <label className="dp-lbl">Qualification</label>
@@ -418,7 +418,7 @@ function DoctorForm({ editItem, departments, onSuccess, onCancel, addToast }: {
             </div>
             <div className="dp-field">
               <label className="dp-lbl">Consultation Fee (₹) <span className="dp-req">*</span></label>
-              <input className={`dp-input${errors.consultationFee ? " err" : ""}`} type="number" min="0" step="0.01" placeholder="500" value={form.consultationFee} onChange={e => sf("consultationFee", e.target.value)} />
+              <input data-ui="hospitaladmin.doctors.form.consultation-fee" className={`dp-input${errors.consultationFee ? " err" : ""}`} type="number" min="0" step="0.01" placeholder="500" value={form.consultationFee} onChange={e => sf("consultationFee", e.target.value)} />
               {errors.consultationFee && <span className="dp-error">{errors.consultationFee}</span>}
             </div>
             <div className="dp-field">
@@ -997,7 +997,7 @@ export default function DoctorPanel({ onOpenAvailability, onOpenLeave }: DoctorP
                       <button className="dp-icon-btn dp-del" title="Delete" onClick={() => setDeleteItem(row)}>
                         <Trash2 size={13} />
                       </button>
-                      <button className="dp-btn-sm blue" title="Manage Schedule" onClick={() => setScheduleModal({ open: true, doctor: row, mode: "edit" })}>
+                      <button data-ui="hospitaladmin.doctors.schedule" data-ui-instance={row.email} className="dp-btn-sm blue" title="Manage Schedule" onClick={() => setScheduleModal({ open: true, doctor: row, mode: "edit" })}>
                         <Clock size={11} /> Schedule
                       </button>
                       {onOpenLeave && (
@@ -1057,6 +1057,7 @@ export default function DoctorPanel({ onOpenAvailability, onOpenLeave }: DoctorP
               doctorName={scheduleModal.doctor.name}
               accent="#0E898F"
               apiBase={`/api/config/doctors/${scheduleModal.doctor.id}`}
+              uiPrefix="hospitaladmin.doctors.schedule"
               onSuccess={() => { load(); }}
             />
           </div>

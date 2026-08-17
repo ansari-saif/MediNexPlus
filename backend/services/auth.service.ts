@@ -66,6 +66,10 @@ export const onboardHospitalBySuperAdmin = async (data: {
     await seedHospitalDefaults(tx, hospital.id);
 
     return { hospital, user };
+  }, {
+    // Seeding departments and sub-departments regularly exceeds Prisma's 5s default.
+    maxWait: 10_000,
+    timeout: 60_000,
   });
 
   return {

@@ -17,7 +17,7 @@ function fmt(n: number) {
   return `₹${n.toFixed(0)}`;
 }
 
-function StatCard({ icon, label, value, sub, color }: { icon: any; label: string; value: string | number; sub?: string; color: string }) {
+function StatCard({ icon, label, value, sub, color, ui }: { icon: any; label: string; value: string | number; sub?: string; color: string; ui?: string }) {
   const Icon = icon;
   return (
     <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e2e8f0", padding: "18px 20px", display: "flex", alignItems: "flex-start", gap: 14, boxShadow: "0 1px 4px rgba(0,0,0,.04)" }}>
@@ -26,20 +26,20 @@ function StatCard({ icon, label, value, sub, color }: { icon: any; label: string
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>{label}</div>
-        <div style={{ fontSize: 24, fontWeight: 800, color: "#1e293b", lineHeight: 1 }}>{value}</div>
+        <div data-ui={ui} style={{ fontSize: 24, fontWeight: 800, color: "#1e293b", lineHeight: 1 }}>{value}</div>
         {sub && <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{sub}</div>}
       </div>
     </div>
   );
 }
 
-function MiniBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+function MiniBar({ label, value, max, color, ui }: { label: string; value: number; max: number; color: string; ui?: string }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
         <span style={{ fontSize: 12, color: "#475569", fontWeight: 600 }}>{label}</span>
-        <span style={{ fontSize: 12, color: "#1e293b", fontWeight: 700 }}>{value}</span>
+        <span data-ui={ui} style={{ fontSize: 12, color: "#1e293b", fontWeight: 700 }}>{value}</span>
       </div>
       <div style={{ height: 7, background: "#f1f5f9", borderRadius: 100, overflow: "hidden" }}>
         <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 100, transition: "width .5s" }} />
@@ -129,7 +129,7 @@ export default function ReportsPanel() {
   };
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div data-ui="hospitaladmin.reports" style={{ fontFamily: "'Inter', sans-serif" }}>
 
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
@@ -174,11 +174,11 @@ export default function ReportsPanel() {
 
       {/* Top KPI Row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 14, marginBottom: 24 }}>
-        <StatCard icon={CalendarCheck} label="Total Appointments" value={ap.total} sub={`${ap.today} today · ${ap.last7days} this week`} color="#0E898F" />
-        <StatCard icon={Users} label="Total Patients" value={pt.total} sub={`${pt.newToday} new today · ${pt.newThisMonth} this month`} color="#3b82f6" />
+        <StatCard ui="hospitaladmin.reports.total-appointments" icon={CalendarCheck} label="Total Appointments" value={ap.total} sub={`${ap.today} today · ${ap.last7days} this week`} color="#0E898F" />
+        <StatCard ui="hospitaladmin.reports.total-patients" icon={Users} label="Total Patients" value={pt.total} sub={`${pt.newToday} new today · ${pt.newThisMonth} this month`} color="#3b82f6" />
         <StatCard icon={IndianRupee} label="Total Revenue" value={fmt(bl.totalRevenue)} sub={`Collected: ${fmt(bl.collectedRevenue)}`} color="#10b981" />
         <StatCard icon={CalendarClock} label="Follow-ups" value={fu.total} sub={`${fu.overdue} overdue · ${fu.today} today`} color={fu.overdue > 0 ? "#f97316" : "#10b981"} />
-        <StatCard icon={Stethoscope} label="Active Doctors" value={dr.active} sub={`${dr.total} total registered`} color="#8b5cf6" />
+        <StatCard ui="hospitaladmin.reports.active-doctors" icon={Stethoscope} label="Active Doctors" value={dr.active} sub={`${dr.total} total registered`} color="#8b5cf6" />
         <StatCard icon={BarChart2} label="This Month" value={fmt(bl.monthRevenue)} sub={`Collected: ${fmt(bl.monthCollected)}`} color="#0ea5e9" />
       </div>
 
@@ -216,11 +216,22 @@ export default function ReportsPanel() {
 
         {/* Appointment by status */}
         <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #e2e8f0", padding: "18px 20px", boxShadow: "0 1px 4px rgba(0,0,0,.04)" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", marginBottom: 14 }}>Appointments by Status</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", marginBottom: 14 }}>
+            Appointments by Status · Completed:{" "}
+            <span data-ui="hospitaladmin.reports.completed-appointments">
+              {ap.byStatus.find((s: any) => s.status === "COMPLETED")?.count ?? 0}
+            </span>
+          </div>
           {ap.byStatus.length === 0
             ? <div style={{ fontSize: 12, color: "#94a3b8" }}>No data</div>
             : ap.byStatus.map((s: any) => (
-              <MiniBar key={s.status} label={s.status} value={s.count} max={ap.total} color={STATUS_COLOR[s.status] ?? "#64748b"} />
+              <MiniBar
+                key={s.status}
+                label={s.status}
+                value={s.count}
+                max={ap.total}
+                color={STATUS_COLOR[s.status] ?? "#64748b"}
+              />
             ))
           }
         </div>
