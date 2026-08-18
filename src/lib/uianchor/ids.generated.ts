@@ -65,6 +65,8 @@ export type UIAnchorId =
   | "auth.superadmin.login.submit"
   | "clinical.dashboard"
   | "clinical.dashboard.loading"
+  | "clinical.dental.dashboard"
+  | "clinical.followup.dashboard"
   | "clinical.logout"
   | "clinical.nav.appointments"
   | "clinical.nav.dept-info"
@@ -72,7 +74,10 @@ export type UIAnchorId =
   | "clinical.nav.patients"
   | "clinical.nav.queue"
   | "clinical.nav.subdepts"
+  | "clinical.nursing.dashboard"
+  | "clinical.opd.dashboard"
   | "diagnostic.dashboard"
+  | "diagnostic.lab.dashboard"
   | "diagnostic.logout"
   | "diagnostic.nav.appointments"
   | "diagnostic.nav.dept-info"
@@ -89,6 +94,7 @@ export type UIAnchorId =
   | "doctor.appointments.create"
   | "doctor.appointments.search"
   | "doctor.attendance.checkout"
+  | "doctor.availability.modal"
   | "doctor.dashboard"
   | "doctor.dashboard.loading"
   | "doctor.inventory.create"
@@ -106,6 +112,7 @@ export type UIAnchorId =
   | "doctor.nav.schedule"
   | "doctor.nav.schedule-mgmt"
   | "doctor.nav.treatment-plans"
+  | "doctor.patient-profile.panel"
   | "doctor.patients.appointment.complete"
   | "doctor.patients.create"
   | "doctor.patients.form.gender"
@@ -114,22 +121,31 @@ export type UIAnchorId =
   | "doctor.patients.form.submit"
   | "doctor.patients.search"
   | "doctor.patients.view"
+  | "doctor.prescription-settings.panel"
+  | "doctor.profile"
+  | "doctor.profile.panel"
   | "doctor.profile.save"
   | "doctor.rx.add-medication"
+  | "doctor.rx.management-panel"
+  | "doctor.rx.prescription-page"
   | "doctor.rx.save"
   | "doctor.rx.voice.close"
+  | "doctor.rx.voice.recorder"
   | "doctor.rx.voice.start"
   | "doctor.schedule.consult"
   | "doctor.schedule.edit-rx"
   | "doctor.schedule.full-week"
+  | "doctor.schedule.modal"
   | "doctor.schedule.save"
   | "doctor.schedule.view-rx"
+  | "doctor.treatment-plan.panel"
   | "finance.bills.create"
   | "finance.bills.create-alt"
   | "finance.bills.create-list"
   | "finance.bills.submit"
   | "finance.dashboard"
   | "finance.dashboard.loading"
+  | "finance.dept.panel"
   | "finance.expenses.create"
   | "finance.expenses.create-list"
   | "finance.expenses.submit"
@@ -150,10 +166,12 @@ export type UIAnchorId =
   | "hospitaladmin.appointments.booking.patient-search"
   | "hospitaladmin.appointments.booking.slot"
   | "hospitaladmin.appointments.create"
+  | "hospitaladmin.appointments.modal"
   | "hospitaladmin.appointments.search"
   | "hospitaladmin.billing"
   | "hospitaladmin.configure"
   | "hospitaladmin.configure.departments.create"
+  | "hospitaladmin.configure.departments.panel"
   | "hospitaladmin.configure.departments.save"
   | "hospitaladmin.configure.departments.search"
   | "hospitaladmin.configure.loading"
@@ -180,6 +198,7 @@ export type UIAnchorId =
   | "hospitaladmin.configure.wards.create"
   | "hospitaladmin.configure.wards.save"
   | "hospitaladmin.consultation"
+  | "hospitaladmin.consultation.prescription-page"
   | "hospitaladmin.consultation.start"
   | "hospitaladmin.consultation.status"
   | "hospitaladmin.dashboard"
@@ -230,6 +249,7 @@ export type UIAnchorId =
   | "hospitaladmin.finance.expense.submit"
   | "hospitaladmin.finance.loading"
   | "hospitaladmin.finance.revenue.submit"
+  | "hospitaladmin.inventory.add-page"
   | "hospitaladmin.inventory.create"
   | "hospitaladmin.inventory.search"
   | "hospitaladmin.ipd.admit"
@@ -334,12 +354,21 @@ export type UIAnchorId =
   | "hospitaladmin.reports.completed-appointments"
   | "hospitaladmin.reports.total-appointments"
   | "hospitaladmin.reports.total-patients"
+  | "hospitaladmin.reschedule.close-button"
+  | "hospitaladmin.reschedule.confirm-button"
+  | "hospitaladmin.reschedule.date-input"
+  | "hospitaladmin.reschedule.department-select"
+  | "hospitaladmin.reschedule.doctor-select"
+  | "hospitaladmin.reschedule.modal"
+  | "hospitaladmin.reschedule.slot-button"
+  | "hospitaladmin.sidebar-nav"
   | "hospitaladmin.staff"
   | "hospitaladmin.staff.create"
   | "hospitaladmin.staff.loading"
   | "hospitaladmin.staff.save"
   | "hospitaladmin.staff.search"
   | "hospitaladmin.subdept"
+  | "hospitaladmin.subdept-dashboard"
   | "parentdept.appointments.booking.confirm"
   | "parentdept.appointments.booking.date"
   | "parentdept.appointments.booking.doctor"
@@ -377,6 +406,7 @@ export type UIAnchorId =
   | "parentdept.patients.search"
   | "parentdept.patients.view"
   | "public.appointment.provider"
+  | "public.blog.panel"
   | "public.booking.date"
   | "public.booking.department"
   | "public.booking.doctor"
@@ -385,8 +415,20 @@ export type UIAnchorId =
   | "public.booking.phone"
   | "public.booking.submit"
   | "public.brand.wordmark"
+  | "public.cookie-policy"
   | "public.footer"
+  | "public.footer.link.about"
+  | "public.footer.link.blog"
+  | "public.footer.link.contact"
+  | "public.footer.link.cookies"
+  | "public.footer.link.home"
   | "public.footer.link.logo"
+  | "public.footer.link.privacy"
+  | "public.footer.link.terms"
+  | "public.footer.link.treatments"
+  | "public.not-found"
+  | "public.privacy-policy"
+  | "public.terms-of-service"
   | "receptionist.appointments.create"
   | "receptionist.dashboard"
   | "receptionist.dashboard.loading"
@@ -394,6 +436,20 @@ export type UIAnchorId =
   | "receptionist.nav.book"
   | "receptionist.nav.patients"
   | "receptionist.nav.queue"
+  | "shared.account.dept.description"
+  | "shared.account.dept.email"
+  | "shared.account.dept.hod-name"
+  | "shared.account.dept.name"
+  | "shared.account.dept.phone"
+  | "shared.account.dept.save"
+  | "shared.account.email"
+  | "shared.account.name"
+  | "shared.account.panel"
+  | "shared.account.password.confirm"
+  | "shared.account.password.current"
+  | "shared.account.password.new"
+  | "shared.account.password.submit"
+  | "shared.account.save"
   | "shared.appointments.booking.confirm"
   | "shared.appointments.booking.date"
   | "shared.appointments.booking.doctor"
@@ -402,6 +458,8 @@ export type UIAnchorId =
   | "shared.appointments.booking.slot"
   | "shared.appointments.create"
   | "shared.appointments.search"
+  | "shared.dynamic-dashboard"
+  | "shared.leave-modal"
   | "shared.patients.appointment.complete"
   | "shared.patients.form.gender"
   | "shared.patients.form.name"
@@ -439,6 +497,7 @@ export type UIAnchorId =
   | "staff.patients.form.submit"
   | "staff.patients.search"
   | "staff.patients.view"
+  | "staff.profile"
   | "subdept.billing-dept.appointments.booking.confirm"
   | "subdept.billing-dept.appointments.booking.date"
   | "subdept.billing-dept.appointments.booking.doctor"
@@ -526,7 +585,10 @@ export type UIAnchorId =
   | "subdept.pharmacy.appointments.booking.slot"
   | "subdept.pharmacy.appointments.create"
   | "subdept.pharmacy.appointments.search"
+  | "subdept.pharmacy.counter-sale.modal"
+  | "subdept.pharmacy.finance.panel"
   | "subdept.pharmacy.inventory.create"
+  | "subdept.pharmacy.inventory.panel"
   | "subdept.pharmacy.inventory.search"
   | "subdept.pharmacy.ipd.admit"
   | "subdept.pharmacy.ipd.search"
@@ -538,6 +600,8 @@ export type UIAnchorId =
   | "subdept.pharmacy.patients.form.submit"
   | "subdept.pharmacy.patients.search"
   | "subdept.pharmacy.patients.view"
+  | "subdept.procedures.panel"
+  | "subdept.profile"
   | "subdept.shell.logout"
   | "subdept.shell.nav.account-settings"
   | "subdept.shell.nav.analytics"
@@ -586,7 +650,9 @@ export type UIAnchorId =
   | "superadmin.nav.hospitals"
   | "superadmin.nav.overview"
   | "superadmin.nav.settings"
+  | "support.ambulance.dashboard"
   | "support.dashboard"
+  | "support.housekeeping.dashboard"
   | "support.logout"
   | "support.nav.appointments"
   | "support.nav.dept-info"
@@ -660,6 +726,8 @@ export const UI_ANCHOR_IDS = [
   "auth.superadmin.login.submit",
   "clinical.dashboard",
   "clinical.dashboard.loading",
+  "clinical.dental.dashboard",
+  "clinical.followup.dashboard",
   "clinical.logout",
   "clinical.nav.appointments",
   "clinical.nav.dept-info",
@@ -667,7 +735,10 @@ export const UI_ANCHOR_IDS = [
   "clinical.nav.patients",
   "clinical.nav.queue",
   "clinical.nav.subdepts",
+  "clinical.nursing.dashboard",
+  "clinical.opd.dashboard",
   "diagnostic.dashboard",
+  "diagnostic.lab.dashboard",
   "diagnostic.logout",
   "diagnostic.nav.appointments",
   "diagnostic.nav.dept-info",
@@ -684,6 +755,7 @@ export const UI_ANCHOR_IDS = [
   "doctor.appointments.create",
   "doctor.appointments.search",
   "doctor.attendance.checkout",
+  "doctor.availability.modal",
   "doctor.dashboard",
   "doctor.dashboard.loading",
   "doctor.inventory.create",
@@ -701,6 +773,7 @@ export const UI_ANCHOR_IDS = [
   "doctor.nav.schedule",
   "doctor.nav.schedule-mgmt",
   "doctor.nav.treatment-plans",
+  "doctor.patient-profile.panel",
   "doctor.patients.appointment.complete",
   "doctor.patients.create",
   "doctor.patients.form.gender",
@@ -709,22 +782,31 @@ export const UI_ANCHOR_IDS = [
   "doctor.patients.form.submit",
   "doctor.patients.search",
   "doctor.patients.view",
+  "doctor.prescription-settings.panel",
+  "doctor.profile",
+  "doctor.profile.panel",
   "doctor.profile.save",
   "doctor.rx.add-medication",
+  "doctor.rx.management-panel",
+  "doctor.rx.prescription-page",
   "doctor.rx.save",
   "doctor.rx.voice.close",
+  "doctor.rx.voice.recorder",
   "doctor.rx.voice.start",
   "doctor.schedule.consult",
   "doctor.schedule.edit-rx",
   "doctor.schedule.full-week",
+  "doctor.schedule.modal",
   "doctor.schedule.save",
   "doctor.schedule.view-rx",
+  "doctor.treatment-plan.panel",
   "finance.bills.create",
   "finance.bills.create-alt",
   "finance.bills.create-list",
   "finance.bills.submit",
   "finance.dashboard",
   "finance.dashboard.loading",
+  "finance.dept.panel",
   "finance.expenses.create",
   "finance.expenses.create-list",
   "finance.expenses.submit",
@@ -745,10 +827,12 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.appointments.booking.patient-search",
   "hospitaladmin.appointments.booking.slot",
   "hospitaladmin.appointments.create",
+  "hospitaladmin.appointments.modal",
   "hospitaladmin.appointments.search",
   "hospitaladmin.billing",
   "hospitaladmin.configure",
   "hospitaladmin.configure.departments.create",
+  "hospitaladmin.configure.departments.panel",
   "hospitaladmin.configure.departments.save",
   "hospitaladmin.configure.departments.search",
   "hospitaladmin.configure.loading",
@@ -775,6 +859,7 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.configure.wards.create",
   "hospitaladmin.configure.wards.save",
   "hospitaladmin.consultation",
+  "hospitaladmin.consultation.prescription-page",
   "hospitaladmin.consultation.start",
   "hospitaladmin.consultation.status",
   "hospitaladmin.dashboard",
@@ -825,6 +910,7 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.finance.expense.submit",
   "hospitaladmin.finance.loading",
   "hospitaladmin.finance.revenue.submit",
+  "hospitaladmin.inventory.add-page",
   "hospitaladmin.inventory.create",
   "hospitaladmin.inventory.search",
   "hospitaladmin.ipd.admit",
@@ -929,12 +1015,21 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.reports.completed-appointments",
   "hospitaladmin.reports.total-appointments",
   "hospitaladmin.reports.total-patients",
+  "hospitaladmin.reschedule.close-button",
+  "hospitaladmin.reschedule.confirm-button",
+  "hospitaladmin.reschedule.date-input",
+  "hospitaladmin.reschedule.department-select",
+  "hospitaladmin.reschedule.doctor-select",
+  "hospitaladmin.reschedule.modal",
+  "hospitaladmin.reschedule.slot-button",
+  "hospitaladmin.sidebar-nav",
   "hospitaladmin.staff",
   "hospitaladmin.staff.create",
   "hospitaladmin.staff.loading",
   "hospitaladmin.staff.save",
   "hospitaladmin.staff.search",
   "hospitaladmin.subdept",
+  "hospitaladmin.subdept-dashboard",
   "parentdept.appointments.booking.confirm",
   "parentdept.appointments.booking.date",
   "parentdept.appointments.booking.doctor",
@@ -972,6 +1067,7 @@ export const UI_ANCHOR_IDS = [
   "parentdept.patients.search",
   "parentdept.patients.view",
   "public.appointment.provider",
+  "public.blog.panel",
   "public.booking.date",
   "public.booking.department",
   "public.booking.doctor",
@@ -980,8 +1076,20 @@ export const UI_ANCHOR_IDS = [
   "public.booking.phone",
   "public.booking.submit",
   "public.brand.wordmark",
+  "public.cookie-policy",
   "public.footer",
+  "public.footer.link.about",
+  "public.footer.link.blog",
+  "public.footer.link.contact",
+  "public.footer.link.cookies",
+  "public.footer.link.home",
   "public.footer.link.logo",
+  "public.footer.link.privacy",
+  "public.footer.link.terms",
+  "public.footer.link.treatments",
+  "public.not-found",
+  "public.privacy-policy",
+  "public.terms-of-service",
   "receptionist.appointments.create",
   "receptionist.dashboard",
   "receptionist.dashboard.loading",
@@ -989,6 +1097,20 @@ export const UI_ANCHOR_IDS = [
   "receptionist.nav.book",
   "receptionist.nav.patients",
   "receptionist.nav.queue",
+  "shared.account.dept.description",
+  "shared.account.dept.email",
+  "shared.account.dept.hod-name",
+  "shared.account.dept.name",
+  "shared.account.dept.phone",
+  "shared.account.dept.save",
+  "shared.account.email",
+  "shared.account.name",
+  "shared.account.panel",
+  "shared.account.password.confirm",
+  "shared.account.password.current",
+  "shared.account.password.new",
+  "shared.account.password.submit",
+  "shared.account.save",
   "shared.appointments.booking.confirm",
   "shared.appointments.booking.date",
   "shared.appointments.booking.doctor",
@@ -997,6 +1119,8 @@ export const UI_ANCHOR_IDS = [
   "shared.appointments.booking.slot",
   "shared.appointments.create",
   "shared.appointments.search",
+  "shared.dynamic-dashboard",
+  "shared.leave-modal",
   "shared.patients.appointment.complete",
   "shared.patients.form.gender",
   "shared.patients.form.name",
@@ -1034,6 +1158,7 @@ export const UI_ANCHOR_IDS = [
   "staff.patients.form.submit",
   "staff.patients.search",
   "staff.patients.view",
+  "staff.profile",
   "subdept.billing-dept.appointments.booking.confirm",
   "subdept.billing-dept.appointments.booking.date",
   "subdept.billing-dept.appointments.booking.doctor",
@@ -1121,7 +1246,10 @@ export const UI_ANCHOR_IDS = [
   "subdept.pharmacy.appointments.booking.slot",
   "subdept.pharmacy.appointments.create",
   "subdept.pharmacy.appointments.search",
+  "subdept.pharmacy.counter-sale.modal",
+  "subdept.pharmacy.finance.panel",
   "subdept.pharmacy.inventory.create",
+  "subdept.pharmacy.inventory.panel",
   "subdept.pharmacy.inventory.search",
   "subdept.pharmacy.ipd.admit",
   "subdept.pharmacy.ipd.search",
@@ -1133,6 +1261,8 @@ export const UI_ANCHOR_IDS = [
   "subdept.pharmacy.patients.form.submit",
   "subdept.pharmacy.patients.search",
   "subdept.pharmacy.patients.view",
+  "subdept.procedures.panel",
+  "subdept.profile",
   "subdept.shell.logout",
   "subdept.shell.nav.account-settings",
   "subdept.shell.nav.analytics",
@@ -1181,7 +1311,9 @@ export const UI_ANCHOR_IDS = [
   "superadmin.nav.hospitals",
   "superadmin.nav.overview",
   "superadmin.nav.settings",
+  "support.ambulance.dashboard",
   "support.dashboard",
+  "support.housekeeping.dashboard",
   "support.logout",
   "support.nav.appointments",
   "support.nav.dept-info",

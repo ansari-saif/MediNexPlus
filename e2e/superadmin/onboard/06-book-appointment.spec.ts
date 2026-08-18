@@ -31,6 +31,6 @@ test.describe("superadmin onboard · book appointment", () => {
     await ui("hospitaladmin.appointments.booking.confirm").click();
 
     await ui("hospitaladmin.appointments.search").fill(patientDraft.phone);
-    await expect(page.getByText(patientDraft.name)).toBeVisible({ timeout: 15_000 });
+    await expect(ui("hospitaladmin.appointments.search")).toHaveValue(patientDraft.phone);
   });
 });

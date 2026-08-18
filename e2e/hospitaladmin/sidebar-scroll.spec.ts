@@ -35,7 +35,7 @@ test.describe("hospital admin sidebar scroll", () => {
     await ui("hospitaladmin.nav.subdepartments").click();
     await expect(ui("hospitaladmin.nav.subdepartments.menu")).toBeVisible();
 
-    const nav = page.locator(".hd-nav");
+    const nav = ui("hospitaladmin.sidebar-nav");
     const scroll = await nav.evaluate((el) => {
       const before = el.scrollTop;
       el.scrollTop = 400;

@@ -52,7 +52,7 @@ export default function AdminSubDeptDashboard({ subDeptId, onBack, backLabel = "
   }, [loadDashboard]);
 
   if (loading) return (
-    <div style={{ padding: 60, textAlign: "center" }}>
+    <div data-ui="hospitaladmin.subdept-dashboard" style={{ padding: 60, textAlign: "center" }}>
       <Loader2 size={24} color="#0E898F" style={{ animation: "spin .7s linear infinite", margin: "0 auto 12px", display: "block" }} />
       <div style={{ fontSize: 13, color: "#0E898F" }}>Loading sub-department dashboard…</div>
     </div>

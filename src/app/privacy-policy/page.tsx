@@ -119,7 +119,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </nav>
 
-      <main className={styles.page}>
+      <main className={styles.page} data-ui="public.privacy-policy">
         {/* Hero */}
         <section className={styles.hero} style={{ paddingTop: "120px" }}>
           <div className="container">

@@ -198,7 +198,7 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 10px" }}>
+    <div data-ui="shared.account.panel" style={{ maxWidth: 1100, margin: "0 auto", padding: "0 10px" }}>
       {/* Page Header */}
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }}>Account Settings</h1>
@@ -283,7 +283,7 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                   <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Current Password</label>
                   <div style={{ position: "relative" }}>
                     <Lock size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                    <input type={cpShowOld ? "text" : "password"} value={cpOld} onChange={(e) => setCpOld(e.target.value)} placeholder="Enter current password" style={{ width: "100%", padding: "11px 40px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} />
+                    <input data-ui="shared.account.password.current" type={cpShowOld ? "text" : "password"} value={cpOld} onChange={(e) => setCpOld(e.target.value)} placeholder="Enter current password" style={{ width: "100%", padding: "11px 40px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} />
                     <button type="button" onClick={() => setCpShowOld(!cpShowOld)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", display: "flex" }}>
                       {cpShowOld ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
@@ -293,7 +293,7 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                   <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>New Password</label>
                   <div style={{ position: "relative" }}>
                     <Lock size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                    <input type={cpShowNew ? "text" : "password"} value={cpNew} onChange={(e) => setCpNew(e.target.value)} placeholder="Choose a strong password" style={{ width: "100%", padding: "11px 40px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} />
+                    <input data-ui="shared.account.password.new" type={cpShowNew ? "text" : "password"} value={cpNew} onChange={(e) => setCpNew(e.target.value)} placeholder="Choose a strong password" style={{ width: "100%", padding: "11px 40px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} />
                     <button type="button" onClick={() => setCpShowNew(!cpShowNew)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", display: "flex" }}>
                       {cpShowNew ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
@@ -309,7 +309,7 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                   <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Confirm New Password</label>
                   <div style={{ position: "relative" }}>
                     <Lock size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                    <input type={cpShowConfirm ? "text" : "password"} value={cpConfirm} onChange={(e) => setCpConfirm(e.target.value)} placeholder="Repeat your new password" style={{ width: "100%", padding: "11px 40px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} />
+                    <input data-ui="shared.account.password.confirm" type={cpShowConfirm ? "text" : "password"} value={cpConfirm} onChange={(e) => setCpConfirm(e.target.value)} placeholder="Repeat your new password" style={{ width: "100%", padding: "11px 40px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} />
                     <button type="button" onClick={() => setCpShowConfirm(!cpShowConfirm)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#94a3b8", display: "flex" }}>
                       {cpShowConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
@@ -317,7 +317,7 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                 </div>
               </div>
               <div style={{ marginTop: 24 }}>
-                <button type="submit" disabled={cpSaving} style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: cpSaving ? "not-allowed" : "pointer", opacity: cpSaving ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 12px rgba(14,137,143,0.2)", transition: "all .15s" }}>
+                <button data-ui="shared.account.password.submit" type="submit" disabled={cpSaving} style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: cpSaving ? "not-allowed" : "pointer", opacity: cpSaving ? 0.7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 12px rgba(14,137,143,0.2)", transition: "all .15s" }}>
                   {cpSaving ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />Updating...</> : <><Shield size={16} />Update Password</>}
                 </button>
               </div>
@@ -347,19 +347,19 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                   <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Full Name</label>
                   <div style={{ position: "relative" }}>
                     <User size={16} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                    <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 40px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Enter your full name" required />
+                    <input data-ui="shared.account.name" type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 40px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Enter your full name" required />
                   </div>
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Email Address</label>
                   <div style={{ position: "relative" }}>
                     <Mail size={16} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                    <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 40px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Enter your email address" required />
+                    <input data-ui="shared.account.email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 40px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#1e293b", outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Enter your email address" required />
                   </div>
                 </div>
               </div>
               <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>
-                <button type="submit" disabled={saving} style={{ padding: "11px 28px", borderRadius: 10, border: "none", background: "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(14,137,143,0.25)", transition: "all .15s" }}>
+                <button data-ui="shared.account.save" type="submit" disabled={saving} style={{ padding: "11px 28px", borderRadius: 10, border: "none", background: "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(14,137,143,0.25)", transition: "all .15s" }}>
                   {saving ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />Saving...</> : <><Save size={16} />Save Changes</>}
                 </button>
               </div>
@@ -409,14 +409,14 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                       <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Display Name</label>
                       <div style={{ position: "relative" }}>
                         <Building2 size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input value={deptForm.name} onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Department display name" />
+                        <input data-ui="shared.account.dept.name" value={deptForm.name} onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Department display name" />
                       </div>
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>HOD Name</label>
                       <div style={{ position: "relative" }}>
                         <User size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input value={deptForm.hodName} onChange={(e) => setDeptForm({ ...deptForm, hodName: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Head of Department name" />
+                        <input data-ui="shared.account.dept.hod-name" value={deptForm.hodName} onChange={(e) => setDeptForm({ ...deptForm, hodName: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Head of Department name" />
                       </div>
                     </div>
                   </div>
@@ -425,14 +425,14 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                       <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Contact Phone</label>
                       <div style={{ position: "relative" }}>
                         <Phone size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input value={deptForm.hodPhone} onChange={(e) => setDeptForm({ ...deptForm, hodPhone: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Contact phone number" />
+                        <input data-ui="shared.account.dept.phone" value={deptForm.hodPhone} onChange={(e) => setDeptForm({ ...deptForm, hodPhone: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Contact phone number" />
                       </div>
                     </div>
                     <div>
                       <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Contact Email</label>
                       <div style={{ position: "relative" }}>
                         <Mail size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
-                        <input type="email" value={deptForm.hodEmail} onChange={(e) => setDeptForm({ ...deptForm, hodEmail: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="HOD email address" />
+                        <input data-ui="shared.account.dept.email" type="email" value={deptForm.hodEmail} onChange={(e) => setDeptForm({ ...deptForm, hodEmail: e.target.value })} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", transition: "border-color .15s" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="HOD email address" />
                       </div>
                     </div>
                   </div>
@@ -440,12 +440,12 @@ export default function AccountSettingsPanel({ user: parentUser }: Props) {
                     <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Department Description</label>
                     <div style={{ position: "relative" }}>
                       <FileText size={15} color="#94a3b8" style={{ position: "absolute", left: 12, top: 12 }} />
-                      <textarea value={deptForm.description} onChange={(e) => setDeptForm({ ...deptForm, description: e.target.value })} rows={3} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", resize: "vertical", boxSizing: "border-box", transition: "border-color .15s", fontFamily: "inherit" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Brief description of the department and its services" />
+                      <textarea data-ui="shared.account.dept.description" value={deptForm.description} onChange={(e) => setDeptForm({ ...deptForm, description: e.target.value })} rows={3} style={{ width: "100%", padding: "11px 11px 11px 38px", borderRadius: 10, border: "1.5px solid #e2e8f0", fontSize: 13, outline: "none", resize: "vertical", boxSizing: "border-box", transition: "border-color .15s", fontFamily: "inherit" }} onFocus={e => e.currentTarget.style.borderColor = "#0E898F"} onBlur={e => e.currentTarget.style.borderColor = "#e2e8f0"} placeholder="Brief description of the department and its services" />
                     </div>
                   </div>
                 </div>
                 <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>
-                  <button type="submit" disabled={deptSaving} style={{ padding: "11px 28px", borderRadius: 10, border: "none", background: "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: deptSaving ? "not-allowed" : "pointer", opacity: deptSaving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(14,137,143,0.25)", transition: "all .15s" }}>
+                  <button data-ui="shared.account.dept.save" type="submit" disabled={deptSaving} style={{ padding: "11px 28px", borderRadius: 10, border: "none", background: "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: deptSaving ? "not-allowed" : "pointer", opacity: deptSaving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 12px rgba(14,137,143,0.25)", transition: "all .15s" }}>
                     {deptSaving ? <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />Saving...</> : <><Save size={16} />Save Department Info</>}
                   </button>
                 </div>

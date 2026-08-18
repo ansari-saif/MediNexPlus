@@ -38,7 +38,7 @@ const fmt12 = (t: string) => {
 
 function InfoChip({ icon: Icon, value, color = "#64748b", bg = "#f8fafc" }: { icon: any; value: string; color?: string; bg?: string }) {
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 10, background: bg, fontSize: 12, color, fontWeight: 500, border: `1px solid ${color}20` }}>
+    <div data-ui="doctor.patient-profile.panel" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 10, background: bg, fontSize: 12, color, fontWeight: 500, border: `1px solid ${color}20` }}>
       <Icon size={13} color={color} />
       {value}
     </div>

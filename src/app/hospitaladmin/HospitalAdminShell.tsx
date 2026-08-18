@@ -174,7 +174,7 @@ export default function HospitalAdminShell({ children }: { children: React.React
             )}
           </div>
 
-          <nav className="hd-nav">
+          <nav className="hd-nav" data-ui="hospitaladmin.sidebar-nav">
             <div className="hd-nav-sec">General</div>
             {generalItems.map(n => (
               <Anchor.Button

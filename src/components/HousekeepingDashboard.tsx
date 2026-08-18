@@ -22,7 +22,7 @@ const api = async (url: string, method = "GET", body?: any) => {
 
 function WipBanner() {
   return (
-    <div className="hk-wip" role="status">
+    <div data-ui="support.housekeeping.dashboard" className="hk-wip" role="status">
       <AlertCircle size={14} />
       <span>Work in progress — task assignment and related tools are being built.</span>
     </div>

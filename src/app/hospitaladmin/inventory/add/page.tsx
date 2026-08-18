@@ -215,7 +215,7 @@ export default function AddInventoryPage() {
         @keyframes aispin{to{transform:rotate(360deg)}}
       `}</style>
 
-      <div className="aip-wrap">
+      <div className="aip-wrap" data-ui="hospitaladmin.inventory.add-page">
         {/* Top Bar */}
         <div className="aip-topbar">
           <div className="aip-topbar-left">

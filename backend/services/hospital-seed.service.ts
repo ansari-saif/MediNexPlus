@@ -1,6 +1,4 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
-
-type Db = PrismaClient | Prisma.TransactionClient;
+type Db = any;
 
 /** Parent departments created for ops sub-modules. */
 export const DEFAULT_ONBOARD_PARENT_DEPARTMENTS = [
@@ -31,8 +29,8 @@ export async function seedHospitalDefaults(db: Db, hospitalId: string) {
     where: { hospitalId },
     select: { id: true, type: true, code: true },
   });
-  const parentByType = new Map(existingParents.map((d) => [d.type, d.id]));
-  const parentCodes = new Set(existingParents.map((d) => d.code));
+  const parentByType = new Map(existingParents.map((d: any) => [d.type, d.id]));
+  const parentCodes = new Set(existingParents.map((d: any) => d.code));
 
   for (const parent of DEFAULT_ONBOARD_PARENT_DEPARTMENTS) {
     if (parentByType.has(parent.type) || parentCodes.has(parent.code)) continue;
@@ -55,7 +53,7 @@ export async function seedHospitalDefaults(db: Db, hospitalId: string) {
     where: { hospitalId },
     select: { type: true },
   });
-  const haveTypes = new Set(existingSubs.map((s) => s.type));
+  const haveTypes = new Set(existingSubs.map((s: any) => s.type));
 
   const createdSubTypes: string[] = [];
   for (const sub of DEFAULT_ONBOARD_SUB_DEPARTMENTS) {

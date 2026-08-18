@@ -132,7 +132,7 @@ export default function NursingDashboard({ profile, user }: { profile: any; user
       <style>{nursingStyles}</style>
 
       {/* Navigation */}
-      <div className="ns-nav">
+      <div data-ui="clinical.nursing.dashboard" className="ns-nav">
         {([
           { id: "overview", label: "Overview", Icon: BarChart2 },
           { id: "patients", label: "Patient List", Icon: BedDouble },

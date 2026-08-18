@@ -119,7 +119,7 @@ export default function DentalOPDDashboard({ profile, user, activeTab, onTabChan
   const ExportDropdown = ({ open, onClose, onExport }: { open: boolean; onClose: () => void; onExport: (fmt: "pdf" | "excel" | "word") => void }) => {
     if (!open) return null;
     return (
-      <div onClick={e => e.stopPropagation()} style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, boxShadow: "0 8px 24px rgba(0,0,0,.10)", zIndex: 200, minWidth: 160, padding: "6px 0" }}>
+      <div data-ui="clinical.dental.dashboard" onClick={e => e.stopPropagation()} style={{ position: "absolute", top: "100%", right: 0, marginTop: 6, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12, boxShadow: "0 8px 24px rgba(0,0,0,.10)", zIndex: 200, minWidth: 160, padding: "6px 0" }}>
         {([["pdf", <FileText size={13} />, "Export PDF"], ["excel", <FileSpreadsheet size={13} />, "Export Excel"], ["word", <FileType size={13} />, "Export Word"]] as any[]).map(([f, icon, label]) => (
           <button key={f} onClick={() => { onExport(f); onClose(); }}
             style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "9px 16px", background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#334155", fontWeight: 500, fontFamily: "inherit", textAlign: "left" }}

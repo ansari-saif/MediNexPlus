@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-17T23:35:18+05:30",
+  "generatedAt": "2026-08-18T11:42:08+05:30",
   "components": {
     "administrative.dashboard": {
       "type": "landmark"
@@ -194,6 +194,12 @@
     "clinical.dashboard.loading": {
       "type": "landmark"
     },
+    "clinical.dental.dashboard": {
+      "type": "landmark"
+    },
+    "clinical.followup.dashboard": {
+      "type": "landmark"
+    },
     "clinical.logout": {
       "type": "button"
     },
@@ -215,7 +221,16 @@
     "clinical.nav.subdepts": {
       "type": "button"
     },
+    "clinical.nursing.dashboard": {
+      "type": "landmark"
+    },
+    "clinical.opd.dashboard": {
+      "type": "landmark"
+    },
     "diagnostic.dashboard": {
+      "type": "landmark"
+    },
+    "diagnostic.lab.dashboard": {
       "type": "landmark"
     },
     "diagnostic.logout": {
@@ -265,6 +280,9 @@
     },
     "doctor.attendance.checkout": {
       "type": "button"
+    },
+    "doctor.availability.modal": {
+      "type": "landmark"
     },
     "doctor.dashboard": {
       "type": "landmark"
@@ -317,6 +335,9 @@
     "doctor.nav.treatment-plans": {
       "type": "button"
     },
+    "doctor.patient-profile.panel": {
+      "type": "landmark"
+    },
     "doctor.patients.appointment.complete": {
       "type": "button"
     },
@@ -341,17 +362,35 @@
     "doctor.patients.view": {
       "type": "button"
     },
+    "doctor.prescription-settings.panel": {
+      "type": "landmark"
+    },
+    "doctor.profile": {
+      "type": "landmark"
+    },
+    "doctor.profile.panel": {
+      "type": "landmark"
+    },
     "doctor.profile.save": {
       "type": "button"
     },
     "doctor.rx.add-medication": {
       "type": "button"
     },
+    "doctor.rx.management-panel": {
+      "type": "landmark"
+    },
+    "doctor.rx.prescription-page": {
+      "type": "landmark"
+    },
     "doctor.rx.save": {
       "type": "button"
     },
     "doctor.rx.voice.close": {
       "type": "button"
+    },
+    "doctor.rx.voice.recorder": {
+      "type": "landmark"
     },
     "doctor.rx.voice.start": {
       "type": "button"
@@ -365,11 +404,17 @@
     "doctor.schedule.full-week": {
       "type": "button"
     },
+    "doctor.schedule.modal": {
+      "type": "landmark"
+    },
     "doctor.schedule.save": {
       "type": "button"
     },
     "doctor.schedule.view-rx": {
       "type": "button"
+    },
+    "doctor.treatment-plan.panel": {
+      "type": "landmark"
     },
     "finance.bills.create": {
       "type": "button"
@@ -387,6 +432,9 @@
       "type": "landmark"
     },
     "finance.dashboard.loading": {
+      "type": "landmark"
+    },
+    "finance.dept.panel": {
       "type": "landmark"
     },
     "finance.expenses.create": {
@@ -449,6 +497,9 @@
     "hospitaladmin.appointments.create": {
       "type": "button"
     },
+    "hospitaladmin.appointments.modal": {
+      "type": "landmark"
+    },
     "hospitaladmin.appointments.search": {
       "type": "input"
     },
@@ -460,6 +511,9 @@
     },
     "hospitaladmin.configure.departments.create": {
       "type": "button"
+    },
+    "hospitaladmin.configure.departments.panel": {
+      "type": "landmark"
     },
     "hospitaladmin.configure.departments.save": {
       "type": "button"
@@ -537,6 +591,9 @@
       "type": "button"
     },
     "hospitaladmin.consultation": {
+      "type": "landmark"
+    },
+    "hospitaladmin.consultation.prescription-page": {
       "type": "landmark"
     },
     "hospitaladmin.consultation.start": {
@@ -688,6 +745,9 @@
     },
     "hospitaladmin.finance.revenue.submit": {
       "type": "button"
+    },
+    "hospitaladmin.inventory.add-page": {
+      "type": "landmark"
     },
     "hospitaladmin.inventory.create": {
       "type": "button"
@@ -1001,6 +1061,30 @@
     "hospitaladmin.reports.total-patients": {
       "type": "landmark"
     },
+    "hospitaladmin.reschedule.close-button": {
+      "type": "button"
+    },
+    "hospitaladmin.reschedule.confirm-button": {
+      "type": "button"
+    },
+    "hospitaladmin.reschedule.date-input": {
+      "type": "input"
+    },
+    "hospitaladmin.reschedule.department-select": {
+      "type": "select"
+    },
+    "hospitaladmin.reschedule.doctor-select": {
+      "type": "select"
+    },
+    "hospitaladmin.reschedule.modal": {
+      "type": "landmark"
+    },
+    "hospitaladmin.reschedule.slot-button": {
+      "type": "button"
+    },
+    "hospitaladmin.sidebar-nav": {
+      "type": "landmark"
+    },
     "hospitaladmin.staff": {
       "type": "landmark"
     },
@@ -1017,6 +1101,9 @@
       "type": "input"
     },
     "hospitaladmin.subdept": {
+      "type": "landmark"
+    },
+    "hospitaladmin.subdept-dashboard": {
       "type": "landmark"
     },
     "parentdept.appointments.booking.confirm": {
@@ -1130,6 +1217,9 @@
     "public.appointment.provider": {
       "type": "landmark"
     },
+    "public.blog.panel": {
+      "type": "landmark"
+    },
     "public.booking.date": {
       "type": "input"
     },
@@ -1154,11 +1244,47 @@
     "public.brand.wordmark": {
       "type": "landmark"
     },
+    "public.cookie-policy": {
+      "type": "landmark"
+    },
     "public.footer": {
       "type": "landmark"
     },
+    "public.footer.link.about": {
+      "type": "link"
+    },
+    "public.footer.link.blog": {
+      "type": "link"
+    },
+    "public.footer.link.contact": {
+      "type": "link"
+    },
+    "public.footer.link.cookies": {
+      "type": "link"
+    },
+    "public.footer.link.home": {
+      "type": "link"
+    },
     "public.footer.link.logo": {
       "type": "link"
+    },
+    "public.footer.link.privacy": {
+      "type": "link"
+    },
+    "public.footer.link.terms": {
+      "type": "link"
+    },
+    "public.footer.link.treatments": {
+      "type": "link"
+    },
+    "public.not-found": {
+      "type": "landmark"
+    },
+    "public.privacy-policy": {
+      "type": "landmark"
+    },
+    "public.terms-of-service": {
+      "type": "landmark"
     },
     "receptionist.appointments.create": {
       "type": "button"
@@ -1179,6 +1305,48 @@
       "type": "button"
     },
     "receptionist.nav.queue": {
+      "type": "button"
+    },
+    "shared.account.dept.description": {
+      "type": "landmark"
+    },
+    "shared.account.dept.email": {
+      "type": "input"
+    },
+    "shared.account.dept.hod-name": {
+      "type": "input"
+    },
+    "shared.account.dept.name": {
+      "type": "input"
+    },
+    "shared.account.dept.phone": {
+      "type": "input"
+    },
+    "shared.account.dept.save": {
+      "type": "button"
+    },
+    "shared.account.email": {
+      "type": "input"
+    },
+    "shared.account.name": {
+      "type": "input"
+    },
+    "shared.account.panel": {
+      "type": "landmark"
+    },
+    "shared.account.password.confirm": {
+      "type": "input"
+    },
+    "shared.account.password.current": {
+      "type": "input"
+    },
+    "shared.account.password.new": {
+      "type": "input"
+    },
+    "shared.account.password.submit": {
+      "type": "button"
+    },
+    "shared.account.save": {
       "type": "button"
     },
     "shared.appointments.booking.confirm": {
@@ -1204,6 +1372,12 @@
     },
     "shared.appointments.search": {
       "type": "input"
+    },
+    "shared.dynamic-dashboard": {
+      "type": "landmark"
+    },
+    "shared.leave-modal": {
+      "type": "landmark"
     },
     "shared.patients.appointment.complete": {
       "type": "button"
@@ -1315,6 +1489,9 @@
     },
     "staff.patients.view": {
       "type": "button"
+    },
+    "staff.profile": {
+      "type": "landmark"
     },
     "subdept.billing-dept.appointments.booking.confirm": {
       "type": "button"
@@ -1577,8 +1754,17 @@
     "subdept.pharmacy.appointments.search": {
       "type": "input"
     },
+    "subdept.pharmacy.counter-sale.modal": {
+      "type": "landmark"
+    },
+    "subdept.pharmacy.finance.panel": {
+      "type": "landmark"
+    },
     "subdept.pharmacy.inventory.create": {
       "type": "button"
+    },
+    "subdept.pharmacy.inventory.panel": {
+      "type": "landmark"
     },
     "subdept.pharmacy.inventory.search": {
       "type": "input"
@@ -1612,6 +1798,12 @@
     },
     "subdept.pharmacy.patients.view": {
       "type": "button"
+    },
+    "subdept.procedures.panel": {
+      "type": "landmark"
+    },
+    "subdept.profile": {
+      "type": "landmark"
     },
     "subdept.shell.logout": {
       "type": "button"
@@ -1757,7 +1949,13 @@
     "superadmin.nav.settings": {
       "type": "button"
     },
+    "support.ambulance.dashboard": {
+      "type": "landmark"
+    },
     "support.dashboard": {
+      "type": "landmark"
+    },
+    "support.housekeeping.dashboard": {
       "type": "landmark"
     },
     "support.logout": {

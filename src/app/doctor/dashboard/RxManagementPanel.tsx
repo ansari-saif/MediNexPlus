@@ -211,7 +211,7 @@ export function RxManagementPanel() {
   };
 
   return (
-    <div style={{ padding: "0 4px" }}>
+    <div data-ui="doctor.rx.management-panel" style={{ padding: "0 4px" }}>
       <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #d1fae5", padding: "18px 24px", marginBottom: 16, display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 1px 4px rgba(16,185,129,0.05)" }}>
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: "#1e293b", display: "flex", alignItems: "center", gap: 8 }}>

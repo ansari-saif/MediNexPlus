@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function CookiePolicyPage() {
   return (
     <>
-      <main className={styles.page}>
+      <main className={styles.page} data-ui="public.cookie-policy">
         {/* Hero */}
         <section className={styles.hero}>
           <div className="container">

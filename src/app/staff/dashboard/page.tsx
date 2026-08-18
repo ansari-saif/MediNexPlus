@@ -400,7 +400,7 @@ export default function StaffDashboard() {
                         value: monthsWorked < 1 ? "< 1 mo" : `${monthsWorked} mo`,
                         icon: <Calendar size={18} color={roleColors.accent} />,
                         bg: roleColors.bg, textColor: roleColors.text,
-                        sub: joinDate.toLocaleDateString("en-IN", { month: "short", year: "numeric" }),
+                        sub: joinDate ? joinDate.toLocaleDateString("en-IN", { month: "short", year: "numeric" }) : "—",
                       },
                     ].map(s => (
                       <div key={s.label} className="sd-stat-card" style={{ background: s.bg }}>
@@ -427,7 +427,7 @@ export default function StaffDashboard() {
                         { icon: <Phone size={15} color={roleColors.accent} />, label: "Phone", value: profile.phone || "Not provided" },
                         { icon: <Briefcase size={15} color={roleColors.accent} />, label: "Role", value: ROLE_LABELS[profile.role] || profile.role },
                         { icon: <Building2 size={15} color={roleColors.accent} />, label: "Department", value: profile.department?.name || "Not assigned" },
-                        { icon: <Calendar size={15} color={roleColors.accent} />, label: "Join Date", value: joinDate.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) },
+                        { icon: <Calendar size={15} color={roleColors.accent} />, label: "Join Date", value: joinDate ? joinDate.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "—" },
                       ].map(item => (
                         <div key={item.label} className="sd-info-row">
                           <div style={{ width: 30, height: 30, borderRadius: 8, background: `${roleColors.accent}12`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>

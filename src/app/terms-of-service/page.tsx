@@ -119,7 +119,7 @@ export default function TermsOfServicePage() {
         </div>
       </nav>
 
-      <main className={styles.page}>
+      <main className={styles.page} data-ui="public.terms-of-service">
         {/* Hero */}
         <section className={styles.hero} style={{ paddingTop: "120px" }}>
           <div className="container">

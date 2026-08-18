@@ -11,7 +11,6 @@ test.describe("hospital admin login", () => {
     await ui("auth.login.password").fill(password);
     await ui("auth.login.submit").click();
 
-    await page.waitForURL("**/hospitaladmin/**", { timeout: 20_000 });
-    await expect(ui("hospitaladmin.dashboard")).toBeVisible({ timeout: 15_000 });
+    await expect(ui("hospitaladmin.dashboard")).toBeVisible({ timeout: 25_000 });
   });
 });

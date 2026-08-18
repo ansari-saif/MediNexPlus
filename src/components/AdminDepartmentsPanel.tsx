@@ -167,7 +167,7 @@ function DepartmentsGrid({ onOpenDept }: { onOpenDept: (id: string) => void }) {
       <style>{`@keyframes deptSpin{to{transform:rotate(360deg)}}`}</style>
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+      <div data-ui="hospitaladmin.configure.departments.panel" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 18, fontWeight: 800, color: "#0f172a", letterSpacing: "-.01em" }}>Departments</div>
           <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>Manage hospital departments and sub-departments</div>

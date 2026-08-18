@@ -215,7 +215,7 @@ export default function TreatmentPlanPanel() {
   );
 
   return (
-    <div>
+    <div data-ui="doctor.treatment-plan.panel">
       <style>{`
         .tp-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
         .tp-toolbar-left{display:flex;flex-direction:column;gap:2px;min-width:0}

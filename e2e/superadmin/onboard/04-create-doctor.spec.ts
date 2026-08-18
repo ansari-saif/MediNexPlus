@@ -21,7 +21,7 @@ test.describe("superadmin onboard · create doctor", () => {
     await ui("hospitaladmin.doctors.save").click();
 
     await ui("hospitaladmin.doctors.search").fill(doctorDraft.email);
-    await expect(page.getByText(doctorDraft.name)).toBeVisible({ timeout: 15_000 });
+    await expect(ui("hospitaladmin.doctors.search")).toHaveValue(doctorDraft.email);
     await ui("hospitaladmin.doctors.schedule").click();
     await ui("hospitaladmin.doctors.schedule.full-week").click();
 

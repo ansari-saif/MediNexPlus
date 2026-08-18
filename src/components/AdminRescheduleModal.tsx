@@ -75,7 +75,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
   const availableSlots = slots.filter(s => !bookedSlots.includes(s));
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,.55)", backdropFilter: "blur(4px)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
+    <div data-ui="hospitaladmin.reschedule.modal" style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,.55)", backdropFilter: "blur(4px)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}
       onClick={e => { if (e.target === e.currentTarget && !saving) onClose(); }}>
       <div style={{ background: "#fff", borderRadius: 20, padding: 28, width: "100%", maxWidth: 520, boxShadow: "0 24px 60px rgba(0,0,0,.18)", fontFamily: "'Inter',sans-serif", maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
@@ -83,7 +83,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
             <div style={{ fontSize: 17, fontWeight: 800, color: "#1e293b", marginBottom: 3 }}>Reschedule Appointment</div>
             <div style={{ fontSize: 12, color: "#64748b" }}>{appt.patient?.name} · {appt.patient?.patientId}</div>
           </div>
-          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 9, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}><X size={14} /></button>
+          <button data-ui="hospitaladmin.reschedule.close-button" onClick={onClose} style={{ width: 32, height: 32, borderRadius: 9, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}><X size={14} /></button>
         </div>
         <div style={{ background: "#E6F4F4", borderRadius: 12, padding: "12px 14px", marginBottom: 20, border: "1px solid #B3E0E0" }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: "#0A6B70", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 4 }}>Current Appointment</div>
@@ -95,7 +95,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: ".06em" }}>Department</label>
-              <select value={departmentId} onChange={e => { setDepartmentId(e.target.value); setDoctorId(""); }}
+              <select data-ui="hospitaladmin.reschedule.department-select" value={departmentId} onChange={e => { setDepartmentId(e.target.value); setDoctorId(""); }}
                 style={{ padding: "10px 12px", borderRadius: 10, border: "1.5px solid #e2e8f0", background: "#f8fafc", fontSize: 13, color: "#334155", outline: "none", fontFamily: "'Inter',sans-serif" }}>
                 <option value="">Select department...</option>
                 {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -103,7 +103,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: ".06em" }}>Doctor</label>
-              <select value={doctorId} onChange={e => { setDoctorId(e.target.value); setSelectedTime(""); }}
+              <select data-ui="hospitaladmin.reschedule.doctor-select" value={doctorId} onChange={e => { setDoctorId(e.target.value); setSelectedTime(""); }}
                 style={{ padding: "10px 12px", borderRadius: 10, border: "1.5px solid #e2e8f0", background: "#f8fafc", fontSize: 13, color: "#334155", outline: "none", fontFamily: "'Inter',sans-serif" }}>
                 <option value="">Select doctor...</option>
                 {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.name}{d.specialization ? ` — ${d.specialization}` : ""}</option>)}
@@ -112,7 +112,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
             <label style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: ".06em" }}>New Date</label>
-            <input type="date" value={appointmentDate} min={toLocalDateStr(new Date())}
+            <input data-ui="hospitaladmin.reschedule.date-input" type="date" value={appointmentDate} min={toLocalDateStr(new Date())}
               onChange={e => { setAppointmentDate(e.target.value); setSelectedTime(""); }}
               style={{ padding: "10px 12px", borderRadius: 10, border: "1.5px solid #e2e8f0", background: "#f8fafc", fontSize: 14, color: "#334155", outline: "none", fontFamily: "'Inter',sans-serif", cursor: "pointer" }} />
           </div>
@@ -139,7 +139,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
                   const isBooked = bookedSlots.includes(slot);
                   const isSelected = selectedTime === slot;
                   return (
-                    <button key={slot} disabled={isBooked}
+                    <button key={slot} data-ui="hospitaladmin.reschedule.slot-button" disabled={isBooked}
                       onClick={() => { if (!isBooked) { setSelectedTime(slot); setErr(""); } }}
                       style={{
                         padding: "9px 6px", borderRadius: 9,
@@ -170,7 +170,7 @@ export default function AdminRescheduleModal({ appt, onClose, onConfirm }: {
           <div style={{ display: "flex", gap: 10 }}>
             <button onClick={onClose} disabled={saving}
               style={{ flex: 1, padding: "11px 0", borderRadius: 11, border: "2px solid #e2e8f0", background: "#fff", color: "#64748b", fontSize: 13, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.6 : 1 }}>Cancel</button>
-            <button onClick={handleConfirm} disabled={saving || !selectedTime}
+            <button data-ui="hospitaladmin.reschedule.confirm-button" onClick={handleConfirm} disabled={saving || !selectedTime}
               style={{ flex: 1, padding: "11px 0", borderRadius: 11, border: "none", background: saving || !selectedTime ? "#94a3b8" : "#0E898F", color: "#fff", fontSize: 13, fontWeight: 700, cursor: saving || !selectedTime ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: saving || !selectedTime ? "none" : "0 4px 14px rgba(14,137,143,.35)" }}>
               {saving ? <><Loader2 size={13} style={{ animation: "spin .7s linear infinite" }} /> Saving…</> : <><RefreshCw size={13} /> Confirm Reschedule</>}
             </button>

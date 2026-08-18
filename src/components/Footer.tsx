@@ -84,14 +84,11 @@ export default function Footer() {
         <div className={styles.footerCol}>
           <h4 className={styles.colTitle}>Quick Links</h4>
           <ul className={styles.linkList}>
-            {quickLinks.map((link) => (
-              <li key={link.label}>
-                <Anchor.Link ui={link.ui} href={link.href} className={styles.footerLink}>
-                  <ArrowRight size={14} />
-                  {link.label}
-                </Anchor.Link>
-              </li>
-            ))}
+            <li><Anchor.Link ui="public.footer.link.home" href="#" className={styles.footerLink}><ArrowRight size={14} />Home</Anchor.Link></li>
+            <li><Anchor.Link ui="public.footer.link.about" href="#" className={styles.footerLink}><ArrowRight size={14} />About Us</Anchor.Link></li>
+            <li><Anchor.Link ui="public.footer.link.treatments" href="#" className={styles.footerLink}><ArrowRight size={14} />Treatments</Anchor.Link></li>
+            <li><Anchor.Link ui="public.footer.link.blog" href="#" className={styles.footerLink}><ArrowRight size={14} />Blog</Anchor.Link></li>
+            <li><Anchor.Link ui="public.footer.link.contact" href="#" className={styles.footerLink}><ArrowRight size={14} />Contact Us</Anchor.Link></li>
           </ul>
         </div>
 
@@ -138,11 +135,9 @@ export default function Footer() {
             © {new Date().getFullYear()} Curify. All rights reserved.
           </p>
           <div className={styles.bottomLinks}>
-            {legalLinks.map((link) => (
-              <Anchor.Link key={link.label} ui={link.ui} href={link.href}>
-                {link.label}
-              </Anchor.Link>
-            ))}
+            <Anchor.Link ui="public.footer.link.privacy" href="#">Privacy Policy</Anchor.Link>
+            <Anchor.Link ui="public.footer.link.terms" href="#">Terms of Service</Anchor.Link>
+            <Anchor.Link ui="public.footer.link.cookies" href="#">Cookie Policy</Anchor.Link>
           </div>
         </div>
       </div>

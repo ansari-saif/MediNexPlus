@@ -73,7 +73,7 @@ export default function PrescriptionSettingsPanel() {
   const letterheadType = hs?.letterheadType || "IMAGE";
 
   if (loading) return (
-    <div style={{ padding: "40px 0", textAlign: "center", color: "#64748b" }}>
+    <div data-ui="doctor.prescription-settings.panel" style={{ padding: "40px 0", textAlign: "center", color: "#64748b" }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <Loader2 size={24} style={{ animation: "spin .7s linear infinite", marginBottom: 10 }} />
       <div>Loading settings...</div>

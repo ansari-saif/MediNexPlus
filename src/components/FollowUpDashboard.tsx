@@ -40,7 +40,7 @@ function StatsBar({ stats }: { stats: any }) {
     { label: "Completed", value: stats.completed, color: "#059669", bg: "#f0fdf4", icon: CheckCircle },
   ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 24 }}>
+    <div data-ui="clinical.followup.dashboard" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 24 }}>
       {items.map(i => (
         <div key={i.label} style={{ background: "linear-gradient(135deg, #ffffff, #f8fafc)", borderRadius: 14, padding: "16px 18px", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{ width: 46, height: 46, borderRadius: 12, background: i.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>

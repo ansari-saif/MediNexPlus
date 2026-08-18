@@ -96,7 +96,7 @@ function SearchableSelect({ options, value, onChange, placeholder, icon: Icon, e
   };
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div data-ui="hospitaladmin.appointments.modal" ref={ref} style={{ position: "relative" }}>
       <div ref={triggerRef} onClick={openDropdown} className={`${styles.inputWrap} ${styles.customSelect} ${error ? styles.fieldError : ""}`}
         style={{ cursor: "pointer", borderColor: open ? "var(--primary)" : error ? "var(--error)" : undefined, boxShadow: open ? "0 0 0 3px var(--primary-100)" : undefined }}>
         <span className={styles.fieldIconWrap}><Icon size={15} /></span>

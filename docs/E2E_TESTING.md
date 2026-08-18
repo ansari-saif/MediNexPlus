@@ -56,9 +56,7 @@ Anything other than `200` means fix the environment before blaming a test.
 | `npx playwright test --debug` | step through with the inspector |
 | `npx playwright test --ui` | time-travel UI mode, best for locator debugging |
 
-Two projects exist in `playwright.config.ts`:
-
-- **`chromium`** — normal independent specs, ignores the onboard glob.
+- **`chromium`** — normal independent specs across all portals (`doctor`, `finance`, `clinical`, `diagnostic`, `administrative`, `support`, `receptionist`, `public`, `signup`, `hospitaladmin`), ignoring the onboard glob.
 - **`superadmin-onboard`** — the serial flow, `workers: 1`, one shared browser tab.
 
 ### The serial onboarding flow

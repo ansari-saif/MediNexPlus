@@ -24,7 +24,7 @@ const fmtCurrency = (n: number) => `₹${(n || 0).toLocaleString("en-IN")}`;
 
 function WipBanner() {
   return (
-    <div className="amb-wip" role="status">
+    <div data-ui="support.ambulance.dashboard" className="amb-wip" role="status">
       <AlertCircle size={14} />
       <span>Work in progress — booking, fleet, and trip tools are being built.</span>
     </div>

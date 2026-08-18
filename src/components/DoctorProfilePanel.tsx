@@ -77,7 +77,7 @@ export default function DoctorProfilePanel({ doctor, onBack, onProfileUpdated }:
   const deptName = doctor?.department?.name || "General";
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div data-ui="doctor.profile.panel" style={{ fontFamily: "'Inter', sans-serif" }}>
       <style suppressHydrationWarning>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       
       {/* Header */}

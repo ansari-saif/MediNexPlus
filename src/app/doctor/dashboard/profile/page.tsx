@@ -255,7 +255,7 @@ export default function DoctorProfilePage() {
   const isUploadingPhoto = uploadingField === "profileImage";
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", maxWidth: 960, margin: "0 auto" }}>
+    <div data-ui="doctor.profile" style={{ fontFamily: "'Inter', sans-serif", maxWidth: 960, margin: "0 auto" }}>
       <style suppressHydrationWarning>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
       <div style={{ marginBottom: 24 }}>

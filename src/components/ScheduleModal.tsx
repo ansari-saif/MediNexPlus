@@ -628,7 +628,7 @@ export default function ScheduleModal({ open, onClose, doctorId, doctorName, onS
 
   return (
     <>
-      <div className="sched-overlay" onClick={onClose} />
+      <div data-ui="doctor.schedule.modal" className="sched-overlay" onClick={onClose} />
       <div className="sched-modal">
         {toast && (
           <div className={`sched-toast ${toast.type}`}>

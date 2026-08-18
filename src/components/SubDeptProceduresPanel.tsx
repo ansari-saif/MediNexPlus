@@ -293,7 +293,7 @@ export default function SubDeptProceduresPanel({ meta, deptName }: { meta: Meta;
           <div style={{overflowX:"auto"}}>
             <table style={{width:"100%",borderCollapse:"collapse"}}>
               <thead>
-                <tr style={{background:"#f8fafc"}}>
+                <tr data-ui="subdept.procedures.panel" style={{background:"#f8fafc"}}>
                   <th style={{padding:"12px 10px 12px 14px",borderBottom:"2px solid #f1f5f9",width:36}}>
                     <input type="checkbox" checked={filtered.length > 0 && selected.size === filtered.length} onChange={toggleAll}
                       style={{width:15,height:15,cursor:"pointer",accentColor:meta.accent}}/>

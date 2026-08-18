@@ -59,7 +59,7 @@ const formatDateInput = (date: Date) => {
 
 function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: number) => void }) {
   return (
-    <div className="leave-toast-container">
+    <div data-ui="shared.leave-modal" className="leave-toast-container">
       {toasts.map((t) => (
         <div key={t.id} className={`leave-toast leave-toast-${t.type}`}>
           {t.type === "success" && <Check size={16} />}

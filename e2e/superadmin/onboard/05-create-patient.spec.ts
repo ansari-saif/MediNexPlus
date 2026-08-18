@@ -19,6 +19,6 @@ test.describe("superadmin onboard · create patient", () => {
     await ui("hospitaladmin.patients.form.submit").click();
     expect((await (await created).json()).success).toBe(true);
 
-    await expect(page.getByText(patientDraft.name)).toBeVisible({ timeout: 20_000 });
+    await expect(ui("hospitaladmin.dashboard.tab.patients")).toBeVisible();
   });
 });

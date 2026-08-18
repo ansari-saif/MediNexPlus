@@ -31,7 +31,7 @@ const sortData = (data: any[], sort: {col:string;dir:"asc"|"desc"}) =>
 
 const mkTh = (label:string, col:string, sort:{col:string;dir:"asc"|"desc"}, onSort:(c:string)=>void, style?:any) => (
   <th key={col} style={{cursor:"pointer",userSelect:"none",whiteSpace:"nowrap",...style}} onClick={()=>onSort(col)}>
-    <div style={{display:"flex",alignItems:"center",gap:4}}>{label}
+    <div data-ui="subdept.pharmacy.inventory.panel" style={{display:"flex",alignItems:"center",gap:4}}>{label}
       {sort.col===col?(sort.dir==="asc"?<ChevronUp size={11}/>:<ChevronDown size={11}/>):<ChevronsUpDown size={11} color="#cbd5e1"/>}
     </div>
   </th>

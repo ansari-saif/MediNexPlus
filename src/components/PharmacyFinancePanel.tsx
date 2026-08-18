@@ -249,7 +249,7 @@ export default function PharmacyFinancePanel() {
   const chart7Max     = Math.max(chart7MaxRev, chart7MaxExp, 1);
 
   return (
-    <div style={{ flex: 1, minHeight: 0, overflowY: "auto", paddingRight: 4, animation: "fadeUp .25s ease" }}>
+    <div data-ui="subdept.pharmacy.finance.panel" style={{ flex: 1, minHeight: 0, overflowY: "auto", paddingRight: 4, animation: "fadeUp .25s ease" }}>
       <style>{`
         @keyframes finFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes finSpin{to{transform:rotate(360deg)}}

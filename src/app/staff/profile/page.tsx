@@ -205,7 +205,7 @@ export default function StaffProfilePage() {
             </div>
           </header>
 
-          <main className="sd-center">
+          <main className="sd-center" data-ui="staff.profile">
             <div style={{ maxWidth: 700, margin: "0 auto" }}>
               <div style={{ marginBottom: 24 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a" }}>My Profile</h1>

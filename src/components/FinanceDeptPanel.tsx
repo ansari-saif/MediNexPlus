@@ -79,7 +79,7 @@ export default function FinanceDeptPanel() {
   };
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 60, color: "#94a3b8", gap: 10 }}>
+    <div data-ui="finance.dept.panel" style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 60, color: "#94a3b8", gap: 10 }}>
       <Loader2 size={20} style={{ animation: "spin .7s linear infinite" }} /> Loading finance department…
     </div>
   );

@@ -42,7 +42,7 @@ export default function DynamicDashboard() {
   useEffect(() => { load(); }, [load]);
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "80px 0", color: "#94a3b8", fontSize: 14 }}>
+    <div data-ui="shared.dynamic-dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "80px 0", color: "#94a3b8", fontSize: 14 }}>
       <Loader2 size={20} style={{ animation: "spin .8s linear infinite" }} />
       Loading dashboard...
     </div>

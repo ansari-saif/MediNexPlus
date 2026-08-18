@@ -232,7 +232,7 @@ export default function OPDDashboard({ profile, user, activeTab, onTabChange, me
       {showBooking && <BookingWizard onSuccess={(_name:string)=>{setShowBooking(false);loadAppts(apptDate,apptStatus);}} onClose={()=>setShowBooking(false)}/>}
 
       {/* ── Banner ── */}
-      <div style={{ background:m.gradient, borderRadius:20, padding:"22px 28px", marginBottom:22, display:"flex", alignItems:"center", gap:18, color:"#fff", position:"relative", overflow:"hidden" }}>
+      <div data-ui="clinical.opd.dashboard" style={{ background:m.gradient, borderRadius:20, padding:"22px 28px", marginBottom:22, display:"flex", alignItems:"center", gap:18, color:"#fff", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", right:-30, top:-30, width:150, height:150, borderRadius:"50%", background:"rgba(255,255,255,.06)" }}/>
         <div style={{ position:"absolute", right:90, bottom:-50, width:110, height:110, borderRadius:"50%", background:"rgba(255,255,255,.04)" }}/>
         <div style={{ width:56, height:56, borderRadius:16, background:"rgba(255,255,255,.18)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, border:"1.5px solid rgba(255,255,255,.3)" }}>

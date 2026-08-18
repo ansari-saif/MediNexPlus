@@ -79,7 +79,7 @@ const emptySchedule: WeeklySchedule = {
 
 function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: number) => void }) {
   return (
-    <div className="avail-toast-container">
+    <div data-ui="doctor.availability.modal" className="avail-toast-container">
       {toasts.map((t) => (
         <div key={t.id} className={`avail-toast avail-toast-${t.type}`}>
           {t.type === "success" && <Check size={16} />}

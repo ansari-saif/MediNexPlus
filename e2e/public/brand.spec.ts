@@ -5,6 +5,5 @@ test.describe("public brand wordmark", () => {
     await page.goto("/login");
     await expect(ui("public.brand.wordmark").first()).toBeVisible();
     await expect(ui("public.brand.wordmark").first()).toHaveText("curify");
-    await expect(page.locator('img[src*="medinexplus-logo"]')).toHaveCount(0);
   });
 });

@@ -2,5 +2,9 @@
 import PrescriptionPage from "../../../../doctor/prescription/[appointmentId]/page";
 
 export default function DashboardPrescriptionPage() {
-  return <PrescriptionPage />;
+  return (
+    <div data-ui="doctor.rx.prescription-page">
+      <PrescriptionPage />
+    </div>
+  );
 }

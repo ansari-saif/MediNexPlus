@@ -186,7 +186,7 @@ export default function LabDashboard({ profile, user, activeTab, onTabChange, ui
                 </button>
               </div>
               <table className="lb-tbl">
-                <thead><tr><th>Patient</th><th>Doctor</th><th>Time</th><th>Status</th></tr></thead>
+                <thead><tr data-ui="diagnostic.lab.dashboard"><th>Patient</th><th>Doctor</th><th>Time</th><th>Status</th></tr></thead>
                 <tbody>
                   {qLoad ? <tr><td colSpan={4} className="lb-empty"><Loader2 size={14} style={{ animation:"lb-spin .7s linear infinite", verticalAlign:"middle" }} /></td></tr>
                   : queue.length === 0 ? <tr><td colSpan={4} className="lb-empty">No pending tests</td></tr>

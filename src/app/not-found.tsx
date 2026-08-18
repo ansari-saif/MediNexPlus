@@ -13,7 +13,7 @@ export default function NotFound() {
   const [hoveredBtn, setHoveredBtn] = useState<number | null>(null);
 
   return (
-    <div style={{
+    <div data-ui="public.not-found" style={{
       minHeight: "100vh",
       display: "flex",
       alignItems: "center",

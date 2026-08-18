@@ -249,7 +249,7 @@ export default function VoicePrescriptionRecorder({
   };
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(10,18,38,0.72)", backdropFilter: "blur(3px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div data-ui="doctor.rx.voice.recorder" style={{ position: "fixed", inset: 0, background: "rgba(10,18,38,0.72)", backdropFilter: "blur(3px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div style={{ background: "#fff", borderRadius: 24, width: 500, maxWidth: "100%", boxShadow: "0 30px 80px rgba(0,0,0,0.35)", animation: "vModalIn .28s cubic-bezier(.34,1.4,.64,1)", overflow: "hidden", position: "relative" }}>
 
         {/* ── Modal Header ── */}

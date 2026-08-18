@@ -227,7 +227,7 @@ export default function CounterSaleModal({ onClose, user, onSuccess }: Props) {
         @keyframes csmSpin{to{transform:rotate(360deg)}}
       `}</style>
 
-      <div className="csm-overlay" onClick={onClose}>
+      <div data-ui="subdept.pharmacy.counter-sale.modal" className="csm-overlay" onClick={onClose}>
         <div className="csm-bg" />
         <div className="csm-modal" onClick={e => e.stopPropagation()}>
           {/* Header */}

@@ -33,7 +33,7 @@ function StatusBadge({ status }: { status: string }) {
   };
   const s = map[status] || map.DRAFT;
   return (
-    <span style={{ padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700, background: s.bg, color: s.color }}>
+    <span data-ui="public.blog.panel" style={{ padding: "3px 10px", borderRadius: 20, fontSize: 10, fontWeight: 700, background: s.bg, color: s.color }}>
       {s.label}
     </span>
   );
