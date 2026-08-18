@@ -83,9 +83,11 @@ services:
       start_period: 20s
 
   alloy:
-    image: grafana/alloy:latest
+    image: grafana/alloy:v1.18.1
     container_name: medinexplus-alloy
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: "1.0"
     command:
       - run
       - /etc/alloy/config.alloy
@@ -105,6 +107,8 @@ services:
     image: grafana/loki:3.4.2
     container_name: medinexplus-loki
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: "1.0"
     ports:
       - "127.0.0.1:3100:3100"
     command: -config.file=/etc/loki/loki-config.yaml
@@ -118,6 +122,8 @@ services:
     image: grafana/tempo:2.7.1
     container_name: medinexplus-tempo
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: "1.0"
     ports:
       - "127.0.0.1:4318:4318"
       - "127.0.0.1:3200:3200"
@@ -132,6 +138,8 @@ services:
     image: prom/prometheus:v3.2.1
     container_name: medinexplus-prometheus
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: "1.0"
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -144,9 +152,11 @@ services:
       - observability
 
   pyroscope:
-    image: grafana/pyroscope:latest
+    image: grafana/pyroscope:2.2.1
     container_name: medinexplus-pyroscope
     restart: unless-stopped
+    mem_limit: 1.5g
+    cpus: "2.0"
     ports:
       - "127.0.0.1:4040:4040"
     volumes:
@@ -158,6 +168,8 @@ services:
     image: prom/mysqld-exporter:v0.14.0
     container_name: medinexplus-mysqld-exporter
     restart: unless-stopped
+    mem_limit: 128m
+    cpus: "0.5"
     environment:
       DATA_SOURCE_NAME: ${MYSQL_USER:-medinex}:${MYSQL_PASSWORD:-medinexpassword}@(mysql:3306)/
     depends_on:
@@ -167,9 +179,12 @@ services:
       - observability
 
   grafana:
-    image: grafana/grafana:latest
+    # Pin Grafana. Do not set GF_SERVER_PROTOCOL=https (TLS belongs on nginx).
+    image: grafana/grafana:13.1.3
     container_name: medinexplus-grafana
     restart: unless-stopped
+    mem_limit: 2g
+    cpus: "2.0"
     ports:
       - "127.0.0.1:3001:3000"
     environment:
@@ -177,9 +192,11 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
-      GF_INSTALL_PLUGINS: grafana-pyroscope-datasource
+      GF_SECURITY_COOKIE_SECURE: "true"
       GF_SERVER_DOMAIN: ${GF_SERVER_DOMAIN:-grafana.ansarisaif.com}
-      GF_SERVER_ROOT_URL: ${GF_SERVER_ROOT_URL:-https://grafana.ansarisaif.com}
+      GF_SERVER_ROOT_URL: ${GF_SERVER_ROOT_URL:-https://grafana.ansarisaif.com/}
+      GF_DATABASE_WAL: "true"
+      GF_DATABASE_QUERY_RETRIES: "20"
     volumes:
       - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
@@ -188,6 +205,16 @@ services:
       - tempo
       - prometheus
       - pyroscope
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --spider http://127.0.0.1:3000/api/health || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
     profiles:
       - observability
 
