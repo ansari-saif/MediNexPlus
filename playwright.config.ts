@@ -17,6 +17,7 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+  timeout: 90_000,
   workers: 1,
   // Stop the worker after the first failed spec. Per-file `serial` does not
   // skip later files in this onboard chain.

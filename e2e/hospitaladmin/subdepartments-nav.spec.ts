@@ -71,14 +71,11 @@ test.describe("hospital admin sub-departments nav", () => {
       page.locator('[data-ui="hospitaladmin.nav.subdept-item"][data-ui-instance="sub-pathology-1"]')
     ).toBeVisible();
 
-    await Promise.all([
-      page.waitForURL(/\/hospitaladmin\/sub-departments\/sub-pharmacy-1\/?$/, { timeout: 15_000 }),
-      page.locator('[data-ui="hospitaladmin.nav.subdept-item"][data-ui-instance="sub-pharmacy-1"]').click(),
-    ]);
+    await page.locator('[data-ui="hospitaladmin.nav.subdept-item"][data-ui-instance="sub-pharmacy-1"]').click();
 
-    // Soft nav can race while the new segment compiles; full load is definitive.
+    // Soft nav can race while the new segment compiles; wait on the landmark, not `load`.
     if (!(await ui("hospitaladmin.subdept").isVisible().catch(() => false))) {
-      await page.goto("/hospitaladmin/sub-departments/sub-pharmacy-1");
+      await page.goto("/hospitaladmin/sub-departments/sub-pharmacy-1", { waitUntil: "domcontentloaded" });
     }
 
     await expect(ui("hospitaladmin.subdept")).toBeVisible({ timeout: 15_000 });

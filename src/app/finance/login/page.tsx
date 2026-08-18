@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IndianRupee, Eye, EyeOff, Loader2, AlertCircle, ShieldCheck } from "lucide-react";
 import { Anchor } from "@/lib/uianchor";
+import "./finance-login.css";
 
 export default function FinanceLoginPage() {
   const router = useRouter();
@@ -36,8 +37,6 @@ export default function FinanceLoginPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(135deg,#fffbeb 0%,#fef3c7 50%,#fde68a 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter',sans-serif", padding: 20 }}>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'); *{box-sizing:border-box;margin:0;padding:0} @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
-
       <div style={{ width: "100%", maxWidth: 420, animation: "fadeUp .4s ease" }}>
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 28 }}>
@@ -116,8 +115,6 @@ export default function FinanceLoginPage() {
           Hospital Management System · Finance Department
         </div>
       </div>
-
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

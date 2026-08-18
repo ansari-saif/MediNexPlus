@@ -1,17 +1,15 @@
-import { test, expect } from "../fixtures";
+import { test, expect, signInParentDept, gotoDashboard } from "../fixtures";
 
-const email = process.env.E2E_SUBDEPT_EMAIL || "subdept@hospital.com";
-const password = process.env.E2E_SUBDEPT_PASSWORD || "SubDept@123";
+const email = process.env.E2E_ADMINISTRATIVE_EMAIL || "administrative@hospital.com";
+const password = process.env.E2E_ADMINISTRATIVE_PASSWORD || "Administrative@123";
 
 test.describe("administrative department portal", () => {
-  test("sub-department portal renders dashboard with UIAnchors", async ({ page, ui }) => {
-    await page.goto("/subdept/login");
-
-    await ui("auth.subdept.login.email").fill(email);
-    await ui("auth.subdept.login.password").fill(password);
-    await ui("auth.subdept.login.submit").click();
-
-    await page.waitForURL("**/subdept/**", { timeout: 20_000 });
-    await expect(ui("subdept.dashboard")).toBeVisible({ timeout: 15_000 });
+  test("administrative department controls render with UIAnchors", async ({ page, ui }) => {
+    test.setTimeout(120_000);
+    await signInParentDept(page, ui, email, password);
+    await gotoDashboard(page, "/administrative/dashboard");
+    await expect(ui("administrative.dashboard")).toBeVisible({ timeout: 45_000 });
+    await expect(ui("administrative.nav.overview")).toBeVisible();
+    await expect(ui("administrative.nav.appointments")).toBeVisible();
   });
 });

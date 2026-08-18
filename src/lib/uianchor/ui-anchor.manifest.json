@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-18T11:42:08+05:30",
+  "generatedAt": "2026-08-18T22:00:25+05:30",
   "components": {
     "administrative.dashboard": {
       "type": "landmark"
@@ -404,6 +404,9 @@
     "doctor.schedule.full-week": {
       "type": "button"
     },
+    "doctor.schedule.loading": {
+      "type": "landmark"
+    },
     "doctor.schedule.modal": {
       "type": "landmark"
     },
@@ -703,6 +706,9 @@
     },
     "hospitaladmin.doctors.schedule.ipd.search": {
       "type": "input"
+    },
+    "hospitaladmin.doctors.schedule.loading": {
+      "type": "landmark"
     },
     "hospitaladmin.doctors.schedule.patients.appointment.complete": {
       "type": "button"

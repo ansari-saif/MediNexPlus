@@ -188,7 +188,7 @@ function OverviewTab({ deptProfile, onOpenSubDept }: { deptProfile: any; onOpenS
       {/* Header: title + live indicator + refresh */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }} data-ui="parentdept.dashboard">
+          <div style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", letterSpacing: "-.02em" }}>
             {deptProfile?.name || "Pharmacy"} Overview
           </div>
           <div style={{ fontSize: 12, color: "#64748b", marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>

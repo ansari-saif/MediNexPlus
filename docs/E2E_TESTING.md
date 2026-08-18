@@ -179,6 +179,8 @@ Prefer web-first assertions (`await expect(locator).toBeVisible()`) over
 | Search box filled but dropdown empty | test searched a value a different fixture instance created | make the draft fixture worker-scoped |
 | "No available slots" when booking | doctor's weekly schedule never persisted | assert the `/availability` response in spec `04` |
 | Login lands on dashboard but `waitForURL` times out | Next.js client nav never fires `load` | wait on the dashboard locator, not `until: "load"` |
+| Portal login never shows the dashboard landmark | Cookie is not set before the next navigation, or `goto` waited on `domcontentloaded` while Next was still compiling | Authenticate with `page.request.post` after filling the form, then `goto` with `waitUntil: "commit"` |
+| Headed Chromium shows a Next.js overlay but the spec still passed | Playwright ignores `pageerror` and the overlay unless asserted | Shared fixture `catchPageRuntimeErrors` fails the spec on uncaught page errors and `nextjs-portal` |
 | Later specs keep running after a fail | `serial` is per-file; `testInfo.skip()` does not abort | `maxFailures: 1` plus `test.skip()` in the shared fixture |
 
 Useful when a UI symptom and the DB disagree:

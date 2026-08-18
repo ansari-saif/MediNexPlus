@@ -634,7 +634,7 @@ export default function FinanceDashboard() {
               {sidebarOpen ? <X size={18} color="#f59e0b" /> : <Menu size={18} color="#64748b" />}
             </button>
             <div>
-              <div data-ui="finance.dashboard" style={{ fontSize:15, fontWeight: 800, color: "#1e293b" }}>
+              <div style={{ fontSize:15, fontWeight: 800, color: "#1e293b" }}>
                 {tab === "overview" ? "Financial Overview" : tab === "bills" ? "Bills & Invoices" : tab === "payments" ? "Payment History" : tab === "expenses" ? "Expense Management" : "Revenue Reports"}
               </div>
               <div style={{ fontSize:10, color: "#94a3b8", marginTop: 1 }}>

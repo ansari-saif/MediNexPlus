@@ -1,0 +1,8 @@
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.sl-spin {
+  animation: spin 0.7s linear infinite;
+}

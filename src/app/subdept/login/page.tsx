@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, Stethoscope } from "lucide-react";
 import { Anchor } from "@/lib/uianchor";
+import "./subdept-login.css";
 
 export default function SubDeptLoginPage() {
   const router = useRouter();
@@ -47,15 +48,7 @@ export default function SubDeptLoginPage() {
   };
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Inter',sans-serif}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .sl-spin{animation:spin .7s linear infinite}
-      `}</style>
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg,#667eea 0%,#764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg,#667eea 0%,#764ba2 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", fontFamily: "'Inter',sans-serif" }}>
         <div style={{ background: "#fff", borderRadius: 20, padding: "40px 36px", width: "100%", maxWidth: 420, boxShadow: "0 20px 60px rgba(0,0,0,0.2)" }}>
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <div style={{ width: 56, height: 56, background: "linear-gradient(135deg,#667eea,#764ba2)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
@@ -124,7 +117,6 @@ export default function SubDeptLoginPage() {
             Credentials are provided by the hospital administrator
           </div>
         </div>
-      </div>
-    </>
+    </div>
   );
 }

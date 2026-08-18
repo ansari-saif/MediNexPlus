@@ -1,17 +1,22 @@
-import { test, expect } from "../fixtures";
+import { test, expect, signInPortal } from "../fixtures";
 
-const email = process.env.E2E_STAFF_EMAIL || "staff@hospital.com";
-const password = process.env.E2E_STAFF_PASSWORD || "Staff@123";
+const email = process.env.E2E_RECEPTIONIST_EMAIL || "receptionist@hospital.com";
+const password = process.env.E2E_RECEPTIONIST_PASSWORD || "Receptionist@123";
 
 test.describe("receptionist staff portal", () => {
-  test("receptionist login and staff controls render with UIAnchors", async ({ page, ui }) => {
-    await page.goto("/staff/login");
-
-    await ui("auth.staff.login.email").fill(email);
-    await ui("auth.staff.login.password").fill(password);
-    await ui("auth.staff.login.submit").click();
-
-    await page.waitForURL("**/staff/dashboard**", { timeout: 20_000 });
-    await expect(ui("staff.profile")).toBeVisible({ timeout: 15_000 });
+  test("receptionist can open the dedicated receptionist dashboard", async ({ page, ui }) => {
+    test.setTimeout(120_000);
+    await signInPortal(page, ui, {
+      loginPath: "/staff/login",
+      dashboardPath: "/receptionist/dashboard",
+      emailId: "auth.staff.login.email",
+      passwordId: "auth.staff.login.password",
+      submitId: "auth.staff.login.submit",
+      loginApi: "/api/auth/staff/login",
+      email,
+      password,
+    });
+    await expect(ui("receptionist.dashboard")).toBeVisible({ timeout: 45_000 });
+    await expect(ui("receptionist.nav.queue")).toBeVisible();
   });
 });

@@ -135,6 +135,7 @@ export type UIAnchorId =
   | "doctor.schedule.consult"
   | "doctor.schedule.edit-rx"
   | "doctor.schedule.full-week"
+  | "doctor.schedule.loading"
   | "doctor.schedule.modal"
   | "doctor.schedule.save"
   | "doctor.schedule.view-rx"
@@ -235,6 +236,7 @@ export type UIAnchorId =
   | "hospitaladmin.doctors.schedule.inventory.search"
   | "hospitaladmin.doctors.schedule.ipd.admit"
   | "hospitaladmin.doctors.schedule.ipd.search"
+  | "hospitaladmin.doctors.schedule.loading"
   | "hospitaladmin.doctors.schedule.patients.appointment.complete"
   | "hospitaladmin.doctors.schedule.patients.create"
   | "hospitaladmin.doctors.schedule.patients.form.gender"
@@ -796,6 +798,7 @@ export const UI_ANCHOR_IDS = [
   "doctor.schedule.consult",
   "doctor.schedule.edit-rx",
   "doctor.schedule.full-week",
+  "doctor.schedule.loading",
   "doctor.schedule.modal",
   "doctor.schedule.save",
   "doctor.schedule.view-rx",
@@ -896,6 +899,7 @@ export const UI_ANCHOR_IDS = [
   "hospitaladmin.doctors.schedule.inventory.search",
   "hospitaladmin.doctors.schedule.ipd.admit",
   "hospitaladmin.doctors.schedule.ipd.search",
+  "hospitaladmin.doctors.schedule.loading",
   "hospitaladmin.doctors.schedule.patients.appointment.complete",
   "hospitaladmin.doctors.schedule.patients.create",
   "hospitaladmin.doctors.schedule.patients.form.gender",

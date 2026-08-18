@@ -410,7 +410,15 @@ export default function ScheduleBuilder({ doctorId, doctorName, accent = "#0E898
 
       <div className="sb-body">
         {loading ? (
-          <div className="sb-loading"><Loader2 size={20} className="sb-spin" /> Loading schedule...</div>
+          uiPrefix ? (
+            <div className="sb-loading" data-ui="hospitaladmin.doctors.schedule.loading">
+              <Loader2 size={20} className="sb-spin" /> Loading schedule...
+            </div>
+          ) : (
+            <div className="sb-loading" data-ui="doctor.schedule.loading">
+              <Loader2 size={20} className="sb-spin" /> Loading schedule...
+            </div>
+          )
 
         ) : step === 1 ? (
           /* ═══════ STEP 1: WEEKLY SCHEDULE ═══════ */

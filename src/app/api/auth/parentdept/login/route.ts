@@ -26,9 +26,9 @@ export const POST = withApiRoute("auth.parentdept.login.post", async (req: NextR
       return errorResponse("Invalid credentials", 401);
     }
 
-    // Verify department is linked
-    const dept = await (prisma as any).department.findFirst({
-      where: { userId: user.id },
+    // Verify department is linked via hodUserId (Department has no userId column)
+    const dept = await prisma.department.findFirst({
+      where: { hodUserId: user.id },
       select: { id: true, name: true, type: true, code: true },
     });
     if (!dept) return errorResponse("No department linked to this account", 400);

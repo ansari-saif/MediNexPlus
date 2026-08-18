@@ -8,7 +8,7 @@ test.describe("superadmin onboard · create doctor", () => {
     ui,
     doctorDraft,
   }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(90_000);
 
     await page.goto("/hospitaladmin/doctors");
     await expect(ui("hospitaladmin.doctors")).toBeVisible();
@@ -23,7 +23,9 @@ test.describe("superadmin onboard · create doctor", () => {
     await ui("hospitaladmin.doctors.search").fill(doctorDraft.email);
     await expect(ui("hospitaladmin.doctors.search")).toHaveValue(doctorDraft.email);
     await ui("hospitaladmin.doctors.schedule").click();
+    await expect(ui("hospitaladmin.doctors.schedule.loading")).toBeHidden({ timeout: 20_000 });
     await ui("hospitaladmin.doctors.schedule.full-week").click();
+    await expect(ui("hospitaladmin.doctors.schedule.save")).toBeEnabled();
 
     // Wait for the persisted response: the next spec navigates away, which would
     // otherwise abort this POST and leave the doctor with no bookable slots.

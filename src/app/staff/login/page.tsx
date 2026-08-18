@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Anchor } from "@/lib/uianchor";
+import "./staff-login.css";
 
 export default function StaffLoginPage() {
   const router = useRouter();
@@ -62,78 +63,6 @@ export default function StaffLoginPage() {
 
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-
-        .sp.dark { --bg:#0f0f19; --brand-from:#0f172a; --brand-to:#064e3b; --card-bg:#0f0f19; --input-bg:rgba(255,255,255,0.04); --input-border:rgba(255,255,255,0.1); --input-focus-border:rgba(16,185,129,0.55); --input-focus-shadow:rgba(16,185,129,0.12); --input-color:#fff; --placeholder:rgba(255,255,255,0.18); --label:#9ca3af; --heading:#fff; --sub:rgba(255,255,255,0.35); --err-bg:rgba(239,68,68,0.08); --err-border:rgba(239,68,68,0.22); --err-color:#fca5a5; --ferr:#f87171; --suc-bg:rgba(16,185,129,0.1); --suc-border:rgba(16,185,129,0.25); --suc-color:#6ee7b7; --toggle-bg:rgba(255,255,255,0.08); --toggle-color:rgba(255,255,255,0.5); --toggle-hover:rgba(255,255,255,0.14); --footer-color:rgba(255,255,255,0.3); --footer-link:#34d399; --eye-color:rgba(255,255,255,0.25); --eye-hover:rgba(255,255,255,0.55); --brand-grid:rgba(255,255,255,0.025); --stat-num:#34d399; --stat-label:rgba(255,255,255,0.4); --stat-div:rgba(255,255,255,0.12); --pill-bg:rgba(255,255,255,0.05); --pill-border:rgba(255,255,255,0.12); --pill-color:rgba(255,255,255,0.6); --brand-title:#fff; --brand-sub:rgba(255,255,255,0.5); }
-
-        .sp.light { --bg:#ecfdf5; --brand-from:#d1fae5; --brand-to:#a7f3d0; --card-bg:#ffffff; --input-bg:#f9fafb; --input-border:#d1d5db; --input-focus-border:#10b981; --input-focus-shadow:rgba(16,185,129,0.15); --input-color:#111827; --placeholder:#9ca3af; --label:#6b7280; --heading:#111827; --sub:#6b7280; --err-bg:#fef2f2; --err-border:#fecaca; --err-color:#dc2626; --ferr:#dc2626; --suc-bg:#f0fdf4; --suc-border:#bbf7d0; --suc-color:#059669; --toggle-bg:rgba(0,0,0,0.07); --toggle-color:#374151; --toggle-hover:rgba(0,0,0,0.12); --footer-color:#6b7280; --footer-link:#059669; --eye-color:#9ca3af; --eye-hover:#374151; --brand-grid:rgba(16,185,129,0.06); --stat-num:#059669; --stat-label:#6b7280; --stat-div:#d1d5db; --pill-bg:rgba(16,185,129,0.06); --pill-border:rgba(16,185,129,0.18); --pill-color:#065f46; --brand-title:#14532d; --brand-sub:#374151; }
-
-        .sp { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; font-family:'Inter',sans-serif; overflow:hidden; transition:background 0.3s; background:var(--bg); }
-        @media(max-width:768px){ .sp{ grid-template-columns:1fr; } .sp-brand{ display:none; } }
-
-        .sp-toggle { position:fixed; top:20px; right:20px; z-index:100; width:40px; height:40px; border-radius:50%; border:none; cursor:pointer; background:var(--toggle-bg); color:var(--toggle-color); display:flex; align-items:center; justify-content:center; transition:background 0.2s, transform 0.2s; box-shadow:0 2px 12px rgba(0,0,0,0.12); backdrop-filter:blur(8px); }
-        .sp-toggle:hover { background:var(--toggle-hover); transform:scale(1.1); }
-
-        .sp-brand { background:linear-gradient(155deg, var(--brand-from) 0%, #6ee7b7 50%, var(--brand-to) 100%); display:flex; align-items:center; justify-content:center; padding:48px; position:relative; overflow:hidden; transition:background 0.3s; }
-        .sp-brand-grid { position:absolute; inset:0; background-image:linear-gradient(var(--brand-grid) 1px, transparent 1px), linear-gradient(90deg, var(--brand-grid) 1px, transparent 1px); background-size:40px 40px; }
-        .sp-brand-glow { position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 10% 30%, rgba(16,185,129,0.25) 0%, transparent 55%), radial-gradient(ellipse at 85% 70%, rgba(5,150,105,0.2) 0%, transparent 55%); }
-        .sp-brand-content { position:relative; z-index:2; max-width:420px; }
-        .sp-logo { display:flex; align-items:center; gap:12px; margin-bottom:48px; text-decoration:none; }
-        .sp-logo-icon { width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #10b981, #059669); display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(16,185,129,0.4); }
-        .sp-logo-text { font-size:22px; font-weight:800; color:var(--brand-title); letter-spacing:-0.02em; }
-        .sp-logo-accent { color:#059669; }
-        .sp.light .sp-logo-accent { color:#047857; }
-        .sp-brand-title { font-size:38px; font-weight:800; line-height:1.15; letter-spacing:-0.03em; margin-bottom:16px; color:var(--brand-title); }
-        .sp-brand-title span { background:linear-gradient(135deg, #059669, #34d399); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .sp-brand-sub { font-size:15px; color:var(--brand-sub); line-height:1.7; margin-bottom:40px; }
-        .sp-stats { display:flex; gap:24px; margin-bottom:40px; }
-        .sp-stat { text-align:center; }
-        .sp-stat-num { font-size:28px; font-weight:800; color:var(--stat-num); display:block; letter-spacing:-0.02em; }
-        .sp-stat-label { font-size:12px; color:var(--stat-label); font-weight:500; }
-        .sp-stat-div { width:1px; background:var(--stat-div); }
-        .sp-pills { display:flex; flex-wrap:wrap; gap:8px; }
-        .sp-pill { padding:5px 12px; border-radius:100px; font-size:12px; font-weight:600; border:1px solid var(--pill-border); color:var(--pill-color); background:var(--pill-bg); }
-
-        .sp-form-side { background:var(--card-bg); display:flex; align-items:center; justify-content:center; padding:32px; transition:background 0.3s; }
-        .sp-form-box { width:100%; max-width:420px; }
-        .sp-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; background:rgba(16,185,129,0.1); color:#059669; border:1px solid rgba(16,185,129,0.22); margin-bottom:12px; }
-        .sp-heading { font-size:28px; font-weight:800; color:var(--heading); letter-spacing:-0.02em; margin-bottom:6px; }
-        .sp-sub { font-size:14px; color:var(--sub); line-height:1.6; margin-bottom:24px; }
-
-        .sp-err { display:flex; align-items:flex-start; gap:10px; background:var(--err-bg); border:1px solid var(--err-border); border-radius:12px; padding:12px 14px; margin-bottom:18px; font-size:13px; color:var(--err-color); line-height:1.5; animation:sp-shake 0.3s ease; }
-        @keyframes sp-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
-        .sp-suc { display:flex; align-items:center; gap:10px; background:var(--suc-bg); border:1px solid var(--suc-border); border-radius:12px; padding:12px 14px; margin-bottom:18px; font-size:13px; color:var(--suc-color); font-weight:600; }
-
-        .sp-field { margin-bottom:16px; }
-        .sp-label-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
-        .sp-label { font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--label); }
-        .sp-wrap { position:relative; }
-        .sp-input { width:100%; background:var(--input-bg); border:1.5px solid var(--input-border); border-radius:11px; padding:13px 42px 13px 14px; font-size:14px; color:var(--input-color); font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
-        .sp-input::placeholder { color:var(--placeholder); }
-        .sp-input:focus { border-color:var(--input-focus-border); box-shadow:0 0 0 3px var(--input-focus-shadow); }
-        .sp-input.err { border-color:#ef4444; }
-        .sp-eye { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--eye-color); display:flex; align-items:center; padding:0; transition:color 0.2s; }
-        .sp-eye:hover { color:var(--eye-hover); }
-        .sp-ferr { font-size:12px; color:var(--ferr); margin-top:5px; display:block; }
-
-        .sp-btn { width:100%; padding:14px; border:none; border-radius:12px; font-size:15px; font-weight:700; font-family:'Inter',sans-serif; cursor:pointer; position:relative; overflow:hidden; transition:transform 0.15s, box-shadow 0.15s; display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg, #10b981, #059669); color:#fff; box-shadow:0 4px 18px rgba(16,185,129,0.3); margin-bottom:0; }
-        .sp-btn:hover:not(:disabled){ transform:translateY(-1px); box-shadow:0 8px 26px rgba(16,185,129,0.42); }
-        .sp-btn:active:not(:disabled){ transform:translateY(0); }
-        .sp-btn:disabled { opacity:0.55; cursor:not-allowed; }
-        .sp-btn-shine { position:absolute; inset:0; background:linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%); background-size:200% 100%; animation:sp-shine 3s infinite; }
-        @keyframes sp-shine { 0%{background-position:200% center} 100%{background-position:-200% center} }
-        .sp-spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:sp-spin 0.7s linear infinite; }
-        @keyframes sp-spin { to{ transform:rotate(360deg); } }
-
-        .sp-footer { text-align:center; margin-top:20px; font-size:13px; color:var(--footer-color); }
-        .sp-footer a { color:var(--footer-link); text-decoration:none; font-weight:600; }
-        .sp-footer a:hover { opacity:0.8; }
-        .sp-notice { margin-top:16px; padding:12px 16px; border-radius:10px; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.18); font-size:12px; color:#065f46; line-height:1.6; }
-        .sp.dark .sp-notice { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.2); color:#6ee7b7; }
-      `}</style>
-
       <button className="sp-toggle" onClick={() => setDark(!dark)} title={dark ? "Light Mode" : "Dark Mode"}>
         {dark
           ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
